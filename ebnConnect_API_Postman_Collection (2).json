@@ -1,0 +1,857 @@
+{
+  "info": {
+    "name": "EBN Connect API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://net_connect.test/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"member@example.com\",\n    \"password\": \"password\",\n    \"device_name\": \"postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logout",
+              "host": ["{{base_url}}"],
+              "path": ["logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dashboard?time_filter=lifetime",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard"],
+              "query": [
+                {
+                  "key": "time_filter",
+                  "value": "lifetime",
+                  "description": "Filter by time: '6m', '12m', 'lifetime'"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Elite Meets",
+      "item": [
+        {
+          "name": "List Elite Meets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/elite-meets?status=Scheduled",
+              "host": ["{{base_url}}"],
+              "path": ["elite-meets"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "Scheduled",
+                  "description": "Filter by status: Scheduled, Completed, Cancelled"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Elite Meet",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"member_b\": 2,\n    \"met_at\": \"2024-05-20 10:30 AM\",\n    \"location\": \"Starbucks, Main Street\",\n    \"mode\": \"In-person\",\n    \"topics_discussed\": \"Business synergies and potential referrals\",\n    \"status\": \"Scheduled\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/elite-meets",
+              "host": ["{{base_url}}"],
+              "path": ["elite-meets"]
+            }
+          }
+        },
+        {
+          "name": "Show Elite Meet",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/elite-meets/1",
+              "host": ["{{base_url}}"],
+              "path": ["elite-meets", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Elite Meet",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"Completed\",\n    \"topics_discussed\": \"Updated topics\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/elite-meets/1",
+              "host": ["{{base_url}}"],
+              "path": ["elite-meets", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Elite Referrals",
+      "item": [
+        {
+          "name": "List Referrals",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/elite-referrals?tab=given",
+              "host": ["{{base_url}}"],
+              "path": ["elite-referrals"],
+              "query": [
+                {
+                  "key": "tab",
+                  "value": "given",
+                  "description": "Filter by tab: 'given' or 'received'"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "Filter by status: Open, Converted, Closed, Rejected",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Referral",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"referred_to\": 3,\n    \"type\": \"External\",\n    \"date_submitted\": \"2024-05-15\",\n    \"prospect_name\": \"John Doe\",\n    \"company_name\": \"Acme Corp\",\n    \"phone\": \"9876543210\",\n    \"email\": \"john@acme.com\",\n    \"requirement\": \"Needs IT consulting services\",\n    \"estimated_value\": 50000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/elite-referrals",
+              "host": ["{{base_url}}"],
+              "path": ["elite-referrals"]
+            }
+          }
+        },
+        {
+          "name": "Show Referral",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/elite-referrals/1",
+              "host": ["{{base_url}}"],
+              "path": ["elite-referrals", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Referral",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"Converted\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/elite-referrals/1",
+              "host": ["{{base_url}}"],
+              "path": ["elite-referrals", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Regions Dropdown",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dropdowns/regions",
+              "host": ["{{base_url}}"],
+              "path": ["dropdowns", "regions"]
+            }
+          }
+        },
+        {
+          "name": "Get Chapters by Region Dropdown",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dropdowns/regions/1/chapters",
+              "host": ["{{base_url}}"],
+              "path": ["dropdowns", "regions", "1", "chapters"]
+            }
+          }
+        },
+        {
+          "name": "Get Members by Chapter Dropdown",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dropdowns/chapters/1/members",
+              "host": ["{{base_url}}"],
+              "path": ["dropdowns", "chapters", "1", "members"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Elite Close Business",
+      "item": [
+        {
+          "name": "Available Referrals",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/elite-close-business/available-referrals",
+              "host": ["{{base_url}}"],
+              "path": ["elite-close-business", "available-referrals"]
+            }
+          }
+        },
+        {
+          "name": "List Elite Close Business",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/elite-close-business?tab=received",
+              "host": ["{{base_url}}"],
+              "path": ["elite-close-business"],
+              "query": [
+                {
+                  "key": "tab",
+                  "value": "received",
+                  "description": "Filter by tab: 'given' or 'received'"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Elite Close Business",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"referral_id\": 5,\n    \"amount\": 150000,\n    \"paid_date\": \"2024-05-20\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/elite-close-business",
+              "host": ["{{base_url}}"],
+              "path": ["elite-close-business"]
+            }
+          }
+        },
+        {
+          "name": "Show Elite Close Business",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/elite-close-business/1",
+              "host": ["{{base_url}}"],
+              "path": ["elite-close-business", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Elite Close Business",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"Received\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/elite-close-business/1",
+              "host": ["{{base_url}}"],
+              "path": ["elite-close-business", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Visitor Invitations",
+      "item": [
+        {
+          "name": "List Visitor Invitations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/elite-visitor-invitations",
+              "host": ["{{base_url}}"],
+              "path": ["elite-visitor-invitations"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search by name, company, email, mobile",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Visitor Invitation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"full_name\": \"Jane Smith\",\n    \"company_name\": \"Tech Solutions\",\n    \"mobile_no\": \"9988776655\",\n    \"whatsapp_no\": \"9988776655\",\n    \"email\": \"jane@techsolutions.com\",\n    \"gst_no\": \"22AAAAA0000A1Z5\",\n    \"invitation_date\": \"2024-06-10\",\n    \"category_id\": 1,\n    \"sub_category_id\": 2,\n    \"payment_mode\": \"paid_at_venue\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/elite-visitor-invitations",
+              "host": ["{{base_url}}"],
+              "path": ["elite-visitor-invitations"]
+            }
+          }
+        },
+        {
+          "name": "Show Visitor Invitation",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/elite-visitor-invitations/1",
+              "host": ["{{base_url}}"],
+              "path": ["elite-visitor-invitations", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Visitor Invitation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"attended\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/elite-visitor-invitations/1",
+              "host": ["{{base_url}}"],
+              "path": ["elite-visitor-invitations", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Categories Dropdown",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dropdowns/categories",
+              "host": ["{{base_url}}"],
+              "path": ["dropdowns", "categories"]
+            }
+          }
+        },
+        {
+          "name": "Get Sub-Categories Dropdown",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/dropdowns/categories/1/sub-categories",
+              "host": ["{{base_url}}"],
+              "path": ["dropdowns", "categories", "1", "sub-categories"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Trainings",
+      "item": [
+        {
+          "name": "List Trainings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/trainings",
+              "host": ["{{base_url}}"],
+              "path": ["trainings"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search by title, description, location",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Register for Training",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/trainings/1/register",
+              "host": ["{{base_url}}"],
+              "path": ["trainings", "1", "register"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Training Registration",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/trainings/1/register",
+              "host": ["{{base_url}}"],
+              "path": ["trainings", "1", "register"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Directory & Profile",
+      "item": [
+        {
+          "name": "Chapter Members",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/elite-members/chapter-members",
+              "host": ["{{base_url}}"],
+              "path": ["elite-members", "chapter-members"]
+            }
+          }
+        },
+        {
+          "name": "Search Elite Members",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/elite-members/search?tab=chapter&search=software",
+              "host": ["{{base_url}}"],
+              "path": ["elite-members", "search"],
+              "query": [
+                {
+                  "key": "tab",
+                  "value": "chapter",
+                  "description": "Filter by tab: 'chapter' or 'global'"
+                },
+                {
+                  "key": "search",
+                  "value": "software",
+                  "description": "Search by name, company, category"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Show Elite Member",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/elite-members/1",
+              "host": ["{{base_url}}"],
+              "path": ["elite-members", "1"]
+            }
+          }
+        },
+        {
+          "name": "My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/profile/me",
+              "host": ["{{base_url}}"],
+              "path": ["profile", "me"]
+            }
+          }
+        },
+        {
+          "name": "My Billing details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/profile/billing",
+              "host": ["{{base_url}}"],
+              "path": ["profile", "billing"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Payments & Notifications",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"invoice_number\": \"TRG-XXXXXX\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/payments/create-order",
+              "host": ["{{base_url}}"],
+              "path": ["payments", "create-order"]
+            }
+          }
+        },
+        {
+          "name": "Verify Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"invoice_number\": \"TRG-XXXXXX\",\n    \"razorpay_order_id\": \"order_XXXXXX\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/payments/verify",
+              "host": ["{{base_url}}"],
+              "path": ["payments", "verify"]
+            }
+          }
+        },
+        {
+          "name": "Save Device Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"device_token\": \"fcm_token_here\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/device-token",
+              "host": ["{{base_url}}"],
+              "path": ["device-token"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

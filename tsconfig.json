@@ -1,8 +1,32 @@
 {
   "extends": "@react-native/typescript-config",
   "compilerOptions": {
-    "types": ["jest"]
+    "strict": true,
+    "baseUrl": ".",
+    "ignoreDeprecations": "5.0",
+    "paths": {
+      "@utils": ["src/utils"],
+      "@store": ["src/store"],
+      "@hooks": ["src/hooks"],
+      "@assets": ["src/assets"],
+      "@utils/*": ["src/utils/*"],
+      "@store/*": ["src/store/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@screens": ["src/screens"],
+      "@assets/*": ["src/assets/*"],
+      "@screens/*": ["src/screens/*"],
+      "@colors": ["src/assets/colors"],
+      "@components": ["src/components"],
+      "@navigation": ["src/navigations"],
+      "@components/*": ["src/components/*"],
+      "@routes": ["src/navigations/routes"],
+      "@navigation/*": ["src/navigations/*"],
+      "@routes/*": ["src/navigations/routes"]
+    },
+    "types": ["jest"],
+    "module": "esnext",
+    "moduleResolution": "bundler"
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "src"],
   "exclude": ["**/node_modules", "**/Pods"]
 }
