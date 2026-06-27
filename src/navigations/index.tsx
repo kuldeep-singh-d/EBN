@@ -13,7 +13,7 @@ import { useEffect, useMemo } from 'react';
 import { useSelector } from '@hooks';
 import { colors } from '@assets/colors';
 import { Authorised } from './authorised';
-import { ToastMessage } from '@components';
+import { StatusBar, ToastMessage } from '@components';
 import { Unauthorised } from './unauthorised';
 
 const lightTheme: Theme = {
@@ -39,6 +39,7 @@ const Navigation = () => {
 
   return (
     <SafeAreaProvider>
+      <StatusBar />
       <NavigationContainer
         theme={theme}
         onReady={() => {

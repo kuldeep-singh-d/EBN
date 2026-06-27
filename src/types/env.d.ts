@@ -19,3 +19,11 @@ declare module 'react-native-date-picker' {
   const DatePicker: ComponentType<DatePickerProps>;
   export default DatePicker;
 }
+
+declare module '*.svg' {
+  import { ComponentType } from 'react';
+  import { SvgProps } from 'react-native-svg';
+
+  const content: ComponentType<SvgProps>;
+  export default content;
+}

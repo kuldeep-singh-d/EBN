@@ -14,14 +14,17 @@ const GRADIENT_START = '#0BB2C3';
 
 const AppInput = ({
   value,
+  style,
   onPress,
   setError,
   leftIcon,
+  inputStyle,
   rightElement,
   maxLength,
   title = '',
   error = '',
   placeholder,
+  placeholderTextColor,
   onChangeText,
   keyboardType,
   autoComplete,
@@ -30,6 +33,7 @@ const AppInput = ({
   onSubmitEditing,
   textContentType,
   isPassword = false,
+  showPasswordToggle = true,
   gradientBorder = false,
   isContactNumber = false,
   autoCapitalize = 'none',
@@ -61,7 +65,11 @@ const AppInput = ({
   const input = (
     <Pressable
       onPress={onPress}
-      style={[styles.inputWrapper, gradientBorder && styles.gradientInput]}
+      style={[
+        styles.inputWrapper,
+        gradientBorder && styles.gradientInput,
+        style,
+      ]}
     >
       {leftIcon ? <View style={styles.leftIcon}>{leftIcon}</View> : null}
 
@@ -69,7 +77,7 @@ const AppInput = ({
         value={value}
         editable={editable}
         maxLength={maxLength}
-        style={styles.textInput}
+        style={[styles.textInput, inputStyle]}
         placeholder={placeholder}
         cursorColor={colors.text}
         keyboardType={keyboardType}
@@ -80,14 +88,14 @@ const AppInput = ({
         onChangeText={handleOnchangeText}
         onSubmitEditing={onSubmitEditing}
         textContentType={textContentType}
-        placeholderTextColor={colors.gray}
+        placeholderTextColor={placeholderTextColor ?? colors.gray}
         pointerEvents={onPress ? 'none' : 'auto'}
         secureTextEntry={isPassword && !isPasswordVisible}
       />
 
       {rightElement ? rightElement : null}
 
-      {isPassword && (
+      {isPassword && showPasswordToggle && (
         <Pressable onPress={handleEyePress} style={styles.eyeView} hitSlop={10}>
           {isPasswordVisible ? <Svgs.OpenEye /> : <Svgs.CloseEye />}
         </Pressable>

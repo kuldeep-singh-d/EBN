@@ -1,6 +1,16 @@
 import React from 'react';
 import Svg, { Circle, Line, Path, SvgProps } from 'react-native-svg';
 
+import AlertBackArrow from './alertBackArrow.svg';
+import CommunityMembers from './communityMembers.svg';
+import HomeStats from './homeStats.svg';
+import TabCommunity from './tabCommunity.svg';
+import TabHome from './tabHome.svg';
+import TabSearch from './tabSearch.svg';
+import TabSlips from './tabSlips.svg';
+import TabVisitors from './tabVisitors.svg';
+import VisitorPass from './visitorPass.svg';
+
 const IconBase = ({ children, ...props }: SvgProps) => (
   <Svg width={props.width ?? 24} height={props.height ?? 24} viewBox="0 0 24 24" fill="none" {...props}>
     {children}
@@ -103,15 +113,23 @@ const Check = (props: SvgProps) => (
 );
 
 export const Svgs = {
-  AlertBackArrow: BackArrow,
+  AlertBackArrow,
   BackArrow,
   Barcode,
   Check,
   CloseEye: Eye,
+  CommunityMembers,
   Cross,
   Date,
   DownArrow,
+  HomeStats,
   OpenEye: Eye,
   Pencil,
   Search,
+  TabCommunity,
+  TabHome,
+  TabSearch,
+  TabSlips,
+  TabVisitors,
+  VisitorPass,
 };

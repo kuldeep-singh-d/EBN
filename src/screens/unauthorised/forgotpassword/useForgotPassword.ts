@@ -1,36 +1,56 @@
 import { useCallback, useState } from 'react';
-import { useNavigation, useTheme } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
-import useStyles from './styles';
 import { ForgotPasswordForm } from './types';
+import useStyles from './styles';
+
+const isValidEmail = (value: string) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
 const useForgotPassword = () => {
   const styles = useStyles();
-  const { colors } = useTheme();
   const navigation: any = useNavigation();
 
   const [email, setEmail] = useState<ForgotPasswordForm['email']>('');
   const [emailError, setEmailError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
-  const handleSubmit = useCallback(() => {}, []);
+  const handleSubmit = useCallback(() => {
+    const normalizedEmail = email.trim();
+
+    setSuccessMessage('');
+
+    if (!normalizedEmail) {
+      setEmailError('Email is required');
+      return;
+    }
+
+    if (!isValidEmail(normalizedEmail)) {
+      setEmailError('Enter a valid email');
+      return;
+    }
+
+    setEmailError('');
+    setSuccessMessage('Reset link sent');
+  }, [email]);
+
   const handleBackToLogin = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
 
   return {
     styles,
-    colors,
     states: {
       email,
       emailError,
-    },
-    handlers: {
+      successMessage,
       setEmail,
       setEmailError,
+    },
+    handlers: {
       handleSubmit,
       handleBackToLogin,
     },
-    constants: {},
   };
 };
 

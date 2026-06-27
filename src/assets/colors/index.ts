@@ -2,11 +2,12 @@ const common = Object.freeze({
   white: '#FFFFFF',
   black: '#000000',
   card: 'transparent',
-  border: '#E5E7EB',
+  border: '#C8C8C8',
   background: '#F3F4F6',
   notification: 'transparent',
   //
   gray: '#6B7280',
+  placeholder: '#BFC1C5',
   toastWarn: '#FFF5CF',
   toastError: '#FFDFDF',
   toastSuccess: '#D7FFFF',
@@ -15,15 +16,15 @@ const common = Object.freeze({
 
 export const colors = {
   light: {
-    text: '#021330',
-    primary: '#3B82F6',
-    secondary: '#60A5FA',
+    text: '#01071D',
+    primary: '#23579F',
+    secondary: '#01071D',
     ...common,
   },
   dark: {
-    text: '#FFFFFF',
-    primary: '#3B82F6',
-    secondary: '#60A5FA',
+    text: '#01071D',
+    primary: '#23579F',
+    secondary: '#01071D',
     ...common,
   },
 };

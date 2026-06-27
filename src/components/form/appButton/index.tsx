@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import {
   View,
   ViewStyle,
+  TextStyle,
   Pressable,
   ColorValue,
   ActivityIndicator,
@@ -26,16 +27,21 @@ interface ButtonProps {
   color?: ColorValue;
   isBottom?: boolean;
   isBackground?: boolean;
+  gradient?: boolean;
   disabled?: boolean;
   style?: ViewStyle | any;
+  labelStyle?: TextStyle | any;
 }
 
 const AppButton = ({
   style,
   onPress,
   isBottom,
+  gradient = true,
   title = '',
+  color,
   loader = false,
+  labelStyle,
   topMargin,
   disabled = false,
 }: ButtonProps) => {
@@ -49,6 +55,7 @@ const AppButton = ({
       disabled={disabled || loader}
       style={[
         styles.containerBG,
+        !gradient && { backgroundColor: color ?? colors.primary },
         disabled && styles.disabled,
         style,
         {
@@ -58,26 +65,28 @@ const AppButton = ({
         },
       ]}
     >
-      <Svg
-        width="100%"
-        height="100%"
-        pointerEvents="none"
-        style={styles.gradient}
-      >
-        <Defs>
-          <LinearGradient id="buttonGradient" x1="0" y1="0" x2="1" y2="0">
-            <Stop offset="0" stopColor={GRADIENT_START} />
-            <Stop offset="1" stopColor={GRADIENT_END} />
-          </LinearGradient>
-        </Defs>
-        <Rect width="100%" height="100%" fill="url(#buttonGradient)" />
-      </Svg>
+      {gradient ? (
+        <Svg
+          width="100%"
+          height="100%"
+          pointerEvents="none"
+          style={styles.gradient}
+        >
+          <Defs>
+            <LinearGradient id="buttonGradient" x1="0" y1="0" x2="1" y2="0">
+              <Stop offset="0" stopColor={GRADIENT_START} />
+              <Stop offset="1" stopColor={GRADIENT_END} />
+            </LinearGradient>
+          </Defs>
+          <Rect width="100%" height="100%" fill="url(#buttonGradient)" />
+        </Svg>
+      ) : null}
 
       <View style={[styles.wrapper, isBottom && styles.bottom]}>
         {loader ? (
           <ActivityIndicator size="large" color={colors.white} />
         ) : (
-          <AppText semibold label={title} style={styles.label} />
+          <AppText semibold label={title} style={[styles.label, labelStyle]} />
         )}
       </View>
     </Pressable>

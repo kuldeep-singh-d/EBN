@@ -4,7 +4,7 @@ import { useDeviceDimensions } from '@hooks/useDeviceDimensions';
 
 const useStyles = () => {
   const { colors } = useTheme();
-  const { moderateHeight } = useDeviceDimensions();
+  const { moderateWidth, moderateHeight } = useDeviceDimensions();
 
   return StyleSheet.create({
     container: {
@@ -15,6 +15,11 @@ const useStyles = () => {
     },
     label: {
       marginTop: moderateHeight(2),
+    },
+    heroIcon: {
+      width: moderateWidth(13),
+      height: moderateWidth(13),
+      color: colors.primary,
     },
   });
 };

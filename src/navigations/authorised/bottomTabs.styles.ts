@@ -1,32 +1,34 @@
 import { StyleSheet } from 'react-native';
 import { useDeviceDimensions } from '@hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { colors } from '@assets/colors';
 
 export const useStyles = () => {
   const insets = useSafeAreaInsets();
   const { moderateHeight, moderateWidth } = useDeviceDimensions();
+  const themeColors = colors.light;
 
   return StyleSheet.create({
     container: {
-      backgroundColor: '#FFFFFF',
+      backgroundColor: themeColors.white,
       paddingHorizontal: moderateWidth(3),
       paddingBottom: Math.max(insets.bottom, moderateHeight(1.1)),
     },
     tabBar: {
       width: '100%',
-      borderWidth: 1,
       flexDirection: 'row',
       alignItems: 'center',
-      borderColor: '#E3F2E6',
-      padding: moderateWidth(1),
-      backgroundColor: '#FFFFFF',
-      minHeight: moderateHeight(8),
-      borderRadius: moderateWidth(5),
+      paddingTop: moderateHeight(1.8),
+      paddingBottom: moderateHeight(1.2),
+      paddingHorizontal: moderateWidth(3),
+      backgroundColor: themeColors.primary,
+      minHeight: moderateHeight(10),
+      borderRadius: moderateWidth(8),
 
       elevation: 10,
       shadowRadius: 14,
       shadowOpacity: 0.16,
-      shadowColor: '#087E8B',
+      shadowColor: themeColors.secondary,
       shadowOffset: { width: 0, height: 5 },
     },
     tabButton: {
@@ -35,12 +37,9 @@ export const useStyles = () => {
       overflow: 'hidden',
       alignItems: 'center',
       justifyContent: 'center',
-      minHeight: moderateHeight(6.2),
-      borderRadius: moderateWidth(3),
+      minHeight: moderateHeight(6.5),
     },
-    activeTabButton: {
-      backgroundColor: '#E8F8ED',
-    },
+    activeTabButton: {},
     pressedTabButton: {
       opacity: 0.78,
     },
@@ -51,32 +50,37 @@ export const useStyles = () => {
       paddingHorizontal: moderateWidth(0.5),
     },
     tabIcon: {
-      width: moderateWidth(7),
-      height: moderateWidth(7),
-      borderRadius: moderateWidth(3.5),
+      width: moderateWidth(8),
+      height: moderateWidth(7.2),
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#F3F4F6',
     },
-    activeTabIcon: {
-      backgroundColor: '#31C44C',
+    activeTabIcon: {},
+    iconSize: {
+      width: moderateWidth(7),
+      height: moderateWidth(7),
     },
-    tabIconLabel: {
-      color: '#607578',
-      fontSize: moderateHeight(1.4),
-      lineHeight: moderateHeight(1.8),
+    iconColor: {
+      color: themeColors.white,
     },
-    activeTabIconLabel: {
-      color: '#FFFFFF',
+    activeIconColor: {
+      color: '#B8BDC6',
     },
     tabLabel: {
-      color: '#607578',
+      color: themeColors.white,
       fontSize: moderateHeight(1.15),
       lineHeight: moderateHeight(1.6),
       marginTop: moderateHeight(0.35),
     },
     activeTabLabel: {
-      color: '#14201A',
+      color: '#B8BDC6',
+    },
+    activeIndicator: {
+      width: moderateWidth(5),
+      height: moderateHeight(0.45),
+      marginTop: moderateHeight(0.45),
+      borderRadius: moderateHeight(0.25),
+      backgroundColor: themeColors.white,
     },
   });
 };

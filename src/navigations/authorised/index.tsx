@@ -8,7 +8,7 @@ import * as Screens from '@screens/index';
 const Stack = createNativeStackNavigator();
 
 export function Authorised() {
-  const { mainTabs, search, notifications } = routes.app;
+  const { mainTabs, notifications } = routes.app;
 
   return (
     <Stack.Navigator
@@ -16,7 +16,6 @@ export function Authorised() {
       screenOptions={{ headerShown: false }}
     >
       <Stack.Screen name={mainTabs} component={MainTabs} />
-      <Stack.Screen name={search} component={Screens.Search} />
       <Stack.Screen name={notifications} component={Screens.Notifications} />
     </Stack.Navigator>
   );

@@ -2,8 +2,10 @@ import React from 'react';
 import { Pressable, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import type { SvgProps } from 'react-native-svg';
 
 import { AppText } from '@components';
+import { Svgs } from '@assets/svgs';
 import { routes } from '../routes';
 import * as Screens from '@screens/index';
 
@@ -11,7 +13,7 @@ import useStyles from './bottomTabs.styles';
 
 type TabItem = {
   label: string;
-  shortLabel: string;
+  icon?: React.ComponentType<SvgProps>;
 };
 
 const Tab = createBottomTabNavigator();
@@ -19,23 +21,23 @@ const Tab = createBottomTabNavigator();
 const TAB_ITEMS: Record<string, TabItem> = {
   [routes.app.home]: {
     label: 'Home',
-    shortLabel: 'H',
+    icon: Svgs.TabHome,
   },
   [routes.app.slips]: {
     label: 'Slips',
-    shortLabel: 'S',
+    icon: Svgs.TabSlips,
   },
   [routes.app.community]: {
     label: 'Community',
-    shortLabel: 'C',
+    icon: Svgs.TabCommunity,
   },
   [routes.app.visitors]: {
     label: 'Visitors',
-    shortLabel: 'V',
+    icon: Svgs.TabVisitors,
   },
-  [routes.app.profile]: {
-    label: 'Profile',
-    shortLabel: 'P',
+  [routes.app.search]: {
+    label: 'Search',
+    icon: Svgs.TabSearch,
   },
 };
 
@@ -48,6 +50,9 @@ const BottomTabBar = ({ state, navigation }: BottomTabBarProps) => {
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;
           const tabItem = TAB_ITEMS[route.name];
+          if (!tabItem) return null;
+
+          const Icon = tabItem.icon;
 
           const handlePress = () => {
             const event = navigation.emit({
@@ -89,15 +94,17 @@ const BottomTabBar = ({ state, navigation }: BottomTabBarProps) => {
                     isFocused && styles.activeTabIcon,
                   ]}
                 >
-                  <AppText
-                    semibold
-                    label={tabItem.shortLabel}
-                    centered
-                    style={[
-                      styles.tabIconLabel,
-                      isFocused && styles.activeTabIconLabel,
-                    ]}
-                  />
+                  {Icon ? (
+                    <Icon
+                      width={styles.iconSize.width}
+                      height={styles.iconSize.height}
+                      color={
+                        isFocused
+                          ? styles.activeIconColor.color
+                          : styles.iconColor.color
+                      }
+                    />
+                  ) : null}
                 </View>
                 <AppText
                   semibold={isFocused}
@@ -108,6 +115,7 @@ const BottomTabBar = ({ state, navigation }: BottomTabBarProps) => {
                     isFocused && styles.activeTabLabel,
                   ]}
                 />
+                {isFocused ? <View style={styles.activeIndicator} /> : null}
               </View>
             </Pressable>
           );
@@ -135,7 +143,7 @@ export const MainTabs = () => (
     <Tab.Screen name={routes.app.slips} component={Screens.Slips} />
     <Tab.Screen name={routes.app.community} component={Screens.Community} />
     <Tab.Screen name={routes.app.visitors} component={Screens.Visitors} />
-    <Tab.Screen name={routes.app.profile} component={Screens.Profile} />
+    <Tab.Screen name={routes.app.search} component={Screens.Search} />
   </Tab.Navigator>
 );
 

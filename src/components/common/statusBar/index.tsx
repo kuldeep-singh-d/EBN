@@ -1,12 +1,12 @@
 import { AppStatusBarProps } from './types';
 import React, { memo, useMemo } from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 
 const AppStatusBar = ({
   absolute,
-  barStyle,
   translucent = false,
+  barStyle = 'dark-content',
   backgroundColor = '#FFFFFF',
   ...props
 }: AppStatusBarProps) => {

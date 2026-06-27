@@ -3,6 +3,7 @@ import { createAction } from '@reduxjs/toolkit';
 interface Props {
   url?: string;
   data?: object;
+  params?: object;
   method?: string;
   token?: boolean;
   onStart?: string;

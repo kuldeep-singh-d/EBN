@@ -1,13 +1,13 @@
 import axios from 'axios';
 // Internal Imports
-import { BASE_URL } from '@env';
+// import { BASE_URL } from '@env';
 import { show } from '@utils/helpers';
-import { getApiErrorMessage } from '@utils/apiError';
 import * as actions from '@store/apiActions';
+import { getApiErrorMessage } from '@utils/apiError';
 // import { clearLoginRes } from '@store/slices/auth/login';
 // import { clearLogoutResponse } from '@store/slices/auth/logout';
-import { setLoginState } from '@store/slices/localStates/loginState';
-import { handalLoading } from '@store/slices/localStates/handalLoading';
+import { setLoginState } from '@store/slices/app/localStates/loginState';
+import { handalLoading } from '@store/slices/app/localStates/handalLoading';
 
 interface ApiMiddlewareArgs {
   dispatch: React.Dispatch<any>;
@@ -17,6 +17,7 @@ interface ApiMiddlewareArgs {
 // Define common types for action payloads and request options
 interface ApiCallPayload {
   data?: any;
+  params?: Record<string, any>;
   url: string;
   method: string;
   onStart?: string;
@@ -32,6 +33,7 @@ interface ApiCallPayload {
 
 interface AxiosRequestConfig {
   data?: any;
+  params?: Record<string, any>;
   url: string;
   method: string;
   baseURL?: string;
@@ -50,6 +52,7 @@ const api =
     const {
       url,
       data,
+      params,
       method,
       onStart,
       onReset,
@@ -69,9 +72,15 @@ const api =
 
     const store = getState();
     const token =
-      store?.login?.data?.data?.token || store?.register?.data?.data?.token;
-    const baseURL = store?.setEnvironment?.data?.domain || BASE_URL;
+      store?.login?.data?.data?.token ||
+      store?.login?.data?.token ||
+      store?.login?.data?.access_token ||
+      store?.register?.data?.data?.token;
+
+    const baseURL = 'https://ebnconnect.com/api/v1/';
+
     // console.log('[API] baseURL:', baseURL);
+
     const headers: Record<string, string> = {
       Accept: 'application/json',
       'Content-Type': isRowData ? 'application/json' : 'multipart/form-data',
@@ -87,6 +96,7 @@ const api =
     const requestConfig: AxiosRequestConfig = {
       url,
       data,
+      params,
       method,
       headers,
       timeout: 30000,
@@ -97,11 +107,11 @@ const api =
       const responseData = response?.data;
       // console.log(url + ' Response=>>\n', response);
       // Check for API-specific failure even on 200 status
-      if (responseData?.success === false) {
+      if (responseData?.success === false || responseData?.status === 'error') {
         const apiError = getApiErrorMessage(responseData);
 
         show.error(apiError);
-        console.log('[success == false]', responseData);
+        console.log('[API status error]', responseData);
 
         if (onFailed) {
           dispatch({ type: onFailed, payload: responseData });
@@ -132,16 +142,18 @@ const api =
             `Server Message: ${statusCode}, Something went wrong`,
           );
 
+      show.error(errorMessage);
+
       // Handle common auth/session-related errors
-      if (statusCode === 401) {
-        show.error(`${statusCode}: Unauthorized`);
-        dispatch(setLoginState(false));
-      } else if (statusCode === 503) {
-        // Maintenance message only
-        show.error('Server under maintenance');
-      } else {
-        show.error(errorMessage);
-      }
+      // if (statusCode === 401) {
+      //   show.error(`${statusCode}: Unauthorized`);
+      //   dispatch(setLoginState(false));
+      // } else if (statusCode === 503) {
+      //   // Maintenance message only
+      //   show.error('Server under maintenance');
+      // } else {
+      //   show.error(errorMessage);
+      // }
       // console.log('[API Error]', error?.response || error);
 
       dispatch(actions.apiCallFailed(error));
