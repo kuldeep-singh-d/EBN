@@ -3,6 +3,7 @@ const common = Object.freeze({
   black: '#000000',
   card: 'transparent',
   border: '#C8C8C8',
+  brandRed: '#CE1F34',
   background: '#F3F4F6',
   notification: 'transparent',
   //

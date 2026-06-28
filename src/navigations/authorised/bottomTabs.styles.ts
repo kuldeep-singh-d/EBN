@@ -10,20 +10,22 @@ export const useStyles = () => {
 
   return StyleSheet.create({
     container: {
-      backgroundColor: themeColors.white,
-      paddingHorizontal: moderateWidth(3),
+      borderRadius: moderateWidth(8),
+      marginHorizontal: moderateWidth(3),
+      // paddingHorizontal: moderateWidth(3),
+      backgroundColor: themeColors.background,
       paddingBottom: Math.max(insets.bottom, moderateHeight(1.1)),
     },
     tabBar: {
       width: '100%',
       flexDirection: 'row',
       alignItems: 'center',
+      minHeight: moderateHeight(10),
+      borderRadius: moderateWidth(8),
       paddingTop: moderateHeight(1.8),
       paddingBottom: moderateHeight(1.2),
       paddingHorizontal: moderateWidth(3),
       backgroundColor: themeColors.primary,
-      minHeight: moderateHeight(10),
-      borderRadius: moderateWidth(8),
 
       elevation: 10,
       shadowRadius: 14,
@@ -50,10 +52,10 @@ export const useStyles = () => {
       paddingHorizontal: moderateWidth(0.5),
     },
     tabIcon: {
-      width: moderateWidth(8),
-      height: moderateWidth(7.2),
       alignItems: 'center',
+      width: moderateWidth(8),
       justifyContent: 'center',
+      height: moderateWidth(7.2),
     },
     activeTabIcon: {},
     iconSize: {

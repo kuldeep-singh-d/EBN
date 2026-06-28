@@ -12,6 +12,7 @@ export type Theme = {
     white: Color;
     black: Color;
     border: Color;
+    brandRed: Color;
     primary: Color;
     overlay: Color;
     secondary: Color;

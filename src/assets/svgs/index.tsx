@@ -6,6 +6,15 @@ import CommunityConnections from './communityConnections.svg';
 import CommunityEvents from './communityEvents.svg';
 import CommunityMembers from './communityMembers.svg';
 import CommunityTestimonials from './communityTestimonials.svg';
+import HeaderMenu from './headerMenu.svg';
+import HeaderNotification from './headerNotification.svg';
+import HomeBook from './homeBook.svg';
+import HomeBulb from './homeBulb.svg';
+import HomeChat from './homeChat.svg';
+import HomeHandshake from './homeHandshake.svg';
+import HomeLink from './homeLink.svg';
+import HomeOneToOne from './homeOneToOne.svg';
+import HomeReferral from './homeReferral.svg';
 import HomeStats from './homeStats.svg';
 import TabCommunity from './tabCommunity.svg';
 import TabHome from './tabHome.svg';
@@ -134,6 +143,15 @@ export const Svgs = {
   Cross,
   Date,
   DownArrow,
+  HeaderMenu,
+  HeaderNotification,
+  HomeBook,
+  HomeBulb,
+  HomeChat,
+  HomeHandshake,
+  HomeLink,
+  HomeOneToOne,
+  HomeReferral,
   HomeStats,
   HelpCircle,
   OpenEye: Eye,

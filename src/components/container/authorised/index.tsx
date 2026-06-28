@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Svgs } from '@assets/svgs';
 import type { SvgProps } from 'react-native-svg';
+import { routes } from '@navigation/routes';
 import { useDeviceDimensions } from '@hooks/index';
 import { AppText, KeyboardAvoider, Loader } from '@components';
 import { useTheme, useNavigation } from '@react-navigation/native';
@@ -23,8 +24,11 @@ interface AppContainerProps {
   centerTitle?: boolean;
   headerIconSize?: number;
   headerIconColor?: string;
+  showHeaderActions?: boolean;
   onBackPress?: () => void;
+  onMenuPress?: () => void;
   title?: string | undefined;
+  onNotificationPress?: () => void;
   onHeaderRightPress?: () => void;
   headerStyle?: StyleProp<ViewStyle>;
   contentStyle?: StyleProp<ViewStyle>;
@@ -42,8 +46,11 @@ const AppContainer = ({
   contentStyle,
   headerIconSize,
   headerIconColor,
+  showHeaderActions = true,
   headerTitleStyle,
   canLogout = false,
+  onMenuPress,
+  onNotificationPress,
   onHeaderRightPress,
   hideBackBtn = false,
   centerTitle = false,
@@ -55,6 +62,9 @@ const AppContainer = ({
   const navigation: any = useNavigation();
   const { moderateHeight } = useDeviceDimensions();
   const iconSize = headerIconSize ?? moderateHeight(3);
+  const actionIconColor = String(
+    headerIconColor ?? styles.headerActionIcon.color,
+  );
 
   const handleBackBtn = (): void => {
     if (onBackPress) {
@@ -84,6 +94,15 @@ const AppContainer = ({
   const handleLogout = () => {
     // logout();
     // queryClient.clear();
+  };
+
+  const handleNotificationPress = () => {
+    if (onNotificationPress) {
+      onNotificationPress();
+      return;
+    }
+
+    navigation.navigate(routes.app.notifications);
   };
 
   return (
@@ -131,6 +150,32 @@ const AppContainer = ({
               color={headerIconColor}
             />
           </Pressable>
+        ) : showHeaderActions ? (
+          <View style={styles.headerActions}>
+            <Pressable
+              style={styles.headerActionBtn}
+              onPress={handleNotificationPress}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 8 }}
+            >
+              <Svgs.HeaderNotification
+                color={actionIconColor}
+                width={styles.notificationIcon.width}
+                height={styles.notificationIcon.height}
+              />
+            </Pressable>
+            <Pressable
+              onPress={onMenuPress}
+              disabled={!onMenuPress}
+              style={styles.headerActionBtn}
+              hitSlop={{ top: 12, bottom: 12, left: 8, right: 12 }}
+            >
+              <Svgs.HeaderMenu
+                color={actionIconColor}
+                width={styles.menuIcon.width}
+                height={styles.menuIcon.height}
+              />
+            </Pressable>
+          </View>
         ) : centerTitle ? (
           <View style={styles.headerRightBtn} />
         ) : null}
@@ -179,6 +224,8 @@ const useStyles = () => {
     header: {
       flexDirection: 'row',
       alignItems: 'center',
+      minHeight: moderateHeight(6),
+      backgroundColor: colors.white,
       justifyContent: 'space-between',
       paddingVertical: moderateHeight(1),
       paddingHorizontal: moderateWidth(5),
@@ -189,10 +236,10 @@ const useStyles = () => {
     },
     centeredTitle: {
       marginLeft: 0,
-      color: colors.gray,
-      fontSize: moderateHeight(2.45),
       letterSpacing: 0,
+      color: colors.gray,
       textTransform: 'uppercase',
+      fontSize: moderateHeight(2.45),
     },
     userID: {
       marginLeft: moderateWidth(3),
@@ -224,6 +271,29 @@ const useStyles = () => {
       justifyContent: 'center',
       minWidth: moderateHeight(3.8),
       minHeight: moderateHeight(3.8),
+    },
+    headerActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'flex-end',
+      columnGap: moderateWidth(2),
+    },
+    headerActionBtn: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      minWidth: moderateHeight(4.2),
+      minHeight: moderateHeight(4.2),
+    },
+    headerActionIcon: {
+      color: colors.primary,
+    },
+    notificationIcon: {
+      width: moderateHeight(3.2),
+      height: moderateHeight(3.2),
+    },
+    menuIcon: {
+      width: moderateHeight(3),
+      height: moderateHeight(3),
     },
     logoutBtn: {},
   });

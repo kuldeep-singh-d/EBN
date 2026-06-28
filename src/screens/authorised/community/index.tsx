@@ -69,7 +69,7 @@ export const Community = () => {
           <AppText label="Networking" style={styles.heroTitle} />
           <AppText
             medium
-            label="Get to know your BNI Members"
+            label="Get to know your EBN Members"
             style={styles.heroSubtitle}
           />
         </View>
