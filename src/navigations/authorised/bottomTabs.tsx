@@ -1,15 +1,13 @@
 import React from 'react';
-import { Pressable, View } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import type { SvgProps } from 'react-native-svg';
-
-import { AppText } from '@components';
-import { Svgs } from '@assets/svgs';
 import { routes } from '../routes';
+import { Svgs } from '@assets/svgs';
+import { AppText } from '@components';
 import * as Screens from '@screens/index';
-
 import useStyles from './bottomTabs.styles';
+import { Pressable, View } from 'react-native';
+import type { SvgProps } from 'react-native-svg';
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 type TabItem = {
   label: string;
@@ -89,10 +87,7 @@ const BottomTabBar = ({ state, navigation }: BottomTabBarProps) => {
             >
               <View style={styles.tabContent}>
                 <View
-                  style={[
-                    styles.tabIcon,
-                    isFocused && styles.activeTabIcon,
-                  ]}
+                  style={[styles.tabIcon, isFocused && styles.activeTabIcon]}
                 >
                   {Icon ? (
                     <Icon
@@ -110,10 +105,7 @@ const BottomTabBar = ({ state, navigation }: BottomTabBarProps) => {
                   semibold={isFocused}
                   label={tabItem.label}
                   centered
-                  style={[
-                    styles.tabLabel,
-                    isFocused && styles.activeTabLabel,
-                  ]}
+                  style={[styles.tabLabel, isFocused && styles.activeTabLabel]}
                 />
                 {isFocused ? <View style={styles.activeIndicator} /> : null}
               </View>

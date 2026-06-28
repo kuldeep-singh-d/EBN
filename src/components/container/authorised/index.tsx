@@ -1,7 +1,15 @@
 import React, { ReactNode, useEffect } from 'react';
-import { View, Pressable, StyleSheet, BackHandler } from 'react-native';
-
+import {
+  View,
+  ViewStyle,
+  Pressable,
+  StyleProp,
+  TextStyle,
+  StyleSheet,
+  BackHandler,
+} from 'react-native';
 import { Svgs } from '@assets/svgs';
+import type { SvgProps } from 'react-native-svg';
 import { useDeviceDimensions } from '@hooks/index';
 import { AppText, KeyboardAvoider, Loader } from '@components';
 import { useTheme, useNavigation } from '@react-navigation/native';
@@ -12,7 +20,16 @@ interface AppContainerProps {
   canLogout?: boolean;
   children?: ReactNode;
   hideBackBtn?: boolean;
+  centerTitle?: boolean;
+  headerIconSize?: number;
+  headerIconColor?: string;
+  onBackPress?: () => void;
   title?: string | undefined;
+  onHeaderRightPress?: () => void;
+  headerStyle?: StyleProp<ViewStyle>;
+  contentStyle?: StyleProp<ViewStyle>;
+  headerTitleStyle?: StyleProp<TextStyle>;
+  rightIcon?: React.ComponentType<SvgProps>;
 }
 
 const AppContainer = ({
@@ -20,17 +37,34 @@ const AppContainer = ({
   listing,
   children,
   title = '',
+  headerStyle,
+  onBackPress,
+  contentStyle,
+  headerIconSize,
+  headerIconColor,
+  headerTitleStyle,
   canLogout = false,
+  onHeaderRightPress,
   hideBackBtn = false,
+  centerTitle = false,
+  rightIcon: RightIcon,
 }: AppContainerProps) => {
   const styles = useStyles();
   // const { logout, username } = useAuthStore();
   // const queryClient = useQueryClient();
   const navigation: any = useNavigation();
   const { moderateHeight } = useDeviceDimensions();
+  const iconSize = headerIconSize ?? moderateHeight(3);
 
   const handleBackBtn = (): void => {
-    navigation.goBack();
+    if (onBackPress) {
+      onBackPress();
+      return;
+    }
+
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    }
   };
 
   useEffect(() => {
@@ -54,25 +88,52 @@ const AppContainer = ({
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.titleView}>
+      <View
+        style={[styles.header, centerTitle && styles.centerHeader, headerStyle]}
+      >
+        <View style={[styles.titleView, centerTitle && styles.centerTitleView]}>
           {!hideBackBtn && (
             <Pressable onPress={handleBackBtn} style={styles.backBtn}>
               <Svgs.BackArrow
-                width={moderateHeight(3)}
-                height={moderateHeight(3)}
+                width={iconSize}
+                height={iconSize}
+                color={headerIconColor}
               />
             </Pressable>
           )}
-          <View>
+          <View
+            pointerEvents="none"
+            style={centerTitle && styles.titleCenterSlot}
+          >
             <AppText
               semibold
               label={title}
               numberOfLines={1}
-              style={styles.title}
+              style={[
+                styles.title,
+                centerTitle && styles.centeredTitle,
+                headerTitleStyle,
+              ]}
             />
           </View>
         </View>
+
+        {RightIcon ? (
+          <Pressable
+            onPress={onHeaderRightPress}
+            disabled={!onHeaderRightPress}
+            style={styles.headerRightBtn}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          >
+            <RightIcon
+              width={iconSize}
+              height={iconSize}
+              color={headerIconColor}
+            />
+          </Pressable>
+        ) : centerTitle ? (
+          <View style={styles.headerRightBtn} />
+        ) : null}
 
         {canLogout && (
           <Pressable
@@ -84,9 +145,11 @@ const AppContainer = ({
       </View>
 
       {listing !== undefined ? (
-        <View style={styles.keyboardAwar}>{children}</View>
+        <View style={[styles.keyboardAwar, contentStyle]}>{children}</View>
       ) : (
-        <KeyboardAvoider contentContainerStyle={styles.keyboardAwar}>
+        <KeyboardAvoider
+          contentContainerStyle={[styles.keyboardAwar, contentStyle]}
+        >
           {children}
         </KeyboardAvoider>
       )}
@@ -124,6 +187,13 @@ const useStyles = () => {
       marginLeft: moderateWidth(3),
       fontSize: moderateHeight(2.4),
     },
+    centeredTitle: {
+      marginLeft: 0,
+      color: colors.gray,
+      fontSize: moderateHeight(2.45),
+      letterSpacing: 0,
+      textTransform: 'uppercase',
+    },
     userID: {
       marginLeft: moderateWidth(3),
       fontSize: moderateHeight(1.6),
@@ -132,6 +202,28 @@ const useStyles = () => {
       alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'center',
+    },
+    centerHeader: {
+      minHeight: moderateHeight(6.4),
+    },
+    centerTitleView: {
+      flex: 1,
+      justifyContent: 'space-between',
+    },
+    titleCenterSlot: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    headerRightBtn: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      minWidth: moderateHeight(3.8),
+      minHeight: moderateHeight(3.8),
     },
     logoutBtn: {},
   });

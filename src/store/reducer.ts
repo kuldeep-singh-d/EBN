@@ -8,6 +8,7 @@ import handalLoading from './slices/app/localStates/handalLoading';
 // API States
 import login from './slices/auth/login';
 import logout from './slices/auth/logout';
+import forgotPassword from './slices/auth/forgotPassword';
 import dashboard from './slices/app/dashboard/dashboard';
 import dropdowns from './slices/app/dropdowns/dropdowns';
 import eliteMeets from './slices/app/eliteMeets/eliteMeets';
@@ -26,6 +27,7 @@ const reducers = combineReducers({
   handalLoading,
   login,
   logout,
+  forgotPassword,
   dashboard,
   dropdowns,
   eliteMeets,

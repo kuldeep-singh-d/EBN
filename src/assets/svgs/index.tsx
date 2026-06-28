@@ -2,14 +2,23 @@ import React from 'react';
 import Svg, { Circle, Line, Path, SvgProps } from 'react-native-svg';
 
 import AlertBackArrow from './alertBackArrow.svg';
+import CommunityConnections from './communityConnections.svg';
+import CommunityEvents from './communityEvents.svg';
 import CommunityMembers from './communityMembers.svg';
+import CommunityTestimonials from './communityTestimonials.svg';
 import HomeStats from './homeStats.svg';
 import TabCommunity from './tabCommunity.svg';
 import TabHome from './tabHome.svg';
 import TabSearch from './tabSearch.svg';
 import TabSlips from './tabSlips.svg';
 import TabVisitors from './tabVisitors.svg';
+import HelpCircle from './helpCircle.svg';
+import VisitorEmail from './visitorEmail.svg';
+import VisitorMyself from './visitorMyself.svg';
 import VisitorPass from './visitorPass.svg';
+import VisitorPerson from './visitorPerson.svg';
+import VisitorShare from './visitorShare.svg';
+import VisitorSms from './visitorSms.svg';
 
 const IconBase = ({ children, ...props }: SvgProps) => (
   <Svg width={props.width ?? 24} height={props.height ?? 24} viewBox="0 0 24 24" fill="none" {...props}>
@@ -118,11 +127,15 @@ export const Svgs = {
   Barcode,
   Check,
   CloseEye: Eye,
+  CommunityConnections,
+  CommunityEvents,
   CommunityMembers,
+  CommunityTestimonials,
   Cross,
   Date,
   DownArrow,
   HomeStats,
+  HelpCircle,
   OpenEye: Eye,
   Pencil,
   Search,
@@ -131,5 +144,10 @@ export const Svgs = {
   TabSearch,
   TabSlips,
   TabVisitors,
+  VisitorEmail,
+  VisitorMyself,
   VisitorPass,
+  VisitorPerson,
+  VisitorShare,
+  VisitorSms,
 };

@@ -6,7 +6,12 @@ import { images } from '@assets/images';
 import useForgotPassword from './useForgotPassword';
 
 export const ForgotPassword = () => {
-  const { styles, states, handlers } = useForgotPassword();
+  const { styles, states, handlers, loader } = useForgotPassword();
+  const title = states.isSuccessScreen
+    ? 'Check Your Email'
+    : 'Forgot Password?';
+  const successMessage =
+    "We've sent a password reset link to your registered email address.\n\nPlease check your inbox (and Spam/Junk folder if needed) and follow the link to create a new password.";
 
   return (
     <SafeAreaView style={styles.root}>
@@ -14,54 +19,75 @@ export const ForgotPassword = () => {
         <View style={styles.logoSection}>
           <Image
             resizeMode="contain"
-            source={images.ebnLogo}
             style={styles.logo}
+            source={images.ebnLogo}
           />
         </View>
 
         <View style={styles.titleSection}>
-          <AppText
-            medium
-            centered
-            label="Forgot Password?"
-            style={styles.title}
-          />
+          <AppText medium centered label={title} style={styles.title} />
           <View style={styles.divider} />
         </View>
 
-        <View style={styles.form}>
-          <AppInput
-            value={states.email}
-            error={states.emailError}
-            placeholder="Email"
-            returnKeyType="done"
-            keyboardType="email-address"
-            autoComplete="email"
-            textContentType="emailAddress"
-            setError={states.setEmailError}
-            onChangeText={states.setEmail}
-            onSubmitEditing={handlers.handleSubmit}
-            style={styles.input}
-            inputStyle={styles.inputText}
-            placeholderTextColor={styles.placeholder.color}
-          />
+        {states.isSuccessScreen ? (
+          <View style={styles.successContent}>
+            <View style={styles.mailIcon}>
+              <View style={styles.envelope}>
+                <View style={styles.envelopeLineLeft} />
+                <View style={styles.envelopeLineRight} />
+                <View style={styles.envelopeLineBottomLeft} />
+                <View style={styles.envelopeLineBottomRight} />
+              </View>
+              <View style={styles.checkBadge}>
+                <View style={styles.checkMark} />
+              </View>
+            </View>
 
-          {states.successMessage ? (
             <AppText
               centered
-              label={states.successMessage}
-              style={styles.successText}
+              numberOfLines={10}
+              label={successMessage}
+              style={styles.successMessage}
             />
-          ) : null}
+          </View>
+        ) : (
+          <View style={styles.form}>
+            <AppInput
+              editable={!loader}
+              placeholder="Email"
+              value={states.email}
+              returnKeyType="done"
+              autoComplete="email"
+              style={styles.input}
+              error={states.emailError}
+              keyboardType="email-address"
+              inputStyle={styles.inputText}
+              textContentType="emailAddress"
+              onChangeText={states.setEmail}
+              setError={states.setEmailError}
+              onSubmitEditing={handlers.handleSubmit}
+              placeholderTextColor={styles.placeholder.color}
+            />
 
-          <AppButton
-            gradient={false}
-            title="Submit"
-            onPress={handlers.handleSubmit}
-            style={styles.button}
-            labelStyle={styles.buttonLabel}
-          />
-        </View>
+            {states.apiError ? (
+              <AppText
+                centered
+                label={states.apiError}
+                style={styles.errorText}
+              />
+            ) : null}
+
+            <AppButton
+              loader={loader}
+              gradient={false}
+              disabled={loader}
+              style={styles.button}
+              title="Send Reset Link"
+              onPress={handlers.handleSubmit}
+              labelStyle={styles.buttonLabel}
+            />
+          </View>
+        )}
 
         <Pressable
           hitSlop={12}

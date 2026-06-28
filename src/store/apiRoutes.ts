@@ -9,6 +9,7 @@ export const apiRoutes = {
   auth: {
     login: '/login',
     logout: '/logout',
+    forgotPassword: '/password/forgot',
   },
   dashboard: {
     get: '/dashboard',

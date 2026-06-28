@@ -1,5 +1,4 @@
 export const images = Object.freeze({
-  ebnLogo: require('./ebnLogo.png'),
-  headerLogo: require('./ebnLogo.png'),
+  ebnLogo: require('./appstore.png'),
   EBNTAGLINE: require('./EBNTAGLINE.png'),
 });
