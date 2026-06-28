@@ -1,6 +1,7 @@
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import {
   View,
+  Modal,
   ViewStyle,
   Pressable,
   StyleProp,
@@ -34,7 +35,15 @@ interface AppContainerProps {
   contentStyle?: StyleProp<ViewStyle>;
   headerTitleStyle?: StyleProp<TextStyle>;
   rightIcon?: React.ComponentType<SvgProps>;
+  rightComponent?: ReactNode;
+  rightMenuItems?: HeaderMenuItem[];
+  onRightActionPress?: (item: HeaderMenuItem) => void;
 }
+
+export type HeaderMenuItem = {
+  id: string;
+  label: string;
+};
 
 const AppContainer = ({
   loading,
@@ -52,6 +61,9 @@ const AppContainer = ({
   onMenuPress,
   onNotificationPress,
   onHeaderRightPress,
+  rightComponent,
+  rightMenuItems = [],
+  onRightActionPress,
   hideBackBtn = false,
   centerTitle = false,
   rightIcon: RightIcon,
@@ -60,6 +72,7 @@ const AppContainer = ({
   // const { logout, username } = useAuthStore();
   // const queryClient = useQueryClient();
   const navigation: any = useNavigation();
+  const [isRightMenuVisible, setIsRightMenuVisible] = useState(false);
   const { moderateHeight } = useDeviceDimensions();
   const iconSize = headerIconSize ?? moderateHeight(3);
   const actionIconColor = String(
@@ -105,6 +118,20 @@ const AppContainer = ({
     navigation.navigate(routes.app.notifications);
   };
 
+  const handleRightPress = () => {
+    if (rightMenuItems.length) {
+      setIsRightMenuVisible(true);
+      return;
+    }
+
+    onHeaderRightPress?.();
+  };
+
+  const handleRightMenuPress = (item: HeaderMenuItem) => {
+    setIsRightMenuVisible(false);
+    onRightActionPress?.(item);
+  };
+
   return (
     <View style={styles.container}>
       <View
@@ -120,27 +147,35 @@ const AppContainer = ({
               />
             </Pressable>
           )}
-          <View
-            pointerEvents="none"
-            style={centerTitle && styles.titleCenterSlot}
-          >
+          {!centerTitle && (
             <AppText
+              centered
               semibold
               label={title}
               numberOfLines={1}
-              style={[
-                styles.title,
-                centerTitle && styles.centeredTitle,
-                headerTitleStyle,
-              ]}
+              style={[styles.title, headerTitleStyle]}
             />
-          </View>
+          )}
         </View>
 
-        {RightIcon ? (
+        {centerTitle && (
+          <View pointerEvents="none" style={styles.titleCenterSlot}>
+            <AppText
+              centered
+              semibold
+              label={title}
+              numberOfLines={1}
+              style={[styles.title, styles.centeredTitle, headerTitleStyle]}
+            />
+          </View>
+        )}
+
+        {rightComponent ? (
+          rightComponent
+        ) : RightIcon ? (
           <Pressable
-            onPress={onHeaderRightPress}
-            disabled={!onHeaderRightPress}
+            onPress={handleRightPress}
+            disabled={!onHeaderRightPress && !rightMenuItems.length}
             style={styles.headerRightBtn}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
@@ -189,6 +224,33 @@ const AppContainer = ({
         )}
       </View>
 
+      <Modal
+        transparent
+        animationType="fade"
+        visible={isRightMenuVisible}
+        onRequestClose={() => setIsRightMenuVisible(false)}
+      >
+        <Pressable
+          style={styles.menuOverlay}
+          onPress={() => setIsRightMenuVisible(false)}
+        >
+          <View style={styles.rightMenu}>
+            {rightMenuItems.map((item, index) => (
+              <Pressable
+                key={item.id}
+                onPress={() => handleRightMenuPress(item)}
+                style={[
+                  styles.rightMenuItem,
+                  index > 0 && styles.rightMenuItemBorder,
+                ]}
+              >
+                <AppText label={item.label} style={styles.rightMenuText} />
+              </Pressable>
+            ))}
+          </View>
+        </Pressable>
+      </Modal>
+
       {listing !== undefined ? (
         <View style={[styles.keyboardAwar, contentStyle]}>{children}</View>
       ) : (
@@ -229,9 +291,9 @@ const useStyles = () => {
       justifyContent: 'space-between',
       paddingVertical: moderateHeight(1),
       paddingHorizontal: moderateWidth(5),
+      position: 'relative',
     },
     title: {
-      marginLeft: moderateWidth(3),
       fontSize: moderateHeight(2.4),
     },
     centeredTitle: {
@@ -254,15 +316,14 @@ const useStyles = () => {
       minHeight: moderateHeight(6.4),
     },
     centerTitleView: {
-      flex: 1,
-      justifyContent: 'space-between',
+      minWidth: moderateHeight(3.8),
     },
     titleCenterSlot: {
       position: 'absolute',
       top: 0,
-      right: 0,
       bottom: 0,
-      left: 0,
+      left: moderateWidth(14),
+      right: moderateWidth(14),
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -296,5 +357,34 @@ const useStyles = () => {
       height: moderateHeight(3),
     },
     logoutBtn: {},
+    menuOverlay: {
+      flex: 1,
+      backgroundColor: colors.card,
+    },
+    rightMenu: {
+      position: 'absolute',
+      top: moderateHeight(10),
+      right: moderateWidth(10),
+      width: moderateWidth(31),
+      backgroundColor: colors.white,
+      shadowColor: colors.black,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.12,
+      shadowRadius: 4,
+      elevation: 4,
+    },
+    rightMenuItem: {
+      minHeight: moderateHeight(4.7),
+      justifyContent: 'center',
+      paddingHorizontal: moderateWidth(3.4),
+    },
+    rightMenuItemBorder: {
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: colors.border,
+    },
+    rightMenuText: {
+      color: colors.secondary,
+      fontSize: moderateHeight(1.48),
+    },
   });
 };

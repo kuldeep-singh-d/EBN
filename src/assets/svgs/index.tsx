@@ -16,6 +16,7 @@ import HomeLink from './homeLink.svg';
 import HomeOneToOne from './homeOneToOne.svg';
 import HomeReferral from './homeReferral.svg';
 import HomeStats from './homeStats.svg';
+import MoreVertical from './moreVertical.svg';
 import TabCommunity from './tabCommunity.svg';
 import TabHome from './tabHome.svg';
 import TabPayment from './tabPayment.svg';
@@ -155,6 +156,7 @@ export const Svgs = {
   HomeReferral,
   HomeStats,
   HelpCircle,
+  MoreVertical,
   OpenEye: Eye,
   Pencil,
   Search,
