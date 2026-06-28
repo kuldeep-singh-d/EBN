@@ -26,16 +26,16 @@ const TAB_ITEMS: Record<string, TabItem> = {
     icon: Svgs.TabSlips,
   },
   [routes.app.community]: {
-    label: 'Community',
+    label: 'Members',
     icon: Svgs.TabCommunity,
+  },
+  [routes.app.payment]: {
+    label: 'Payment',
+    icon: Svgs.TabPayment,
   },
   [routes.app.visitors]: {
     label: 'Visitors',
     icon: Svgs.TabVisitors,
-  },
-  [routes.app.search]: {
-    label: 'Search',
-    icon: Svgs.TabSearch,
   },
 };
 
@@ -134,8 +134,8 @@ export const MainTabs = () => (
     <Tab.Screen name={routes.app.home} component={Screens.Home} />
     <Tab.Screen name={routes.app.slips} component={Screens.Slips} />
     <Tab.Screen name={routes.app.community} component={Screens.Community} />
+    <Tab.Screen name={routes.app.payment} component={Screens.Payment} />
     <Tab.Screen name={routes.app.visitors} component={Screens.Visitors} />
-    <Tab.Screen name={routes.app.search} component={Screens.Search} />
   </Tab.Navigator>
 );
 

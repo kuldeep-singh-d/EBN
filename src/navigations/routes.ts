@@ -10,6 +10,7 @@ export const routes = Object.freeze({
     slips: 'slips',
     community: 'community',
     visitors: 'visitors',
+    payment: 'payment',
     search: 'search',
     notifications: 'notifications',
     profile: 'profile',

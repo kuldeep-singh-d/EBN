@@ -18,6 +18,7 @@ import HomeReferral from './homeReferral.svg';
 import HomeStats from './homeStats.svg';
 import TabCommunity from './tabCommunity.svg';
 import TabHome from './tabHome.svg';
+import TabPayment from './tabPayment.svg';
 import TabSearch from './tabSearch.svg';
 import TabSlips from './tabSlips.svg';
 import TabVisitors from './tabVisitors.svg';
@@ -159,6 +160,7 @@ export const Svgs = {
   Search,
   TabCommunity,
   TabHome,
+  TabPayment,
   TabSearch,
   TabSlips,
   TabVisitors,
