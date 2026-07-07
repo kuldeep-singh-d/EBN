@@ -38,6 +38,7 @@ const useStyles = () => {
       color: colors.primary,
       fontSize: moderateHeight(2.35),
       lineHeight: moderateHeight(3),
+      textTransform: 'capitalize',
     },
     memberText: {
       color: colors.gray,
@@ -185,6 +186,38 @@ const useStyles = () => {
       color: colors.primary,
       fontSize: moderateHeight(2.2),
       marginLeft: moderateWidth(2.2),
+    },
+    quickActionCard: {
+      paddingHorizontal: moderateWidth(1.4),
+      paddingTop: moderateHeight(1.8),
+      paddingBottom: moderateHeight(0.4),
+    },
+    quickActionsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      alignItems: 'flex-start',
+    },
+    quickActionItem: {
+      width: '33.333%',
+      minHeight: moderateHeight(10.6),
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      paddingHorizontal: moderateWidth(0.8),
+      paddingBottom: moderateHeight(1.4),
+    },
+    quickActionItemPressed: {
+      opacity: 0.72,
+    },
+    quickActionIcon: {
+      width: moderateWidth(10.6),
+      height: moderateWidth(10.6),
+      color: colors.primary,
+    },
+    quickActionLabel: {
+      color: colors.gray,
+      fontSize: moderateHeight(1.2),
+      lineHeight: moderateHeight(1.58),
+      marginTop: moderateHeight(0.55),
     },
     rangeTabs: {
       flexDirection: 'row',

@@ -9,6 +9,12 @@ export type HomeSlip = {
   icon: ComponentType<SvgProps>;
 };
 
+export type HomeQuickAction = {
+  id: string;
+  label: string;
+  icon: ComponentType<SvgProps>;
+};
+
 export type HomeStat = {
   id: string;
   label: string;
@@ -45,6 +51,7 @@ export interface HomeData {
     linkLabel: string;
   };
   slips: HomeSlip[];
+  quickActions: HomeQuickAction[];
   stats: {
     defaultRange: HomeStatsRange;
     ranges: HomeStatsRange[];

@@ -6,7 +6,8 @@ import { AppContainer, AppText } from '@components';
 
 export const Home = () => {
   const { styles, states, handlers } = useHome();
-  const { member, nextMeeting, slips, stats, trafficLight } = states.screenData;
+  const { member, nextMeeting, quickActions, slips, stats, trafficLight } =
+    states.screenData;
 
   return (
     <AppContainer hideBackBtn contentStyle={styles.content}>
@@ -108,6 +109,40 @@ export const Home = () => {
                 </View>
               </View>
             ))}
+          </View>
+        </View>
+
+        <View style={[styles.card, styles.quickActionCard]}>
+          <View style={styles.quickActionsGrid}>
+            {quickActions.map(action => {
+              const Icon = action.icon;
+
+              return (
+                <Pressable
+                  key={action.id}
+                  accessibilityRole="button"
+                  accessibilityLabel={action.label}
+                  onPress={() => handlers.onQuickActionPress(action)}
+                  style={({ pressed }) => [
+                    styles.quickActionItem,
+                    pressed && styles.quickActionItemPressed,
+                  ]}
+                >
+                  <Icon
+                    width={styles.quickActionIcon.width}
+                    height={styles.quickActionIcon.height}
+                    color={styles.quickActionIcon.color}
+                  />
+                  <AppText
+                    medium
+                    centered
+                    numberOfLines={2}
+                    label={action.label}
+                    style={styles.quickActionLabel}
+                  />
+                </Pressable>
+              );
+            })}
           </View>
         </View>
 

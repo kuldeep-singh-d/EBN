@@ -1,8 +1,24 @@
-import { useMemo, useState } from 'react';
-import { images } from '@assets/images';
-import { Svgs } from '@assets/svgs';
 import useStyles from './styles';
-import { HomeData, HomeStatsRange } from './types';
+import moment from 'moment';
+import { Svgs } from '@assets/svgs';
+import { images } from '@assets/images';
+import { useDispatch, useSelector } from '@hooks';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { HomeData, HomeQuickAction, HomeStatsRange } from './types';
+import { getDashboardData } from '@store/slices/app/dashboard/dashboard';
+
+type DashboardProfile = {
+  name?: string;
+  chapter_name?: string;
+  renewal_date?: string;
+  avatar?: string | null;
+};
+
+type DashboardResponse = {
+  data?: {
+    profile?: DashboardProfile | null;
+  };
+};
 
 const HOME_DATA: HomeData = {
   member: {
@@ -36,6 +52,29 @@ const HOME_DATA: HomeData = {
       value: '0',
       icon: Svgs.HomeOneToOne,
     },
+  ],
+  quickActions: [
+    { id: 'training', label: 'Training', icon: Svgs.QuickTraining },
+    {
+      id: 'memberAttendance',
+      label: 'Member Attendance',
+      icon: Svgs.QuickMemberAttendance,
+    },
+    { id: 'event', label: 'Event', icon: Svgs.QuickEvent },
+    {
+      id: 'experienceFees',
+      label: 'Experience Fees',
+      icon: Svgs.QuickExperienceFees,
+    },
+    { id: 'membership', label: 'MemberShip', icon: Svgs.QuickMembership },
+    {
+      id: 'trainingTechnology',
+      label: 'Training & Technology',
+      icon: Svgs.QuickTrainingTechnology,
+    },
+    { id: 'cdpsDeposit', label: 'CDPS Deposit', icon: Svgs.QuickCdpsDeposit },
+    { id: 'members', label: 'Members', icon: Svgs.QuickMembers },
+    { id: 'sicilianSpot', label: 'SicilianSpot', icon: Svgs.QuickSicilianSpot },
   ],
   stats: {
     defaultRange: 'LIFETIME',
@@ -126,25 +165,92 @@ const HOME_DATA: HomeData = {
   },
 };
 
+const getMemberStatus = (renewalDate?: string) => {
+  const parsedDate = moment(
+    renewalDate,
+    ['D MMMM, YYYY', 'DD MMMM, YYYY'],
+    true,
+  );
+
+  if (!parsedDate.isValid()) {
+    return 'Expired';
+  }
+
+  return parsedDate.isAfter(moment(), 'day') ? 'Active' : 'Expired';
+};
+
 const useHome = () => {
   const styles = useStyles();
+  const dispatch = useDispatch();
+  const dashboardRequestRef = useRef(false);
+  const dashboardResponse = useSelector(
+    state => state.dashboard?.data,
+  ) as DashboardResponse;
+  const dashboardLoading = useSelector(state => state.dashboard?.loading);
   const [selectedStatsRange, setSelectedStatsRange] = useState<HomeStatsRange>(
     HOME_DATA.stats.defaultRange,
   );
+
+  useEffect(() => {
+    if (
+      !dashboardRequestRef.current ||
+      dashboardLoading ||
+      !dashboardResponse
+    ) {
+      return;
+    }
+
+    console.log('[Dashboard API Response]', dashboardResponse);
+    dashboardRequestRef.current = false;
+  }, [dashboardLoading, dashboardResponse]);
+
+  useEffect(() => {
+    dashboardRequestRef.current = true;
+    dispatch(getDashboardData());
+  }, [dispatch]);
+
+  const screenData = useMemo(() => {
+    const profile = dashboardResponse?.data?.profile;
+
+    if (!profile) {
+      return HOME_DATA;
+    }
+
+    return {
+      ...HOME_DATA,
+      member: {
+        name: profile.name || HOME_DATA.member.name,
+        company: profile.chapter_name || HOME_DATA.member.company,
+        status: getMemberStatus(profile.renewal_date),
+        dueDate: profile.renewal_date || HOME_DATA.member.dueDate,
+        avatar: profile.avatar
+          ? { uri: profile.avatar }
+          : images.profilePlaceholder,
+      },
+    };
+  }, [dashboardResponse]);
 
   const statsRows = useMemo(
     () => HOME_DATA.stats.rowsByRange[selectedStatsRange],
     [selectedStatsRange],
   );
 
+  const onQuickActionPress = useCallback((action: HomeQuickAction) => {
+    console.log('[Home Quick Action]', {
+      id: action.id,
+      label: action.label,
+    });
+  }, []);
+
   return {
     styles,
     states: {
-      screenData: HOME_DATA,
-      selectedStatsRange,
       statsRows,
+      selectedStatsRange,
+      screenData,
     },
     handlers: {
+      onQuickActionPress,
       setSelectedStatsRange,
     },
     constants: {},

@@ -2,10 +2,6 @@ import React from 'react';
 import Svg, { Circle, Line, Path, SvgProps } from 'react-native-svg';
 
 import AlertBackArrow from './alertBackArrow.svg';
-import CommunityConnections from './communityConnections.svg';
-import CommunityEvents from './communityEvents.svg';
-import CommunityMembers from './communityMembers.svg';
-import CommunityTestimonials from './communityTestimonials.svg';
 import HeaderMenu from './headerMenu.svg';
 import HeaderNotification from './headerNotification.svg';
 import HomeBook from './homeBook.svg';
@@ -17,8 +13,17 @@ import HomeOneToOne from './homeOneToOne.svg';
 import HomeReferral from './homeReferral.svg';
 import HomeStats from './homeStats.svg';
 import MoreVertical from './moreVertical.svg';
-import TabCommunity from './tabCommunity.svg';
+import QuickCdpsDeposit from './quickCdpsDeposit.svg';
+import QuickEvent from './quickEvent.svg';
+import QuickExperienceFees from './quickExperienceFees.svg';
+import QuickMemberAttendance from './quickMemberAttendance.svg';
+import QuickMembers from './quickMembers.svg';
+import QuickMembership from './quickMembership.svg';
+import QuickSicilianSpot from './quickSicilianSpot.svg';
+import QuickTraining from './quickTraining.svg';
+import QuickTrainingTechnology from './quickTrainingTechnology.svg';
 import TabHome from './tabHome.svg';
+import TabMembers from './tabMembers.svg';
 import TabPayment from './tabPayment.svg';
 import TabSearch from './tabSearch.svg';
 import TabSlips from './tabSlips.svg';
@@ -32,7 +37,13 @@ import VisitorShare from './visitorShare.svg';
 import VisitorSms from './visitorSms.svg';
 
 const IconBase = ({ children, ...props }: SvgProps) => (
-  <Svg width={props.width ?? 24} height={props.height ?? 24} viewBox="0 0 24 24" fill="none" {...props}>
+  <Svg
+    width={props.width ?? 24}
+    height={props.height ?? 24}
+    viewBox="0 0 24 24"
+    fill="none"
+    {...props}
+  >
     {children}
   </Svg>
 );
@@ -51,8 +62,24 @@ const BackArrow = (props: SvgProps) => (
 
 const Cross = (props: SvgProps) => (
   <IconBase {...props}>
-    <Line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
-    <Line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
+    <Line
+      x1="6"
+      y1="6"
+      x2="18"
+      y2="18"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+    />
+    <Line
+      x1="18"
+      y1="6"
+      x2="6"
+      y2="18"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+    />
   </IconBase>
 );
 
@@ -71,7 +98,15 @@ const DownArrow = (props: SvgProps) => (
 const Search = (props: SvgProps) => (
   <IconBase {...props}>
     <Circle cx="11" cy="11" r="6" stroke="currentColor" strokeWidth={2} />
-    <Line x1="16" y1="16" x2="21" y2="21" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
+    <Line
+      x1="16"
+      y1="16"
+      x2="21"
+      y2="21"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+    />
   </IconBase>
 );
 
@@ -89,8 +124,18 @@ const Eye = (props: SvgProps) => (
 
 const Date = (props: SvgProps) => (
   <IconBase {...props}>
-    <Path d="M7 3V6" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
-    <Path d="M17 3V6" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
+    <Path
+      d="M7 3V6"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+    />
+    <Path
+      d="M17 3V6"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+    />
     <Path
       d="M4 8H20V20H4V8Z"
       stroke="currentColor"
@@ -114,9 +159,30 @@ const Pencil = (props: SvgProps) => (
 const Barcode = (props: SvgProps) => (
   <IconBase {...props}>
     <Line x1="5" y1="5" x2="5" y2="19" stroke="currentColor" strokeWidth={2} />
-    <Line x1="9" y1="5" x2="9" y2="19" stroke="currentColor" strokeWidth={1.5} />
-    <Line x1="13" y1="5" x2="13" y2="19" stroke="currentColor" strokeWidth={2.5} />
-    <Line x1="18" y1="5" x2="18" y2="19" stroke="currentColor" strokeWidth={1.5} />
+    <Line
+      x1="9"
+      y1="5"
+      x2="9"
+      y2="19"
+      stroke="currentColor"
+      strokeWidth={1.5}
+    />
+    <Line
+      x1="13"
+      y1="5"
+      x2="13"
+      y2="19"
+      stroke="currentColor"
+      strokeWidth={2.5}
+    />
+    <Line
+      x1="18"
+      y1="5"
+      x2="18"
+      y2="19"
+      stroke="currentColor"
+      strokeWidth={1.5}
+    />
   </IconBase>
 );
 
@@ -138,10 +204,6 @@ export const Svgs = {
   Barcode,
   Check,
   CloseEye: Eye,
-  CommunityConnections,
-  CommunityEvents,
-  CommunityMembers,
-  CommunityTestimonials,
   Cross,
   Date,
   DownArrow,
@@ -159,9 +221,18 @@ export const Svgs = {
   MoreVertical,
   OpenEye: Eye,
   Pencil,
+  QuickCdpsDeposit,
+  QuickEvent,
+  QuickExperienceFees,
+  QuickMemberAttendance,
+  QuickMembers,
+  QuickMembership,
+  QuickSicilianSpot,
+  QuickTraining,
+  QuickTrainingTechnology,
   Search,
-  TabCommunity,
   TabHome,
+  TabMembers,
   TabPayment,
   TabSearch,
   TabSlips,

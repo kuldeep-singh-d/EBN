@@ -6,7 +6,7 @@ export * from './unauthorised/forgotpassword';
 // === Authorised === //
 export * from './authorised/home';
 export * from './authorised/slips';
-export * from './authorised/community';
+export * from './authorised/members';
 export * from './authorised/visitors';
 export * from './authorised/payment';
 export * from './authorised/search';

@@ -8,7 +8,7 @@ export const routes = Object.freeze({
     mainTabs: 'mainTabs',
     home: 'home',
     slips: 'slips',
-    community: 'community',
+    members: 'members',
     visitors: 'visitors',
     payment: 'payment',
     search: 'search',

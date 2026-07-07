@@ -1,16 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-
-import { useDispatch, useSelector } from '@hooks';
-import { show } from '@utils/helpers';
-import { routes } from '@navigation/routes';
-import { setLoginState } from '@store/slices/app/localStates/loginState';
-import {
-  LoginResponse,
-  login as loginRequest,
-} from '@store/slices/auth/login';
-import { LoginCredentials } from './types';
 import useStyles from './styles';
+import { show } from '@utils/helpers';
+import { LoginCredentials } from './types';
+import { routes } from '@navigation/routes';
+import { useDispatch, useSelector } from '@hooks';
+import { useNavigation } from '@react-navigation/native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { setLoginState } from '@store/slices/app/localStates/loginState';
+import { LoginResponse, login as loginRequest } from '@store/slices/auth/login';
 
 const isValidEmail = (value: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
@@ -18,18 +14,25 @@ const isValidEmail = (value: string) =>
 const useLogin = () => {
   const styles = useStyles();
   const dispatch = useDispatch();
+  const submittedRef = useRef(false);
   const navigation: any = useNavigation();
   const loader = useSelector(state => Boolean(state.login?.loading));
-  const loginResponse = useSelector(
-    state => state.login?.data,
-  ) as LoginResponse | undefined;
+
+  const loginResponse = useSelector(state => state.login?.data) as
+    | LoginResponse
+    | undefined;
   const loginError = useSelector(state => state.login?.error);
-  const submittedRef = useRef(false);
 
   const [email, setEmail] = useState<LoginCredentials['email']>('');
   const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState<LoginCredentials['password']>('');
   const [passwordError, setPasswordError] = useState('');
+
+  useEffect(() => {
+    if (submittedRef.current && loginError) {
+      submittedRef.current = false;
+    }
+  }, [loginError]);
 
   useEffect(() => {
     if (!submittedRef.current || !loginResponse) return;
@@ -48,12 +51,6 @@ const useLogin = () => {
 
     show.error(message || 'Unable to login. Please try again.');
   }, [dispatch, loginResponse]);
-
-  useEffect(() => {
-    if (submittedRef.current && loginError) {
-      submittedRef.current = false;
-    }
-  }, [loginError]);
 
   const handleLogin = useCallback(() => {
     let hasError = false;

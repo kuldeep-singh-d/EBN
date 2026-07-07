@@ -25,9 +25,9 @@ const TAB_ITEMS: Record<string, TabItem> = {
     label: 'Slips',
     icon: Svgs.TabSlips,
   },
-  [routes.app.community]: {
+  [routes.app.members]: {
     label: 'Members',
-    icon: Svgs.TabCommunity,
+    icon: Svgs.TabMembers,
   },
   [routes.app.payment]: {
     label: 'Payment',
@@ -133,7 +133,7 @@ export const MainTabs = () => (
   >
     <Tab.Screen name={routes.app.home} component={Screens.Home} />
     <Tab.Screen name={routes.app.slips} component={Screens.Slips} />
-    <Tab.Screen name={routes.app.community} component={Screens.Community} />
+    <Tab.Screen name={routes.app.members} component={Screens.Members} />
     <Tab.Screen name={routes.app.payment} component={Screens.Payment} />
     <Tab.Screen name={routes.app.visitors} component={Screens.Visitors} />
   </Tab.Navigator>

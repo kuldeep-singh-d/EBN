@@ -1,75 +1,139 @@
 import React from 'react';
-import { Pressable, View } from 'react-native';
-import type { SvgProps } from 'react-native-svg';
+import { View } from 'react-native';
 
-import { AppContainer, AppText } from '@components';
 import { Svgs } from '@assets/svgs';
+import { AppButton, AppContainer, AppInput } from '@components';
 import useVisitors from './useVisitors';
 
-type VisitorAction = {
-  label: string;
-  icon: React.ComponentType<SvgProps>;
-};
-
-const INVITE_ACTIONS: VisitorAction[] = [
-  { label: 'Email', icon: Svgs.VisitorEmail },
-  { label: 'SMS', icon: Svgs.VisitorSms },
-  { label: 'Share', icon: Svgs.VisitorShare },
-];
-
-const REGISTER_ACTIONS: VisitorAction[] = [
-  { label: 'Myself', icon: Svgs.VisitorMyself },
-  { label: 'Visitor', icon: Svgs.VisitorPerson },
-];
-
 export const Visitors = () => {
-  const { styles } = useVisitors();
+  const { styles, states, handlers } = useVisitors();
+  const { form, title } = states.screenData;
 
-  const renderAction = ({ label, icon: Icon }: VisitorAction) => (
-    <Pressable key={label} style={styles.actionCard}>
+  const renderIconBubble = (
+    Icon: React.ComponentType<React.ComponentProps<typeof Svgs.Date>>,
+  ) => (
+    <View style={styles.iconBubble}>
       <Icon
-        width={styles.actionIcon.width}
-        height={styles.actionIcon.height}
-        color={styles.actionIcon.color}
+        width={styles.fieldIcon.width}
+        height={styles.fieldIcon.height}
+        color={styles.fieldIcon.color}
       />
-      <AppText semibold centered label={label} style={styles.actionLabel} />
-    </Pressable>
+    </View>
   );
 
   return (
     <AppContainer
-      listing
-      title="VISITORS"
       centerTitle
-      rightIcon={Svgs.HelpCircle}
+      hideBackBtn
+      showHeaderActions={false}
+      title={title}
       contentStyle={styles.content}
       headerStyle={styles.header}
-      headerIconColor={String(styles.headerIcon.color)}
-      headerIconSize={styles.headerIcon.width}
       headerTitleStyle={styles.headerTitle}
     >
-      <View style={styles.container}>
-        <View style={styles.inviteSection}>
-          <AppText
-            medium
-            centered
-            label="INVITE TO MY CHAPTER"
-            style={styles.sectionTitle}
-          />
-          <View style={styles.inviteRow}>{INVITE_ACTIONS.map(renderAction)}</View>
-        </View>
+      <View style={styles.form}>
+        <AppInput
+          value={form.firstName}
+          placeholder="FirstName"
+          autoCapitalize="words"
+          onChangeText={value => handlers.setFormValue('firstName', value)}
+          placeholderTextColor={styles.placeholder.color}
+          style={styles.inputWrapper}
+          inputStyle={styles.inputText}
+          rightElement={renderIconBubble(Svgs.VisitorPass)}
+        />
 
-        <View style={styles.registerSection}>
-          <AppText
-            medium
-            centered
-            label="REGISTER A VISIT"
-            style={styles.sectionTitle}
-          />
-          <View style={styles.registerRow}>
-            {REGISTER_ACTIONS.map(renderAction)}
-          </View>
-        </View>
+        <AppInput
+          value={form.lastName}
+          placeholder="Last Name"
+          autoCapitalize="words"
+          onChangeText={value => handlers.setFormValue('lastName', value)}
+          placeholderTextColor={styles.placeholder.color}
+          style={styles.inputWrapper}
+          inputStyle={styles.inputText}
+        />
+
+        <AppInput
+          value={form.email}
+          placeholder="Email *"
+          keyboardType="email-address"
+          textContentType="emailAddress"
+          autoComplete="email"
+          onChangeText={value => handlers.setFormValue('email', value)}
+          placeholderTextColor={styles.placeholder.color}
+          style={styles.inputWrapper}
+          inputStyle={styles.inputText}
+        />
+
+        <AppInput
+          value={form.whatsappNumber}
+          placeholder="WhatsApp Number"
+          keyboardType="phone-pad"
+          onChangeText={value => handlers.setFormValue('whatsappNumber', value)}
+          placeholderTextColor={styles.placeholder.color}
+          style={styles.inputWrapper}
+          inputStyle={styles.inputText}
+        />
+
+        <AppInput
+          value={form.companyName}
+          placeholder="Company Name"
+          autoCapitalize="words"
+          onChangeText={value => handlers.setFormValue('companyName', value)}
+          placeholderTextColor={styles.placeholder.color}
+          style={styles.inputWrapper}
+          inputStyle={styles.inputText}
+        />
+
+        <AppInput
+          value={form.gstNumber}
+          placeholder="GST Number"
+          autoCapitalize="characters"
+          onChangeText={value => handlers.setFormValue('gstNumber', value)}
+          placeholderTextColor={styles.placeholder.color}
+          style={styles.inputWrapper}
+          inputStyle={styles.inputText}
+        />
+
+        <AppInput
+          value={form.invitationMeetingDate}
+          placeholder="Invitation Meeting Date"
+          editable={false}
+          onPress={handlers.onDatePress}
+          placeholderTextColor={styles.placeholder.color}
+          style={styles.inputWrapper}
+          inputStyle={styles.inputText}
+          rightElement={renderIconBubble(Svgs.Date)}
+        />
+
+        <AppInput
+          value={form.chapterName}
+          placeholder="Chapter Name"
+          editable={false}
+          onPress={handlers.onChapterPress}
+          placeholderTextColor={styles.placeholder.color}
+          style={styles.inputWrapper}
+          inputStyle={styles.inputText}
+          rightElement={
+            <Svgs.DownArrow
+              width={styles.dropdownIcon.width}
+              height={styles.dropdownIcon.height}
+              color={styles.dropdownIcon.color}
+            />
+          }
+        />
+
+        <AppButton
+          title="CONFIRM"
+          gradient={false}
+          disabled={!states.canSubmit}
+          onPress={handlers.onSubmit}
+          style={[
+            styles.confirmButton,
+            !states.canSubmit && styles.confirmButtonDisabled,
+          ]}
+          labelStyle={styles.confirmButtonText}
+        />
       </View>
     </AppContainer>
   );
