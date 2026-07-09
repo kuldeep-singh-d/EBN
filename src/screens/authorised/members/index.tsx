@@ -2,8 +2,8 @@ import React from 'react';
 import { Image, Pressable, ScrollView, TextInput, View } from 'react-native';
 
 import { AppContainer, AppText } from '@components';
-import { Svgs } from '@assets/svgs';
 import useMembers from './useMembers';
+import { ChevronDown, Search } from 'lucide-react-native';
 import type { MemberProfile, MemberSearchCriteria } from './types';
 
 type FieldConfig = {
@@ -109,7 +109,7 @@ export const Members = () => {
                 style={[styles.searchInput, styles.inputText]}
               />
               <View pointerEvents="none" style={styles.searchIconWrap}>
-                <Svgs.Search
+                <Search
                   width={styles.searchIcon.width}
                   height={styles.searchIcon.height}
                   color={styles.searchIcon.color}
@@ -179,7 +179,7 @@ export const Members = () => {
                     !criteria.country && styles.placeholder,
                   ]}
                 />
-                <Svgs.DownArrow
+                <ChevronDown
                   width={styles.downIcon.width}
                   height={styles.downIcon.height}
                   color={styles.downIcon.color}

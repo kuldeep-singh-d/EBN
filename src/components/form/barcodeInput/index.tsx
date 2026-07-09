@@ -3,9 +3,9 @@ import { View, TextInput, Pressable, ActivityIndicator } from 'react-native';
 
 //internal imports
 import useStyles from './styles';
-import { Svgs } from '@assets/svgs';
 import { AppText } from '@components';
 import { AppInputProps } from './types';
+import { Barcode, Pencil } from 'lucide-react-native';
 import { useTheme } from '@react-navigation/native';
 
 const BarcodeInput = ({
@@ -156,7 +156,7 @@ const BarcodeInput = ({
           style={styles.barcodeView}
           hitSlop={{ top: 18, bottom: 18, left: 10, right: 10 }}
         >
-          <Svgs.Pencil height={15} width={15} style={styles.barcodeIcon} />
+          <Pencil height={15} width={15} style={styles.barcodeIcon} />
         </Pressable>
 
         <Pressable
@@ -178,7 +178,7 @@ const BarcodeInput = ({
               color={colors.primary}
             />
           ) : (
-            <Svgs.Barcode height={20} width={20} style={styles.barcodeIcon} />
+            <Barcode height={20} width={20} style={styles.barcodeIcon} />
           )}
         </Pressable>
       </Pressable>

@@ -6,7 +6,7 @@ import useStyles from './styles';
 import { AppText } from '@components';
 import { AppFormInputProps } from './types';
 import { useTheme } from '@react-navigation/native';
-import { Svgs } from '@assets/svgs';
+import { Eye, EyeOff } from 'lucide-react-native';
 
 const AppFormInput = ({
   value,
@@ -78,7 +78,7 @@ const AppFormInput = ({
 
         {isPassword && (
           <Pressable onPress={handleEyePress} style={styles.eyeView}>
-            {isPasswordVisible ? <Svgs.CloseEye /> : <Svgs.OpenEye />}
+            {isPasswordVisible ? <EyeOff /> : <Eye />}
           </Pressable>
         )}
       </Pressable>

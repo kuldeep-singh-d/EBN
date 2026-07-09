@@ -14,6 +14,9 @@ export const apiRoutes = {
   dashboard: {
     get: '/dashboard',
   },
+  points: {
+    trafficLight: '/points/traffic-light',
+  },
   eliteMeets: {
     list: '/elite-meets',
     create: '/elite-meets',

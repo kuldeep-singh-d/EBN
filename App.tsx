@@ -1,6 +1,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { persistStore } from 'redux-persist';
+import { LucideProvider } from 'lucide-react-native';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import Navigation from 'src/navigations';
@@ -12,7 +13,9 @@ const App = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <Navigation />
+        <LucideProvider strokeWidth={2}>
+          <Navigation />
+        </LucideProvider>
       </PersistGate>
     </Provider>
   );

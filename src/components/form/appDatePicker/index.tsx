@@ -3,8 +3,8 @@ import { View, Pressable } from 'react-native';
 
 import moment from 'moment';
 import useStyles from './styles';
-import { Svgs } from '@assets/svgs';
 import { AppText } from '@components';
+import { Calendar, X } from 'lucide-react-native';
 import DatePicker from 'react-native-date-picker';
 import { useTheme } from '@react-navigation/native';
 
@@ -62,10 +62,10 @@ const AppDatePicker = ({
 
         {value ? (
           <Pressable onPress={handleClearInput}>
-            <Svgs.Cross height={18} width={18} />
+            <X height={18} width={18} />
           </Pressable>
         ) : (
-          <Svgs.Date />
+          <Calendar />
         )}
       </Pressable>
 

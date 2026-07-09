@@ -1,8 +1,8 @@
 import React from 'react';
 import useHome from './useHome';
-import { Svgs } from '@assets/svgs';
-import { Image, Pressable, View } from 'react-native';
+import { QrCode } from 'lucide-react-native';
 import { AppContainer, AppText } from '@components';
+import { Image, Pressable, RefreshControl, View } from 'react-native';
 
 export const Home = () => {
   const { styles, states, handlers } = useHome();
@@ -10,7 +10,18 @@ export const Home = () => {
     states.screenData;
 
   return (
-    <AppContainer hideBackBtn contentStyle={styles.content}>
+    <AppContainer
+      hideBackBtn
+      contentStyle={styles.content}
+      refreshControl={
+        <RefreshControl
+          refreshing={states.isRefreshing}
+          onRefresh={handlers.onRefresh}
+          tintColor={styles.refreshControl.color}
+          colors={[String(styles.refreshControl.color)]}
+        />
+      }
+    >
       <View style={styles.container}>
         <View style={styles.memberCard}>
           <Image source={member.avatar} style={styles.avatar} />
@@ -29,22 +40,20 @@ export const Home = () => {
         <View style={styles.card}>
           {/* <View style={styles.corner} /> */}
           <View style={styles.cardHeader}>
-            <View style={styles.headerSpacer} />
             <AppText
               medium
               centered
-              label={nextMeeting.title}
               style={styles.cardTitle}
-            />
-            <Svgs.OpenEye
-              width={styles.eyeIcon.width}
-              height={styles.eyeIcon.height}
-              color={styles.eyeIcon.color}
+              label={nextMeeting.title}
             />
           </View>
           <AppText
             centered
-            label={nextMeeting.date}
+            label={
+              nextMeeting.time
+                ? `${nextMeeting.date} | ${nextMeeting.time}`
+                : nextMeeting.date
+            }
             style={styles.meetingDate}
           />
           <AppText
@@ -52,18 +61,26 @@ export const Home = () => {
             label={nextMeeting.type}
             style={styles.meetingType}
           />
+          {nextMeeting.venue ? (
+            <AppText
+              centered
+              label={nextMeeting.venue}
+              style={styles.meetingVenue}
+            />
+          ) : null}
+          {nextMeeting.address && nextMeeting.address !== 'N/A' ? (
+            <AppText
+              centered
+              numberOfLines={2}
+              label={nextMeeting.address}
+              style={styles.meetingAddress}
+            />
+          ) : null}
           <View style={styles.meetingMetrics}>
             <View style={styles.metricGroup}>
               <View style={styles.metricRow}>
                 <AppText label="TYFCB" style={styles.metricLabel} />
                 <AppText label={nextMeeting.tyfcb} style={styles.metricValue} />
-              </View>
-              <View style={styles.metricRow}>
-                <AppText label="SPEAKERS" style={styles.metricLabel} />
-                <AppText
-                  label={nextMeeting.speakers}
-                  style={styles.metricValue}
-                />
               </View>
             </View>
             <View style={styles.visitorMetric}>
@@ -74,23 +91,32 @@ export const Home = () => {
               />
             </View>
           </View>
-          <View style={styles.linkRow}>
-            <Svgs.HomeLink
-              width={styles.linkIcon.width}
-              height={styles.linkIcon.height}
-              color={styles.linkIcon.color}
-            />
-            <AppText label={nextMeeting.linkLabel} style={styles.linkText} />
-          </View>
+          {nextMeeting.canScanQr ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="QR Code"
+              onPress={handlers.onQrCodePress}
+              style={({ pressed }) => [
+                styles.qrButton,
+                pressed && styles.qrButtonPressed,
+              ]}
+            >
+              <QrCode
+                width={styles.qrIcon.width}
+                height={styles.qrIcon.height}
+                color={styles.qrIcon.color}
+              />
+              <AppText medium label="QR Code" style={styles.qrButtonText} />
+            </Pressable>
+          ) : null}
         </View>
 
         <View style={styles.card}>
-          {/* <View style={styles.corner} /> */}
           <AppText
-            medium
+            semibold
             centered
-            label="THIS WEEK'S SLIPS"
             style={styles.cardTitle}
+            label="THIS MONTH'S SLIPS"
           />
           <View style={styles.slipsList}>
             {slips.map(({ id, label, value, icon: Icon }) => (
@@ -104,7 +130,14 @@ export const Home = () => {
                   <AppText label={label} style={styles.slipLabel} />
                 </View>
                 <View style={styles.slipValueRow}>
-                  <AppText label={value} style={styles.slipValue} />
+                  <AppText
+                    semibold
+                    label={value}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.78}
+                    style={styles.slipValue}
+                  />
                   <AppText label="+" style={styles.plusText} />
                 </View>
               </View>
@@ -147,7 +180,6 @@ export const Home = () => {
         </View>
 
         <View style={styles.card}>
-          {/* <View style={styles.corner} /> */}
           <View style={styles.rangeTabs}>
             {stats.ranges.map(range => (
               <Pressable
@@ -202,21 +234,17 @@ export const Home = () => {
               />
             </View>
           </View>
-          <View style={styles.trafficHeaderRow}>
+          {/* <View style={styles.trafficHeaderRow}>
             <View style={styles.trafficNameColumn} />
-            <AppText
-              label={trafficLight.rateLabel}
-              style={styles.trafficHead}
-            />
+
             <AppText
               label={trafficLight.scoreLabel}
               style={styles.trafficHead}
             />
-          </View>
+          </View> */}
           {trafficLight.rows.map(row => (
             <View key={row.id} style={styles.trafficRow}>
               <AppText label={row.label} style={styles.trafficLabel} />
-              <AppText label={row.rate} style={styles.trafficRate} />
               <View
                 style={[
                   styles.trafficScoreBadge,

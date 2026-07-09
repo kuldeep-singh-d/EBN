@@ -1,11 +1,30 @@
 import useStyles from './styles';
 import moment from 'moment';
-import { Svgs } from '@assets/svgs';
 import { images } from '@assets/images';
 import { useDispatch, useSelector } from '@hooks';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { HomeData, HomeQuickAction, HomeStatsRange } from './types';
+import {
+  HomeData,
+  HomeQuickAction,
+  HomeStatsRange,
+  HomeTrafficLightScoreTone,
+} from './types';
+import {
+  Award,
+  BadgeIndianRupee,
+  BookOpen,
+  BriefcaseBusiness,
+  Calendar,
+  GraduationCap,
+  Handshake,
+  Landmark,
+  Lightbulb,
+  Send,
+  UserCheck,
+  Users,
+} from 'lucide-react-native';
 import { getDashboardData } from '@store/slices/app/dashboard/dashboard';
+import { getTrafficLightData } from '@store/slices/app/trafficLight/trafficLight';
 
 type DashboardProfile = {
   name?: string;
@@ -14,9 +33,42 @@ type DashboardProfile = {
   avatar?: string | null;
 };
 
+type DashboardNextMeeting = {
+  id?: number;
+  date?: string;
+  time?: string;
+  venue?: string;
+  mode_of_meeting?: string;
+  address?: string;
+  can_scan_qr?: boolean;
+  show_qr?: boolean;
+};
+
+type DashboardActivity = {
+  label?: string;
+  value?: string | number;
+};
+
 type DashboardResponse = {
   data?: {
     profile?: DashboardProfile | null;
+    next_meeting?: DashboardNextMeeting | null;
+    activities?: DashboardActivity[];
+  };
+};
+
+type TrafficLightMetric = {
+  label?: string;
+  score?: string | number;
+  period_months?: number | null;
+  color?: string;
+};
+
+type TrafficLightResponse = {
+  data?: {
+    total_score?: string | number;
+    last_updated?: string;
+    metrics?: TrafficLightMetric[];
   };
 };
 
@@ -31,50 +83,54 @@ const HOME_DATA: HomeData = {
   nextMeeting: {
     title: 'NEXT MEETING',
     date: 'Thursday, July 02, 2026',
+    time: '',
+    venue: '',
+    address: '',
     type: 'Meeting: In-Person',
     tyfcb: '₹32.6k',
     speakers: '0',
     visitors: '0',
     linkLabel: 'Online Meeting Link',
+    canScanQr: false,
   },
   slips: [
-    { id: 'tyfcb', label: 'TYFCBs', value: '0', icon: Svgs.HomeHandshake },
+    { id: 'tyfcb', label: 'TYFCBs', value: '0', icon: Handshake },
     {
       id: 'referrals',
       label: 'Referrals',
       value: '0',
-      icon: Svgs.HomeReferral,
+      icon: Send,
     },
-    { id: 'ceus', label: 'CEUs', value: '0', icon: Svgs.HomeBook },
+    { id: 'ceus', label: 'CEUs', value: '0', icon: BookOpen },
     {
       id: 'oneToOnes',
       label: 'One-to-Ones',
       value: '0',
-      icon: Svgs.HomeOneToOne,
+      icon: UserCheck,
     },
   ],
   quickActions: [
-    { id: 'training', label: 'Training', icon: Svgs.QuickTraining },
+    { id: 'training', label: 'Training', icon: GraduationCap },
     {
       id: 'memberAttendance',
       label: 'Member Attendance',
-      icon: Svgs.QuickMemberAttendance,
+      icon: UserCheck,
     },
-    { id: 'event', label: 'Event', icon: Svgs.QuickEvent },
+    { id: 'event', label: 'Event', icon: Calendar },
     {
       id: 'experienceFees',
       label: 'Experience Fees',
-      icon: Svgs.QuickExperienceFees,
+      icon: BadgeIndianRupee,
     },
-    { id: 'membership', label: 'MemberShip', icon: Svgs.QuickMembership },
+    { id: 'membership', label: 'MemberShip', icon: Award },
     {
       id: 'trainingTechnology',
       label: 'Training & Technology',
-      icon: Svgs.QuickTrainingTechnology,
+      icon: BriefcaseBusiness,
     },
-    { id: 'cdpsDeposit', label: 'CDPS Deposit', icon: Svgs.QuickCdpsDeposit },
-    { id: 'members', label: 'Members', icon: Svgs.QuickMembers },
-    { id: 'sicilianSpot', label: 'SicilianSpot', icon: Svgs.QuickSicilianSpot },
+    { id: 'cdpsDeposit', label: 'CDPS Deposit', icon: Landmark },
+    { id: 'members', label: 'Members', icon: Users },
+    { id: 'sicilianSpot', label: 'SicilianSpot', icon: Lightbulb },
   ],
   stats: {
     defaultRange: 'LIFETIME',
@@ -179,16 +235,126 @@ const getMemberStatus = (renewalDate?: string) => {
   return parsedDate.isAfter(moment(), 'day') ? 'Active' : 'Expired';
 };
 
+const SLIP_ICONS = [Handshake, Send, BookOpen, UserCheck];
+
+const getNextMeetingData = (nextMeeting?: DashboardNextMeeting | null) => {
+  if (!nextMeeting) {
+    return HOME_DATA.nextMeeting;
+  }
+
+  return {
+    ...HOME_DATA.nextMeeting,
+    date: nextMeeting.date || HOME_DATA.nextMeeting.date,
+    time: nextMeeting.time || HOME_DATA.nextMeeting.time,
+    venue: nextMeeting.venue || HOME_DATA.nextMeeting.venue,
+    address: nextMeeting.address || HOME_DATA.nextMeeting.address,
+    type: nextMeeting.mode_of_meeting
+      ? `Meeting: ${nextMeeting.mode_of_meeting}`
+      : HOME_DATA.nextMeeting.type,
+    canScanQr: Boolean(nextMeeting.can_scan_qr),
+  };
+};
+
+const getActivitySlips = (activities?: DashboardActivity[]) => {
+  if (!activities?.length) {
+    return HOME_DATA.slips;
+  }
+
+  return activities.map((activity, index) => ({
+    id: `${activity.label || 'activity'}-${index}`,
+    label: activity.label || '-',
+    value: String(activity.value ?? '0'),
+    icon: SLIP_ICONS[index % SLIP_ICONS.length],
+  }));
+};
+
+const getTrafficTone = (color?: string): HomeTrafficLightScoreTone => {
+  switch (color?.toLowerCase()) {
+    case 'green':
+      return 'green';
+    case 'red':
+      return 'red';
+    default:
+      return 'neutral';
+  }
+};
+
+const getTotalScoreTone = (
+  score?: string | number,
+): HomeTrafficLightScoreTone => {
+  const numericScore = Number(score ?? 0);
+
+  if (numericScore >= 100) {
+    return 'green';
+  }
+
+  if (numericScore > 0) {
+    return 'red';
+  }
+
+  return 'neutral';
+};
+
+const getTrafficLightScreenData = (
+  trafficLightResponse?: TrafficLightResponse,
+): HomeData['trafficLight'] => {
+  const trafficLightData = trafficLightResponse?.data;
+
+  if (!trafficLightData) {
+    return HOME_DATA.trafficLight;
+  }
+
+  return {
+    ...HOME_DATA.trafficLight,
+    totalScore: String(
+      trafficLightData.total_score ?? HOME_DATA.trafficLight.totalScore,
+    ),
+    totalTone: getTotalScoreTone(trafficLightData.total_score),
+    rateLabel: 'Period',
+    footer: trafficLightData.last_updated
+      ? `Last Updated   ${trafficLightData.last_updated}`
+      : HOME_DATA.trafficLight.footer,
+    rows: trafficLightData.metrics?.length
+      ? trafficLightData.metrics.map((metric, index) => ({
+          id: `${metric.label || 'metric'}-${index}`,
+          label: metric.label || '-',
+          rate: metric.period_months ? `${metric.period_months}M` : '-',
+          score: String(metric.score ?? 0),
+          tone: getTrafficTone(metric.color),
+        }))
+      : HOME_DATA.trafficLight.rows,
+  };
+};
+
 const useHome = () => {
   const styles = useStyles();
   const dispatch = useDispatch();
   const dashboardRequestRef = useRef(false);
+  const refreshRequestStartedRef = useRef(false);
   const dashboardResponse = useSelector(
     state => state.dashboard?.data,
   ) as DashboardResponse;
   const dashboardLoading = useSelector(state => state.dashboard?.loading);
+  const trafficLightResponse = useSelector(
+    state => state.trafficLight?.data,
+  ) as TrafficLightResponse;
+  const trafficLightLoading = useSelector(state => state.trafficLight?.loading);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedStatsRange, setSelectedStatsRange] = useState<HomeStatsRange>(
     HOME_DATA.stats.defaultRange,
+  );
+
+  const requestHomeData = useCallback(
+    (refreshing = false) => {
+      if (refreshing) {
+        setIsRefreshing(true);
+      }
+
+      dashboardRequestRef.current = true;
+      dispatch(getDashboardData());
+      dispatch(getTrafficLightData());
+    },
+    [dispatch],
   );
 
   useEffect(() => {
@@ -200,20 +366,42 @@ const useHome = () => {
       return;
     }
 
-    console.log('[Dashboard API Response]', dashboardResponse);
     dashboardRequestRef.current = false;
   }, [dashboardLoading, dashboardResponse]);
 
   useEffect(() => {
-    dashboardRequestRef.current = true;
-    dispatch(getDashboardData());
-  }, [dispatch]);
+    if (!isRefreshing) {
+      return;
+    }
+
+    if (dashboardLoading || trafficLightLoading) {
+      refreshRequestStartedRef.current = true;
+      return;
+    }
+
+    if (refreshRequestStartedRef.current) {
+      refreshRequestStartedRef.current = false;
+      setIsRefreshing(false);
+    }
+  }, [dashboardLoading, isRefreshing, trafficLightLoading]);
+
+  useEffect(() => {
+    requestHomeData();
+  }, [requestHomeData]);
 
   const screenData = useMemo(() => {
     const profile = dashboardResponse?.data?.profile;
+    const nextMeeting = dashboardResponse?.data?.next_meeting;
+    const activities = dashboardResponse?.data?.activities;
+    const trafficLight = getTrafficLightScreenData(trafficLightResponse);
 
     if (!profile) {
-      return HOME_DATA;
+      return {
+        ...HOME_DATA,
+        nextMeeting: getNextMeetingData(nextMeeting),
+        slips: getActivitySlips(activities),
+        trafficLight,
+      };
     }
 
     return {
@@ -227,8 +415,11 @@ const useHome = () => {
           ? { uri: profile.avatar }
           : images.profilePlaceholder,
       },
+      nextMeeting: getNextMeetingData(nextMeeting),
+      slips: getActivitySlips(activities),
+      trafficLight,
     };
-  }, [dashboardResponse]);
+  }, [dashboardResponse, trafficLightResponse]);
 
   const statsRows = useMemo(
     () => HOME_DATA.stats.rowsByRange[selectedStatsRange],
@@ -242,14 +433,29 @@ const useHome = () => {
     });
   }, []);
 
+  const onQrCodePress = useCallback(() => {
+    console.log('[Next Meeting QR Code]');
+  }, []);
+
+  const onRefresh = useCallback(() => {
+    if (dashboardLoading || trafficLightLoading) {
+      return;
+    }
+
+    requestHomeData(true);
+  }, [dashboardLoading, requestHomeData, trafficLightLoading]);
+
   return {
     styles,
     states: {
+      isRefreshing,
       statsRows,
       selectedStatsRange,
       screenData,
     },
     handlers: {
+      onQrCodePress,
+      onRefresh,
       onQuickActionPress,
       setSelectedStatsRange,
     },

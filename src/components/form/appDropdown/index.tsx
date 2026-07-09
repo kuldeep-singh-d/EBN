@@ -13,8 +13,8 @@ import {
 } from 'react-native';
 
 import useStyles from './styles';
-import { Svgs } from '@assets/svgs';
 import { AppText } from '@components';
+import { Check, ChevronDown, X } from 'lucide-react-native';
 import { useTheme } from '@react-navigation/native';
 import { AppDropdownProps, DropdownItem } from './types';
 
@@ -143,7 +143,7 @@ const AppDropdown = ({
           />
           {selected && (
             <View style={styles.checkIcon}>
-              <Svgs.Check height={18} width={18} />
+              <Check height={18} width={18} />
             </View>
           )}
         </Pressable>
@@ -228,10 +228,10 @@ const AppDropdown = ({
               handleClearSelection();
             }}
           >
-            <Svgs.Cross height={18} width={18} />
+            <X height={18} width={18} />
           </Pressable>
         ) : (
-          <Svgs.DownArrow height={20} width={20} />
+          <ChevronDown height={20} width={20} />
         )}
       </Pressable>
 
@@ -266,7 +266,7 @@ const AppDropdown = ({
                   onPress={closeModal}
                   style={styles.modalCloseBtn}
                 >
-                  <Svgs.Cross height={20} width={20} />
+                  <X height={20} width={20} />
                 </Pressable>
               </View>
 

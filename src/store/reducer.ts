@@ -20,6 +20,7 @@ import trainings from './slices/app/trainings/trainings';
 import eliteReferrals from './slices/app/eliteReferrals/eliteReferrals';
 import eliteCloseBusiness from './slices/app/eliteCloseBusiness/eliteCloseBusiness';
 import visitorInvitations from './slices/app/visitorInvitations/visitorInvitations';
+import trafficLight from './slices/app/trafficLight/trafficLight';
 
 const reducers = combineReducers({
   appTheme,
@@ -39,6 +40,7 @@ const reducers = combineReducers({
   eliteReferrals,
   eliteCloseBusiness,
   visitorInvitations,
+  trafficLight,
 });
 
 // Reset user-scoped Redux state when the active login is cleared.

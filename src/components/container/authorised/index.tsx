@@ -2,15 +2,23 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import {
   View,
   Modal,
+  Image,
   ViewStyle,
   Pressable,
   StyleProp,
   TextStyle,
   StyleSheet,
   BackHandler,
+  RefreshControlProps,
 } from 'react-native';
-import { Svgs } from '@assets/svgs';
-import type { SvgProps } from 'react-native-svg';
+import { images } from '@assets/images';
+import {
+  ArrowLeft,
+  Bell,
+  Menu,
+  X,
+  type LucideIcon,
+} from 'lucide-react-native';
 import { routes } from '@navigation/routes';
 import { useDeviceDimensions } from '@hooks/index';
 import { AppText, KeyboardAvoider, Loader } from '@components';
@@ -34,8 +42,9 @@ interface AppContainerProps {
   headerStyle?: StyleProp<ViewStyle>;
   contentStyle?: StyleProp<ViewStyle>;
   headerTitleStyle?: StyleProp<TextStyle>;
-  rightIcon?: React.ComponentType<SvgProps>;
+  rightIcon?: LucideIcon;
   rightComponent?: ReactNode;
+  refreshControl?: React.ReactElement<RefreshControlProps>;
   rightMenuItems?: HeaderMenuItem[];
   onRightActionPress?: (item: HeaderMenuItem) => void;
 }
@@ -44,6 +53,15 @@ export type HeaderMenuItem = {
   id: string;
   label: string;
 };
+
+const HEADER_MENU_ITEMS: HeaderMenuItem[] = [
+  { id: 'profile', label: 'Profile' },
+  { id: 'meetingSummary', label: 'Meeting Summary' },
+  { id: 'about', label: 'About' },
+  { id: 'termsOfServices', label: 'Terms Of Services' },
+  { id: 'privacyPolicy', label: 'Privacy Policy' },
+  { id: 'logout', label: 'Logout' },
+];
 
 const AppContainer = ({
   loading,
@@ -62,6 +80,7 @@ const AppContainer = ({
   onNotificationPress,
   onHeaderRightPress,
   rightComponent,
+  refreshControl,
   rightMenuItems = [],
   onRightActionPress,
   hideBackBtn = false,
@@ -73,8 +92,9 @@ const AppContainer = ({
   // const queryClient = useQueryClient();
   const navigation: any = useNavigation();
   const [isRightMenuVisible, setIsRightMenuVisible] = useState(false);
+  const [isHeaderMenuVisible, setIsHeaderMenuVisible] = useState(false);
   const { moderateHeight } = useDeviceDimensions();
-  const iconSize = headerIconSize ?? moderateHeight(3);
+  const iconSize = headerIconSize ?? moderateHeight(2.55);
   const actionIconColor = String(
     headerIconColor ?? styles.headerActionIcon.color,
   );
@@ -132,6 +152,19 @@ const AppContainer = ({
     onRightActionPress?.(item);
   };
 
+  const handleMenuPress = () => {
+    onMenuPress?.();
+    setIsHeaderMenuVisible(true);
+  };
+
+  const handleHeaderMenuItemPress = (item: HeaderMenuItem) => {
+    setIsHeaderMenuVisible(false);
+    console.log('[Header Menu]', {
+      id: item.id,
+      label: item.label,
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View
@@ -140,7 +173,7 @@ const AppContainer = ({
         <View style={[styles.titleView, centerTitle && styles.centerTitleView]}>
           {!hideBackBtn && (
             <Pressable onPress={handleBackBtn} style={styles.backBtn}>
-              <Svgs.BackArrow
+              <ArrowLeft
                 width={iconSize}
                 height={iconSize}
                 color={headerIconColor}
@@ -192,19 +225,18 @@ const AppContainer = ({
               onPress={handleNotificationPress}
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 8 }}
             >
-              <Svgs.HeaderNotification
+              <Bell
                 color={actionIconColor}
                 width={styles.notificationIcon.width}
                 height={styles.notificationIcon.height}
               />
             </Pressable>
             <Pressable
-              onPress={onMenuPress}
-              disabled={!onMenuPress}
+              onPress={handleMenuPress}
               style={styles.headerActionBtn}
               hitSlop={{ top: 12, bottom: 12, left: 8, right: 12 }}
             >
-              <Svgs.HeaderMenu
+              <Menu
                 color={actionIconColor}
                 width={styles.menuIcon.width}
                 height={styles.menuIcon.height}
@@ -251,10 +283,79 @@ const AppContainer = ({
         </Pressable>
       </Modal>
 
+      <Modal
+        transparent
+        animationType="fade"
+        visible={isHeaderMenuVisible}
+        onRequestClose={() => setIsHeaderMenuVisible(false)}
+      >
+        <View style={styles.headerMenuOverlay}>
+          <Pressable
+            style={styles.headerMenuBackdrop}
+            onPress={() => setIsHeaderMenuVisible(false)}
+          />
+          <View style={styles.headerMenuPanel}>
+            <View style={styles.headerMenuTop}>
+              <Image
+                resizeMode="contain"
+                source={images.headerLogo}
+                style={styles.headerMenuLogo}
+              />
+              <Pressable
+                hitSlop={12}
+                accessibilityRole="button"
+                accessibilityLabel="Close menu"
+                onPress={() => setIsHeaderMenuVisible(false)}
+                style={styles.headerMenuClose}
+              >
+                <X
+                  width={styles.headerMenuCloseIcon.width}
+                  height={styles.headerMenuCloseIcon.height}
+                  color={styles.headerMenuCloseIcon.color}
+                />
+              </Pressable>
+            </View>
+
+            <View style={styles.headerMenuDivider} />
+
+            <View style={styles.headerMenuItems}>
+              {HEADER_MENU_ITEMS.map(item => (
+                <Pressable
+                  key={item.id}
+                  accessibilityRole="button"
+                  onPress={() => handleHeaderMenuItemPress(item)}
+                  style={({ pressed }) => [
+                    styles.headerMenuItem,
+                    pressed && styles.headerMenuItemPressed,
+                  ]}
+                >
+                  <AppText
+                    centered
+                    label={item.label}
+                    style={styles.headerMenuItemText}
+                  />
+                </Pressable>
+              ))}
+            </View>
+
+            <View style={styles.headerMenuDivider} />
+            <AppText
+              centered
+              label="Version:3.26.0"
+              style={styles.headerMenuVersion}
+            />
+          </View>
+        </View>
+      </Modal>
+
       {listing !== undefined ? (
         <View style={[styles.keyboardAwar, contentStyle]}>{children}</View>
       ) : (
         <KeyboardAvoider
+          bounces={Boolean(refreshControl)}
+          alwaysBounceVertical={Boolean(refreshControl)}
+          overScrollMode={refreshControl ? 'always' : 'auto'}
+          refreshControl={refreshControl}
           contentContainerStyle={[styles.keyboardAwar, contentStyle]}
         >
           {children}
@@ -286,22 +387,22 @@ const useStyles = () => {
     header: {
       flexDirection: 'row',
       alignItems: 'center',
-      minHeight: moderateHeight(6),
+      minHeight: moderateHeight(5.4),
       backgroundColor: colors.white,
       justifyContent: 'space-between',
-      paddingVertical: moderateHeight(1),
+      paddingVertical: moderateHeight(0.65),
       paddingHorizontal: moderateWidth(5),
       position: 'relative',
     },
     title: {
-      fontSize: moderateHeight(2.4),
+      fontSize: moderateHeight(2.1),
     },
     centeredTitle: {
       marginLeft: 0,
       letterSpacing: 0,
       color: colors.gray,
       textTransform: 'uppercase',
-      fontSize: moderateHeight(2.45),
+      fontSize: moderateHeight(2.1),
     },
     userID: {
       marginLeft: moderateWidth(3),
@@ -313,10 +414,10 @@ const useStyles = () => {
       justifyContent: 'center',
     },
     centerHeader: {
-      minHeight: moderateHeight(6.4),
+      minHeight: moderateHeight(5.6),
     },
     centerTitleView: {
-      minWidth: moderateHeight(3.8),
+      minWidth: moderateHeight(3.2),
     },
     titleCenterSlot: {
       position: 'absolute',
@@ -330,31 +431,31 @@ const useStyles = () => {
     headerRightBtn: {
       alignItems: 'center',
       justifyContent: 'center',
-      minWidth: moderateHeight(3.8),
-      minHeight: moderateHeight(3.8),
+      minWidth: moderateHeight(3.2),
+      minHeight: moderateHeight(3.2),
     },
     headerActions: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'flex-end',
-      columnGap: moderateWidth(2),
+      columnGap: moderateWidth(1.4),
     },
     headerActionBtn: {
       alignItems: 'center',
       justifyContent: 'center',
-      minWidth: moderateHeight(4.2),
-      minHeight: moderateHeight(4.2),
+      minWidth: moderateHeight(3.55),
+      minHeight: moderateHeight(3.55),
     },
     headerActionIcon: {
       color: colors.primary,
     },
     notificationIcon: {
-      width: moderateHeight(3.2),
-      height: moderateHeight(3.2),
+      width: moderateHeight(2.55),
+      height: moderateHeight(2.55),
     },
     menuIcon: {
-      width: moderateHeight(3),
-      height: moderateHeight(3),
+      width: moderateHeight(2.45),
+      height: moderateHeight(2.45),
     },
     logoutBtn: {},
     menuOverlay: {
@@ -385,6 +486,82 @@ const useStyles = () => {
     rightMenuText: {
       color: colors.secondary,
       fontSize: moderateHeight(1.48),
+    },
+    headerMenuOverlay: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: moderateWidth(5),
+      backgroundColor: colors.overlay,
+    },
+    headerMenuBackdrop: {
+      ...StyleSheet.absoluteFill,
+    },
+    headerMenuPanel: {
+      width: '100%',
+      maxWidth: moderateWidth(90),
+      overflow: 'hidden',
+      borderRadius: moderateWidth(5.5),
+      backgroundColor: colors.primary,
+      elevation: 8,
+      shadowColor: colors.black,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.22,
+      shadowRadius: 8,
+    },
+    headerMenuTop: {
+      minHeight: moderateHeight(18),
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: moderateWidth(8),
+      paddingTop: moderateHeight(3),
+      paddingBottom: moderateHeight(2.4),
+    },
+    headerMenuLogo: {
+      width: moderateWidth(42),
+      height: moderateHeight(8.2),
+    },
+    headerMenuClose: {
+      position: 'absolute',
+      top: moderateHeight(2.1),
+      right: moderateWidth(4.2),
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: moderateHeight(4.2),
+      height: moderateHeight(4.2),
+    },
+    headerMenuCloseIcon: {
+      width: moderateHeight(3.1),
+      height: moderateHeight(3.1),
+      color: colors.white,
+    },
+    headerMenuDivider: {
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: colors.secondary,
+      opacity: 0.35,
+    },
+    headerMenuItems: {
+      paddingVertical: moderateHeight(1.6),
+    },
+    headerMenuItem: {
+      minHeight: moderateHeight(6.2),
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: moderateWidth(5),
+    },
+    headerMenuItemPressed: {
+      opacity: 0.72,
+    },
+    headerMenuItemText: {
+      color: colors.white,
+      fontSize: moderateHeight(2),
+      lineHeight: moderateHeight(2.7),
+    },
+    headerMenuVersion: {
+      color: colors.white,
+      fontSize: moderateHeight(1.55),
+      lineHeight: moderateHeight(2.2),
+      paddingVertical: moderateHeight(2.2),
     },
   });
 };

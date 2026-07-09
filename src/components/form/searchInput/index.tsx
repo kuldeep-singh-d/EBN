@@ -2,7 +2,7 @@ import React, { memo, useCallback } from 'react';
 import { View, TextInput, TextInputProps, Pressable } from 'react-native';
 
 import useStyles from './styles';
-import { Svgs } from '@assets/svgs';
+import { Search, X } from 'lucide-react-native';
 import { useTheme } from '@react-navigation/native';
 
 interface AuthInputProps extends TextInputProps {
@@ -51,10 +51,10 @@ const SearchInput = ({
         />
         {value ? (
           <Pressable onPress={handleClearInput}>
-            <Svgs.Cross />
+            <X />
           </Pressable>
         ) : (
-          <Svgs.Search />
+          <Search />
         )}
       </View>
     </View>

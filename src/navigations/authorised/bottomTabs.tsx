@@ -1,17 +1,23 @@
 import React from 'react';
 import { routes } from '../routes';
-import { Svgs } from '@assets/svgs';
 import { AppText } from '@components';
 import * as Screens from '@screens/index';
 import useStyles from './bottomTabs.styles';
 import { Pressable, View } from 'react-native';
-import type { SvgProps } from 'react-native-svg';
+import {
+  CreditCard,
+  House,
+  ReceiptText,
+  TicketCheck,
+  Users,
+  type LucideIcon,
+} from 'lucide-react-native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 type TabItem = {
   label: string;
-  icon?: React.ComponentType<SvgProps>;
+  icon?: LucideIcon;
 };
 
 const Tab = createBottomTabNavigator();
@@ -19,23 +25,23 @@ const Tab = createBottomTabNavigator();
 const TAB_ITEMS: Record<string, TabItem> = {
   [routes.app.home]: {
     label: 'Home',
-    icon: Svgs.TabHome,
+    icon: House,
   },
   [routes.app.slips]: {
     label: 'Slips',
-    icon: Svgs.TabSlips,
+    icon: ReceiptText,
   },
   [routes.app.members]: {
     label: 'Members',
-    icon: Svgs.TabMembers,
+    icon: Users,
   },
   [routes.app.payment]: {
     label: 'Payment',
-    icon: Svgs.TabPayment,
+    icon: CreditCard,
   },
   [routes.app.visitors]: {
     label: 'Visitors',
-    icon: Svgs.TabVisitors,
+    icon: TicketCheck,
   },
 };
 

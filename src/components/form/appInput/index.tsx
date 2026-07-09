@@ -3,9 +3,9 @@ import React, { memo, useCallback, useState } from 'react';
 
 //internal imports
 import useStyles from './styles';
-import { Svgs } from '@assets/svgs';
 import { AppText } from '@components';
 import { AppInputProps } from './types';
+import { Eye, EyeOff } from 'lucide-react-native';
 import { useTheme } from '@react-navigation/native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
@@ -97,7 +97,7 @@ const AppInput = ({
 
       {isPassword && showPasswordToggle && (
         <Pressable onPress={handleEyePress} style={styles.eyeView} hitSlop={10}>
-          {isPasswordVisible ? <Svgs.OpenEye /> : <Svgs.CloseEye />}
+          {isPasswordVisible ? <Eye /> : <EyeOff />}
         </Pressable>
       )}
     </Pressable>

@@ -1,17 +1,20 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import { Svgs } from '@assets/svgs';
 import { AppButton, AppContainer, AppInput } from '@components';
+import {
+  Calendar,
+  ChevronDown,
+  TicketCheck,
+  type LucideIcon,
+} from 'lucide-react-native';
 import useVisitors from './useVisitors';
 
 export const Visitors = () => {
   const { styles, states, handlers } = useVisitors();
   const { form, title } = states.screenData;
 
-  const renderIconBubble = (
-    Icon: React.ComponentType<React.ComponentProps<typeof Svgs.Date>>,
-  ) => (
+  const renderIconBubble = (Icon: LucideIcon) => (
     <View style={styles.iconBubble}>
       <Icon
         width={styles.fieldIcon.width}
@@ -40,7 +43,7 @@ export const Visitors = () => {
           placeholderTextColor={styles.placeholder.color}
           style={styles.inputWrapper}
           inputStyle={styles.inputText}
-          rightElement={renderIconBubble(Svgs.VisitorPass)}
+          rightElement={renderIconBubble(TicketCheck)}
         />
 
         <AppInput
@@ -103,7 +106,7 @@ export const Visitors = () => {
           placeholderTextColor={styles.placeholder.color}
           style={styles.inputWrapper}
           inputStyle={styles.inputText}
-          rightElement={renderIconBubble(Svgs.Date)}
+          rightElement={renderIconBubble(Calendar)}
         />
 
         <AppInput
@@ -115,7 +118,7 @@ export const Visitors = () => {
           style={styles.inputWrapper}
           inputStyle={styles.inputText}
           rightElement={
-            <Svgs.DownArrow
+            <ChevronDown
               width={styles.dropdownIcon.width}
               height={styles.dropdownIcon.height}
               color={styles.dropdownIcon.color}

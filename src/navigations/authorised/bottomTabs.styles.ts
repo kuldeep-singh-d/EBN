@@ -10,21 +10,21 @@ export const useStyles = () => {
 
   return StyleSheet.create({
     container: {
-      borderRadius: moderateWidth(8),
-      marginHorizontal: moderateWidth(3),
+      borderRadius: moderateWidth(6),
+      marginHorizontal: moderateWidth(3.2),
       // paddingHorizontal: moderateWidth(3),
       backgroundColor: themeColors.background,
-      paddingBottom: Math.max(insets.bottom, moderateHeight(1.1)),
+      paddingBottom: Math.max(insets.bottom, moderateHeight(0.8)),
     },
     tabBar: {
       width: '100%',
       flexDirection: 'row',
       alignItems: 'center',
-      minHeight: moderateHeight(10),
-      borderRadius: moderateWidth(8),
-      paddingTop: moderateHeight(1.8),
-      paddingBottom: moderateHeight(1.2),
-      paddingHorizontal: moderateWidth(3),
+      minHeight: moderateHeight(8.2),
+      borderRadius: moderateWidth(6),
+      paddingTop: moderateHeight(1.1),
+      paddingBottom: moderateHeight(0.85),
+      paddingHorizontal: moderateWidth(2.4),
       backgroundColor: themeColors.primary,
 
       elevation: 10,
@@ -39,7 +39,7 @@ export const useStyles = () => {
       overflow: 'hidden',
       alignItems: 'center',
       justifyContent: 'center',
-      minHeight: moderateHeight(6.5),
+      minHeight: moderateHeight(5.2),
     },
     activeTabButton: {},
     pressedTabButton: {
@@ -53,14 +53,14 @@ export const useStyles = () => {
     },
     tabIcon: {
       alignItems: 'center',
-      width: moderateWidth(8),
+      width: moderateWidth(6.5),
       justifyContent: 'center',
-      height: moderateWidth(7.2),
+      height: moderateWidth(6),
     },
     activeTabIcon: {},
     iconSize: {
-      width: moderateWidth(7),
-      height: moderateWidth(7),
+      width: moderateWidth(5.6),
+      height: moderateWidth(5.6),
     },
     iconColor: {
       color: themeColors.white,
@@ -70,17 +70,17 @@ export const useStyles = () => {
     },
     tabLabel: {
       color: themeColors.white,
-      fontSize: moderateHeight(1.15),
-      lineHeight: moderateHeight(1.6),
-      marginTop: moderateHeight(0.35),
+      fontSize: moderateHeight(1.12),
+      lineHeight: moderateHeight(1.35),
+      marginTop: moderateHeight(0.2),
     },
     activeTabLabel: {
       color: '#B8BDC6',
     },
     activeIndicator: {
-      width: moderateWidth(5),
-      height: moderateHeight(0.45),
-      marginTop: moderateHeight(0.45),
+      width: moderateWidth(4.2),
+      height: moderateHeight(0.34),
+      marginTop: moderateHeight(0.35),
       borderRadius: moderateHeight(0.25),
       backgroundColor: themeColors.white,
     },

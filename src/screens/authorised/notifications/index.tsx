@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 
 import { AppContainer, AppText } from '@components';
-import { Svgs } from '@assets/svgs';
+import { EllipsisVertical } from 'lucide-react-native';
 import useNotifications from './useNotifications';
 
 export const Notifications = () => {
@@ -12,7 +12,7 @@ export const Notifications = () => {
     <AppContainer
       centerTitle
       title="NOTIFICATIONS"
-      rightIcon={Svgs.MoreVertical}
+      rightIcon={EllipsisVertical}
       contentStyle={styles.content}
       headerIconColor={String(styles.headerIcon.color)}
       headerTitleStyle={styles.headerTitle}

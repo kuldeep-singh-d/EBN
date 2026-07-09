@@ -6,7 +6,6 @@ import * as actions from '@store/apiActions';
 import { getApiErrorMessage } from '@utils/apiError';
 // import { clearLoginRes } from '@store/slices/auth/login';
 // import { clearLogoutResponse } from '@store/slices/auth/logout';
-import { setLoginState } from '@store/slices/app/localStates/loginState';
 import { handalLoading } from '@store/slices/app/localStates/handalLoading';
 
 interface ApiMiddlewareArgs {
@@ -43,6 +42,26 @@ interface AxiosRequestConfig {
 
 type StoreState = any;
 
+const getSafeHeaders = (headers: Record<string, string>) => {
+  const safeHeaders = { ...headers };
+
+  if (safeHeaders.Authorization) {
+    safeHeaders.Authorization = 'Bearer ***';
+  }
+
+  return safeHeaders;
+};
+
+const getApiRequestLogPayload = (requestConfig: AxiosRequestConfig) => ({
+  method: requestConfig.method,
+  url: `${requestConfig.baseURL ?? ''}${requestConfig.url}`,
+  params: requestConfig.params,
+  data: requestConfig.data,
+  headers: requestConfig.headers ? getSafeHeaders(requestConfig.headers) : {},
+});
+
+const getApiLogLabel = (url: string) => `[API ${url}]`;
+
 const api =
   ({ dispatch, getState }: ApiMiddlewareArgs) =>
   (next: any) =>
@@ -77,7 +96,7 @@ const api =
       store?.login?.data?.access_token ||
       store?.register?.data?.data?.token;
 
-    const baseURL = 'https://ebnconnect.com/api/v1/';
+    const baseURL = 'https://ebnconnect.com/api/v1';
 
     // console.log('[API] baseURL:', baseURL);
 
@@ -102,10 +121,19 @@ const api =
       timeout: 30000,
       baseURL,
     };
+
     try {
       const response = await axios.request(requestConfig);
       const responseData = response?.data;
-      // console.log(url + ' Response=>>\n', response);
+
+      console.log(getApiLogLabel(url), {
+        request: getApiRequestLogPayload(requestConfig),
+        response: {
+          status: response?.status,
+          data: responseData,
+        },
+      });
+
       // Check for API-specific failure even on 200 status
       if (responseData?.success === false || responseData?.status === 'error') {
         const apiError = getApiErrorMessage(responseData);
@@ -131,7 +159,14 @@ const api =
 
       if (onSuccess) dispatch({ type: onSuccess, payload: responseData });
     } catch (error: any) {
-      console.log(url, '[error]', error?.response || error);
+      console.log(getApiLogLabel(url), {
+        request: getApiRequestLogPayload(requestConfig),
+        error: {
+          status: error?.response?.status,
+          data: error?.response?.data,
+          message: error?.message,
+        },
+      });
       const statusCode = error?.response?.status;
       const responseData = error?.response?.data;
 

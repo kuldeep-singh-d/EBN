@@ -9,8 +9,8 @@ import {
   RefreshControlProps,
 } from 'react-native';
 import { images } from '@assets/images';
-import { Svgs } from '@assets/svgs';
 import React, { ReactElement, ReactNode } from 'react';
+import { ArrowLeft } from 'lucide-react-native';
 import { useDeviceDimensions } from '@hooks';
 import { KeyboardAvoider } from '@components';
 import { useNavigation } from '@react-navigation/native';
@@ -52,7 +52,7 @@ export const AuthorisedScreen = ({
             accessibilityRole="button"
             accessibilityLabel="Go back"
           >
-            <Svgs.AlertBackArrow
+            <ArrowLeft
               width={styles.backIcon.width}
               height={styles.backIcon.height}
             />

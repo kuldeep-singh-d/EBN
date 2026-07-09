@@ -1,18 +1,17 @@
-import type { ComponentType } from 'react';
 import type { ImageSourcePropType } from 'react-native';
-import type { SvgProps } from 'react-native-svg';
+import type { LucideIcon } from 'lucide-react-native';
 
 export type HomeSlip = {
   id: string;
   label: string;
   value: string;
-  icon: ComponentType<SvgProps>;
+  icon: LucideIcon;
 };
 
 export type HomeQuickAction = {
   id: string;
   label: string;
-  icon: ComponentType<SvgProps>;
+  icon: LucideIcon;
 };
 
 export type HomeStat = {
@@ -44,11 +43,15 @@ export interface HomeData {
   nextMeeting: {
     title: string;
     date: string;
+    time: string;
+    venue: string;
+    address: string;
     type: string;
     tyfcb: string;
     speakers: string;
     visitors: string;
     linkLabel: string;
+    canScanQr: boolean;
   };
   slips: HomeSlip[];
   quickActions: HomeQuickAction[];
