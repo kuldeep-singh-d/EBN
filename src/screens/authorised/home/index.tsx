@@ -3,6 +3,7 @@ import useHome from './useHome';
 import { QrCode } from 'lucide-react-native';
 import { AppContainer, AppText } from '@components';
 import { Image, Pressable, RefreshControl, View } from 'react-native';
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
 export const Home = () => {
   const { styles, states, handlers } = useHome();
@@ -24,20 +25,48 @@ export const Home = () => {
     >
       <View style={styles.container}>
         <View style={styles.memberCard}>
+          <Svg
+            // width="100%"
+            // height="100%"
+            pointerEvents="none"
+            style={styles.memberGradient}
+          >
+            <Defs>
+              <LinearGradient
+                id="profileCardGradient"
+                x1="0"
+                y1="0"
+                x2="1"
+                y2="1"
+              >
+                <Stop offset="0" stopColor={styles.memberGradientStart.color} />
+                <Stop offset="1" stopColor={styles.memberGradientEnd.color} />
+              </LinearGradient>
+            </Defs>
+            <Rect
+              x="0"
+              y="0"
+              width="100%"
+              height="100%"
+              fill="url(#profileCardGradient)"
+            />
+          </Svg>
           <Image source={member.avatar} style={styles.avatar} />
           <View style={styles.memberInfo}>
             <AppText medium label={member.name} style={styles.memberName} />
             <AppText label={member.company} style={styles.memberText} />
-            <AppText label={member.status} style={styles.memberText} />
             <AppText
               label={`Due Date: ${member.dueDate}`}
               style={styles.memberText}
             />
           </View>
-          <AppText label="›" style={styles.chevron} />
+          <View style={styles.statusPill}>
+            <AppText semibold label={member.status} style={styles.statusText} />
+          </View>
+          {/* <AppText label="›" style={styles.chevron} /> */}
         </View>
 
-        <View style={styles.card}>
+        <View style={[styles.card, styles.meetingCard]}>
           {/* <View style={styles.corner} /> */}
           <View style={styles.cardHeader}>
             <AppText
@@ -161,11 +190,13 @@ export const Home = () => {
                     pressed && styles.quickActionItemPressed,
                   ]}
                 >
-                  <Icon
-                    width={styles.quickActionIcon.width}
-                    height={styles.quickActionIcon.height}
-                    color={styles.quickActionIcon.color}
-                  />
+                  <View style={styles.quickActionIconShell}>
+                    <Icon
+                      width={styles.quickActionIcon.width}
+                      height={styles.quickActionIcon.height}
+                      color={styles.quickActionIcon.color}
+                    />
+                  </View>
                   <AppText
                     medium
                     centered

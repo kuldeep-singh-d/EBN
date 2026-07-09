@@ -64,7 +64,7 @@ const Navigation = () => {
       <StatusBar
         barStyle={isPrimaryStatusBar ? 'light-content' : 'dark-content'}
         backgroundColor={
-          isPrimaryStatusBar ? theme.colors.primary : appColors.light.white
+          isPrimaryStatusBar ? theme.colors.primary : appColors.light.background
         }
       />
       <NavigationContainer

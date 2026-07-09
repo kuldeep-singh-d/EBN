@@ -14,6 +14,9 @@ export type Theme = {
     border: Color;
     brandRed: Color;
     primary: Color;
+    primaryDark: Color;
+    primaryBorder: Color;
+    primarySurface: Color;
     overlay: Color;
     secondary: Color;
     toastWarn: Color;
@@ -21,6 +24,8 @@ export type Theme = {
     background: Color;
     toastSuccess: Color;
     notification: Color;
+    whiteMuted: Color;
+    whiteSubtle: Color;
   };
 };
 declare module '@react-navigation/native' {

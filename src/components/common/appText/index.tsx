@@ -33,13 +33,13 @@ const AppText = ({
 
   const textStyle: StyleProp<TextStyle> = [
     styles.label,
+    { color: colors.text },
+    style,
+    color && { color },
     bold && { fontFamily: fonts.bold },
     medium && { fontFamily: fonts.medium },
     semibold && { fontFamily: fonts.semibold },
-
     centered && { textAlign: 'center' },
-    color ? { color } : { color: colors.text },
-    style,
   ];
 
   return (

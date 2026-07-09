@@ -28,7 +28,7 @@ const useStyles = () => {
     },
     label: {
       color: colors.white,
-      fontSize: moderateHeight(2),
+      fontSize: moderateHeight(1.7),
     },
     container: {
       borderColor: colors.secondary,

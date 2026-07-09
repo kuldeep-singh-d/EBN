@@ -15,41 +15,80 @@ const useStyles = () => {
     },
     container: {
       flexGrow: 1,
+      paddingTop: moderateHeight(1.15),
       backgroundColor: colors.background,
-      paddingBottom: moderateHeight(1.2),
+      paddingBottom: moderateHeight(1.4),
     },
     memberCard: {
+      overflow: 'hidden',
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: colors.white,
-      // paddingTop: moderateHeight(1.8),
-      paddingBottom: moderateHeight(1.5),
-      paddingHorizontal: moderateWidth(5),
+      backgroundColor: colors.primaryDark,
+      borderRadius: moderateHeight(1.8),
+      paddingVertical: moderateHeight(1.45),
+      paddingHorizontal: moderateWidth(4.4),
+      marginHorizontal: moderateWidth(4.2),
+
+      elevation: 3,
+      shadowRadius: 5,
+      shadowOpacity: 0.16,
+      shadowColor: colors.black,
+      shadowOffset: { width: 0, height: 2 },
+    },
+    memberGradient: {
+      ...StyleSheet.absoluteFill,
+    },
+    memberGradientStart: {
+      color: colors.primary,
+    },
+    memberGradientEnd: {
+      color: colors.primaryDark,
     },
     avatar: {
-      borderWidth: 1,
+      zIndex: 1,
+      borderWidth: 2,
       width: moderateWidth(13.5),
       height: moderateWidth(13.5),
       borderRadius: moderateWidth(6.75),
-      borderColor: colors.background,
+      borderColor: colors.white,
     },
     memberInfo: {
       flex: 1,
+      zIndex: 1,
       marginLeft: moderateWidth(3.6),
+      paddingRight: moderateWidth(14),
     },
     memberName: {
-      color: colors.primary,
+      color: colors.white,
       fontSize: moderateHeight(2.1),
       lineHeight: moderateHeight(2.55),
       textTransform: 'capitalize',
     },
     memberText: {
-      color: colors.gray,
+      color: colors.whiteMuted,
       fontSize: moderateHeight(1.48),
       lineHeight: moderateHeight(1.95),
     },
+    statusPill: {
+      top: moderateHeight(1.5),
+      right: moderateWidth(3.2),
+      zIndex: 2,
+      position: 'absolute',
+      borderRadius: moderateWidth(5),
+      paddingVertical: moderateHeight(0.36),
+      paddingHorizontal: moderateWidth(2.8),
+      backgroundColor: colors.whiteSubtle,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: colors.whiteMuted,
+    },
+    statusText: {
+      color: colors.white,
+      fontSize: moderateHeight(1.08),
+      lineHeight: moderateHeight(1.35),
+      textTransform: 'capitalize',
+    },
     chevron: {
-      color: colors.primary,
+      color: colors.white,
       fontSize: moderateHeight(3.1),
       lineHeight: moderateHeight(3),
       marginLeft: moderateWidth(2),
@@ -57,17 +96,23 @@ const useStyles = () => {
     card: {
       overflow: 'hidden',
       backgroundColor: colors.white,
-      marginTop: moderateHeight(1.25),
-      borderRadius: moderateHeight(1.45),
-      paddingHorizontal: moderateWidth(3.4),
+      marginTop: moderateHeight(1.35),
+      borderRadius: moderateHeight(1.8),
+      paddingHorizontal: moderateWidth(3.8),
       marginHorizontal: moderateWidth(4.2),
-      paddingVertical: moderateHeight(1.25),
+      paddingVertical: moderateHeight(1.45),
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: colors.border,
 
-      elevation: 3,
-      shadowRadius: 3,
-      shadowOpacity: 0.16,
+      elevation: 2,
+      shadowRadius: 4,
+      shadowOpacity: 0.1,
       shadowColor: colors.black,
       shadowOffset: { width: 0, height: 2 },
+    },
+    meetingCard: {
+      backgroundColor: colors.primarySurface,
+      borderColor: colors.primaryBorder,
     },
     corner: {
       position: 'absolute',
@@ -87,11 +132,11 @@ const useStyles = () => {
     },
     cardTitle: {
       letterSpacing: 0,
-      color: colors.gray,
-      fontSize: moderateHeight(1.8),
+      color: colors.primaryDark,
+      fontSize: moderateHeight(1.55),
     },
     meetingDate: {
-      color: colors.primary,
+      color: colors.primaryDark,
       fontSize: moderateHeight(2.05),
       lineHeight: moderateHeight(2.55),
       marginTop: moderateHeight(1),
@@ -132,7 +177,7 @@ const useStyles = () => {
       minWidth: moderateWidth(15),
     },
     metricValue: {
-      color: colors.gray,
+      color: colors.primaryDark,
       fontSize: moderateHeight(1.35),
     },
     visitorMetric: {
@@ -199,7 +244,7 @@ const useStyles = () => {
     slipIcon: {
       width: moderateWidth(5.3),
       height: moderateWidth(5.3),
-      color: colors.text,
+      color: colors.primary,
     },
     slipLabel: {
       flex: 1,
@@ -226,9 +271,9 @@ const useStyles = () => {
       marginLeft: moderateWidth(1.2),
     },
     quickActionCard: {
-      paddingTop: moderateHeight(2.5),
-      paddingHorizontal: moderateWidth(1),
-      paddingBottom: moderateHeight(0.15),
+      paddingTop: moderateHeight(1.6),
+      paddingHorizontal: moderateWidth(1.2),
+      paddingBottom: moderateHeight(0.25),
     },
     quickActionsGrid: {
       flexDirection: 'row',
@@ -237,7 +282,7 @@ const useStyles = () => {
     },
     quickActionItem: {
       width: '33.333%',
-      minHeight: moderateHeight(8.4),
+      minHeight: moderateHeight(9.2),
       alignItems: 'center',
       justifyContent: 'flex-start',
       paddingHorizontal: moderateWidth(0.8),
@@ -246,9 +291,19 @@ const useStyles = () => {
     quickActionItemPressed: {
       opacity: 0.72,
     },
+    quickActionIconShell: {
+      width: moderateWidth(10.2),
+      height: moderateWidth(10.2),
+      borderRadius: moderateWidth(5.1),
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.primarySurface,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: colors.primaryBorder,
+    },
     quickActionIcon: {
-      width: moderateWidth(7.4),
-      height: moderateWidth(7.4),
+      width: moderateWidth(5.8),
+      height: moderateWidth(5.8),
       color: colors.primary,
     },
     quickActionLabel: {
@@ -361,7 +416,7 @@ const useStyles = () => {
       backgroundColor: colors.border,
     },
     trafficScoreText: {
-      color: colors.black,
+      color: colors.primaryDark,
       fontSize: moderateHeight(1.6),
     },
     trafficFooter: {

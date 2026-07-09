@@ -12,13 +12,7 @@ import {
   RefreshControlProps,
 } from 'react-native';
 import { images } from '@assets/images';
-import {
-  ArrowLeft,
-  Bell,
-  Menu,
-  X,
-  type LucideIcon,
-} from 'lucide-react-native';
+import { ArrowLeft, Bell, Menu, X, type LucideIcon } from 'lucide-react-native';
 import { routes } from '@navigation/routes';
 import { useDeviceDimensions } from '@hooks/index';
 import { AppText, KeyboardAvoider, Loader } from '@components';
@@ -388,7 +382,7 @@ const useStyles = () => {
       flexDirection: 'row',
       alignItems: 'center',
       minHeight: moderateHeight(5.4),
-      backgroundColor: colors.white,
+      backgroundColor: colors.background,
       justifyContent: 'space-between',
       paddingVertical: moderateHeight(0.65),
       paddingHorizontal: moderateWidth(5),
