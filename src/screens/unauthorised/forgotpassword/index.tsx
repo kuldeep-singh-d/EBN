@@ -20,7 +20,7 @@ export const ForgotPassword = () => {
           <Image
             resizeMode="contain"
             style={styles.logo}
-            source={images.ebnLogo}
+            source={images.EBNTAGLINE}
           />
         </View>
 
@@ -54,6 +54,7 @@ export const ForgotPassword = () => {
           <View style={styles.form}>
             <AppInput
               editable={!loader}
+              gradientBorder
               placeholder="Email"
               value={states.email}
               returnKeyType="done"
@@ -79,8 +80,8 @@ export const ForgotPassword = () => {
 
             <AppButton
               loader={loader}
-              gradient={false}
               disabled={loader}
+              topMargin={2.6}
               style={styles.button}
               title="Send Reset Link"
               onPress={handlers.handleSubmit}

@@ -32,12 +32,12 @@ const useStyles = () => {
     },
     gradientBorder: {
       overflow: 'hidden',
-      borderRadius: moderateWidth(2.7),
+      borderRadius: moderateWidth(2.5),
     },
     gradientInput: {
       borderWidth: 0,
       margin: moderateWidth(0.45),
-      borderRadius: moderateWidth(2.25),
+      borderRadius: moderateWidth(2.5),
     },
     leftIcon: {
       alignItems: 'center',

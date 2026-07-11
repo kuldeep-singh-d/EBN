@@ -66,6 +66,8 @@ const AppButton = ({
         <Svg
           width="100%"
           height="100%"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
           pointerEvents="none"
           style={styles.gradient}
         >
@@ -75,7 +77,13 @@ const AppButton = ({
               <Stop offset="1" stopColor={String(colors.primaryDark)} />
             </LinearGradient>
           </Defs>
-          <Rect width="100%" height="100%" fill="url(#buttonGradient)" />
+          <Rect
+            x="0"
+            y="0"
+            width="100"
+            height="100"
+            fill="url(#buttonGradient)"
+          />
         </Svg>
       ) : null}
 

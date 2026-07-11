@@ -14,13 +14,14 @@ export const Login = () => {
           <Image
             style={styles.logo}
             resizeMode="contain"
-            source={images.ebnLogo}
+            source={images.EBNTAGLINE}
           />
         </View>
 
         <View style={styles.form}>
           <AppInput
             value={states.email}
+            gradientBorder
             returnKeyType="next"
             autoComplete="email"
             style={styles.input}
@@ -36,6 +37,7 @@ export const Login = () => {
 
           <AppInput
             isPassword
+            gradientBorder
             returnKeyType="done"
             style={styles.input}
             placeholder="Password"
@@ -54,7 +56,7 @@ export const Login = () => {
           <AppButton
             title="Sign In"
             loader={loader}
-            gradient={false}
+            topMargin={2.4}
             style={styles.button}
             onPress={handlers.handleLogin}
             labelStyle={styles.buttonLabel}

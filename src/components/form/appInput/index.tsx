@@ -9,9 +9,6 @@ import { Eye, EyeOff } from 'lucide-react-native';
 import { useTheme } from '@react-navigation/native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
-const GRADIENT_END = '#3AC34B';
-const GRADIENT_START = '#0BB2C3';
-
 const AppInput = ({
   value,
   style,
@@ -125,8 +122,8 @@ const AppInput = ({
           >
             <Defs>
               <LinearGradient id="inputGradient" x1="0" y1="0" x2="1" y2="0">
-                <Stop offset="0" stopColor={GRADIENT_START} />
-                <Stop offset="1" stopColor={GRADIENT_END} />
+                <Stop offset="0" stopColor={String(colors.primary)} />
+                <Stop offset="1" stopColor={String(colors.primaryDark)} />
               </LinearGradient>
             </Defs>
             <Rect width="100%" height="100%" fill="url(#inputGradient)" />
