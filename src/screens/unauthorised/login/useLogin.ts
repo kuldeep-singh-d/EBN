@@ -24,11 +24,11 @@ const useLogin = () => {
   const loginError = useSelector(state => state.login?.error);
 
   const [email, setEmail] = useState<LoginCredentials['email']>(
-    'shaileshprajapati966@gmail.com',
+    'anastacio86@example.net',
   );
   const [emailError, setEmailError] = useState('');
   const [password, setPassword] =
-    useState<LoginCredentials['password']>('P@ssw0rd');
+    useState<LoginCredentials['password']>('password');
   const [passwordError, setPasswordError] = useState('');
 
   useEffect(() => {
