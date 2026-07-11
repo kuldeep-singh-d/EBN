@@ -1,9 +1,15 @@
 import React from 'react';
 import { Image, Pressable, ScrollView, TextInput, View } from 'react-native';
 
-import { AppContainer, AppText } from '@components';
+import { AppButton, AppContainer, AppText } from '@components';
 import useMembers from './useMembers';
-import { ChevronDown, Search } from 'lucide-react-native';
+import {
+  BriefcaseBusiness,
+  Building2,
+  ChevronDown,
+  ChevronRight,
+  Search,
+} from 'lucide-react-native';
 import type { MemberProfile, MemberSearchCriteria } from './types';
 
 type FieldConfig = {
@@ -50,13 +56,42 @@ export const Members = () => {
         pressed && styles.memberCardPressed,
       ]}
     >
-      <Image source={member.avatar} style={styles.avatar} />
+      <View style={styles.avatarShell}>
+        <Image source={member.avatar} style={styles.avatar} />
+      </View>
       <View style={styles.memberInfo}>
         <AppText semibold label={member.name} style={styles.memberName} />
-        <AppText label={member.company} style={styles.memberMeta} />
-        <AppText label={member.specialty} style={styles.memberMeta} />
+        <View style={styles.memberMetaRow}>
+          <Building2
+            width={styles.memberMetaIcon.width}
+            height={styles.memberMetaIcon.height}
+            color={styles.memberMetaIcon.color}
+          />
+          <AppText
+            numberOfLines={1}
+            label={member.company}
+            style={styles.memberMeta}
+          />
+        </View>
+        <View style={styles.memberSpecialtyPill}>
+          <BriefcaseBusiness
+            width={styles.specialtyIcon.width}
+            height={styles.specialtyIcon.height}
+            color={styles.specialtyIcon.color}
+          />
+          <AppText
+            medium
+            numberOfLines={1}
+            label={member.specialty}
+            style={styles.memberSpecialty}
+          />
+        </View>
       </View>
-      <AppText label="›" style={styles.memberChevron} />
+      <ChevronRight
+        width={styles.memberChevron.width}
+        height={styles.memberChevron.height}
+        color={styles.memberChevron.color}
+      />
     </Pressable>
   );
 
@@ -82,7 +117,7 @@ export const Members = () => {
                 accessibilityRole="tab"
                 accessibilityState={{ selected: isActive }}
                 onPress={() => handlers.setActiveTab(tab.key)}
-                style={styles.tab}
+                style={[styles.tab, isActive && styles.activeTab]}
               >
                 <AppText
                   semibold={isActive}
@@ -90,7 +125,6 @@ export const Members = () => {
                   label={tab.label}
                   style={[styles.tabText, isActive && styles.activeTabText]}
                 />
-                {isActive ? <View style={styles.activeTabLine} /> : null}
               </Pressable>
             );
           })}
@@ -99,20 +133,31 @@ export const Members = () => {
         {activeTab === 'chapterRoster' ? (
           <View style={styles.rosterContainer}>
             <View style={styles.searchPanel}>
-              <TextInput
-                value={states.rosterQuery}
-                placeholder="Search By Name, Speciality..."
-                placeholderTextColor={styles.placeholder.color}
-                cursorColor={styles.inputText.color}
-                selectionColor={styles.inputText.color}
-                onChangeText={handlers.setRosterQuery}
-                style={[styles.searchInput, styles.inputText]}
-              />
-              <View pointerEvents="none" style={styles.searchIconWrap}>
+              <View style={styles.rosterSummary}>
+                <AppText
+                  semibold
+                  label="Chapter Roster"
+                  style={styles.rosterTitle}
+                />
+                <AppText
+                  label={`${states.filteredMembers.length} members`}
+                  style={styles.rosterCount}
+                />
+              </View>
+              <View style={styles.searchBox}>
                 <Search
                   width={styles.searchIcon.width}
                   height={styles.searchIcon.height}
                   color={styles.searchIcon.color}
+                />
+                <TextInput
+                  value={states.rosterQuery}
+                  placeholder="Search by name, speciality..."
+                  placeholderTextColor={styles.placeholder.color}
+                  cursorColor={styles.inputText.color}
+                  selectionColor={styles.inputText.color}
+                  onChangeText={handlers.setRosterQuery}
+                  style={[styles.searchInput, styles.inputText]}
                 />
               </View>
             </View>
@@ -121,7 +166,23 @@ export const Members = () => {
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.memberList}
             >
-              {states.filteredMembers.map(renderMember)}
+              {states.filteredMembers.length ? (
+                states.filteredMembers.map(renderMember)
+              ) : (
+                <View style={styles.emptyState}>
+                  <AppText
+                    semibold
+                    centered
+                    label="No members found"
+                    style={styles.emptyTitle}
+                  />
+                  <AppText
+                    centered
+                    label="Try another name, company, or speciality."
+                    style={styles.emptyText}
+                  />
+                </View>
+              )}
             </ScrollView>
           </View>
         ) : (
@@ -190,22 +251,14 @@ export const Members = () => {
               </View>
             </View>
 
-            <Pressable
-              accessibilityRole="button"
+            <AppButton
+              title="Search"
+              topMargin={0.6}
               disabled={!states.canSearch}
               onPress={handlers.onSearchPress}
-              style={[
-                styles.searchButton,
-                !states.canSearch && styles.searchButtonDisabled,
-              ]}
-            >
-              <AppText
-                semibold
-                centered
-                label="Search"
-                style={styles.searchButtonText}
-              />
-            </Pressable>
+              style={styles.searchButton}
+              labelStyle={styles.searchButtonText}
+            />
           </ScrollView>
         )}
       </View>
