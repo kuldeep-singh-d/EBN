@@ -21,10 +21,19 @@ import { AppDropdownProps, DropdownItem } from './types';
 const AppDropdown = ({
   title = '',
   error = '',
+  style,
+  disabled = false,
+  loading = false,
+  wrapperStyle,
+  labelStyle,
+  emptyLabel = 'No items found',
+  leftIcon,
+  rightElement,
   itemList,
   selectedValues = [],
   selectedValue = null,
   placeholder = 'Select',
+  placeholderStyle,
   multiSelection = false,
   canClear = false,
   isSearching = false,
@@ -51,6 +60,10 @@ const AppDropdown = ({
 
   // ── Open / Close helpers ──
   const openModal = useCallback(() => {
+    if (disabled || loading) {
+      return;
+    }
+
     setIsOpen(true);
     setSearchQuery('');
     Animated.timing(fadeAnim, {
@@ -58,7 +71,7 @@ const AppDropdown = ({
       duration: 200,
       useNativeDriver: true,
     }).start();
-  }, [fadeAnim]);
+  }, [disabled, fadeAnim, loading]);
 
   const closeModal = useCallback(() => {
     Animated.timing(fadeAnim, {
@@ -130,7 +143,6 @@ const AppDropdown = ({
         <Pressable
           style={styles.itemRow}
           onPress={() => {
-            console.log('\n ~ AppDropdown ~ item:', item);
             return multiSelection
               ? handleMultiToggle(item)
               : handleSingleSelect(item);
@@ -171,7 +183,7 @@ const AppDropdown = ({
             medium
             label={placeholder}
             color={colors.gray}
-            style={styles.placeholderText}
+            style={[styles.placeholderText, placeholderStyle]}
           />
         );
       }
@@ -207,7 +219,11 @@ const AppDropdown = ({
     return (
       <AppText
         medium
-        style={styles.selectedText}
+        numberOfLines={1}
+        style={[
+          styles.selectedText,
+          selectedValue ? labelStyle : placeholderStyle,
+        ]}
         color={selectedValue ? colors.text : colors.gray}
         label={selectedValue ? selectedValue.label : placeholder}
       />
@@ -215,12 +231,25 @@ const AppDropdown = ({
   };
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper, wrapperStyle]}>
       {title !== '' && <AppText medium label={title} style={styles.title} />}
 
-      <Pressable style={styles.inputWrapper} onPress={openModal}>
+      <Pressable
+        disabled={disabled || loading}
+        style={[
+          styles.inputWrapper,
+          disabled && styles.disabledInputWrapper,
+          style,
+        ]}
+        onPress={openModal}
+        accessibilityRole="button"
+        accessibilityState={{ disabled: disabled || loading }}
+      >
+        {leftIcon ? <View style={styles.leftIcon}>{leftIcon}</View> : null}
         {renderTriggerContent()}
-        {!multiSelection && selectedValue && canClear ? (
+        {loading ? (
+          <ActivityIndicator size="small" color={colors.primary as string} />
+        ) : !multiSelection && selectedValue && canClear ? (
           <Pressable
             hitSlop={8}
             onPress={e => {
@@ -230,6 +259,8 @@ const AppDropdown = ({
           >
             <X height={18} width={18} />
           </Pressable>
+        ) : rightElement ? (
+          <View style={styles.rightElement}>{rightElement}</View>
         ) : (
           <ChevronDown height={20} width={20} />
         )}
@@ -300,16 +331,13 @@ const AppDropdown = ({
                 contentContainerStyle={styles.listContentContainer}
                 ListEmptyComponent={
                   <View style={styles.emptyContainer}>
-                    {isSearching ? (
+                    {isSearching || loading ? (
                       <ActivityIndicator
                         size="small"
                         color={colors.primary as string}
                       />
                     ) : (
-                      <AppText
-                        label={'No items found'}
-                        style={styles.emptyText}
-                      />
+                      <AppText label={emptyLabel} style={styles.emptyText} />
                     )}
                   </View>
                 }

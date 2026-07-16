@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { View, Pressable } from 'react-native';
+import { Pressable, TextStyle, View, ViewStyle } from 'react-native';
 
 import moment from 'moment';
 import useStyles from './styles';
@@ -12,6 +12,11 @@ interface AppDatePickerProps {
   value?: Date;
   title?: string;
   error?: string;
+  style?: ViewStyle;
+  wrapperStyle?: ViewStyle;
+  leftIcon?: React.ReactNode;
+  rightElement?: React.ReactNode;
+  displayStyle?: TextStyle;
   minimumDate?: Date;
   maximumDate?: Date;
   isDisabled?: boolean;
@@ -26,6 +31,11 @@ const AppDatePicker = ({
   value,
   title = '',
   error = '',
+  style,
+  wrapperStyle,
+  leftIcon,
+  rightElement,
+  displayStyle,
   minimumDate,
   maximumDate,
   isDisabled,
@@ -49,13 +59,25 @@ const AppDatePicker = ({
   };
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper, wrapperStyle]}>
       {title && <AppText medium label={title} style={styles.title} />}
 
-      <Pressable style={styles.inputWrapper} onPress={() => setOpen(true)}>
+      <Pressable
+        disabled={isDisabled}
+        style={[
+          styles.inputWrapper,
+          isDisabled && styles.disabledInputWrapper,
+          style,
+        ]}
+        onPress={() => setOpen(true)}
+        accessibilityRole="button"
+        accessibilityState={{ disabled: Boolean(isDisabled) }}
+      >
+        {leftIcon ? <View style={styles.leftIcon}>{leftIcon}</View> : null}
         <AppText
           medium
-          style={styles.displayValue}
+          numberOfLines={1}
+          style={[styles.displayValue, displayStyle]}
           label={getDisplayValue()}
           color={value ? colors.text : colors.gray}
         />
@@ -64,7 +86,9 @@ const AppDatePicker = ({
           <Pressable onPress={handleClearInput}>
             <X height={18} width={18} />
           </Pressable>
-        ) : (
+        ) : rightElement ? (
+          rightElement
+        ) : leftIcon ? null : (
           <Calendar />
         )}
       </Pressable>

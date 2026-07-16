@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, ReactNode, SetStateAction } from 'react';
+import { TextStyle, ViewStyle } from 'react-native';
 
 export interface DropdownItem {
   label: string;
@@ -8,8 +9,17 @@ export interface DropdownItem {
 export interface AppDropdownProps {
   title?: string;
   error?: string;
+  style?: ViewStyle;
+  disabled?: boolean;
+  loading?: boolean;
   canClear?: boolean;
+  wrapperStyle?: ViewStyle;
+  labelStyle?: TextStyle;
+  emptyLabel?: string;
+  leftIcon?: ReactNode;
+  rightElement?: ReactNode;
   placeholder?: string;
+  placeholderStyle?: TextStyle;
   itemList: DropdownItem[];
   multiSelection?: boolean;
   isSearching?: boolean;
@@ -20,4 +30,3 @@ export interface AppDropdownProps {
   onSelectItem?: (item: DropdownItem | null) => void;
   onSearchChange?: (query: string) => void;
 }
-

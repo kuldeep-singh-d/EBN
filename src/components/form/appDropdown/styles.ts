@@ -29,6 +29,19 @@ const useStyles = (fadeAnim: Animated.Value) => {
       borderColor: colors.border as string,
       paddingVertical: moderateHeight(0.5),
     },
+    disabledInputWrapper: {
+      opacity: 0.65,
+    },
+    leftIcon: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: moderateWidth(3),
+    },
+    rightElement: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: moderateWidth(2),
+    },
     placeholderText: {
       flex: 1,
     },

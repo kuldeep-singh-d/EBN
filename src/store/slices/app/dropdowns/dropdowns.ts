@@ -40,6 +40,7 @@ const slice = createSlice({
       requestReducers.success(state.subCategories, action),
     subCategoriesFailed: (state, action) =>
       requestReducers.failed(state.subCategories, action),
+    subCategoriesReset: state => requestReducers.reset(state.subCategories),
   },
 });
 
@@ -90,3 +91,5 @@ export const getSubCategoriesDropdown = (categoryId: string | number) =>
     onFailed: actions.subCategoriesFailed.type,
     onSuccess: actions.subCategoriesSuccess.type,
   });
+
+export const resetSubCategoriesDropdown = actions.subCategoriesReset;

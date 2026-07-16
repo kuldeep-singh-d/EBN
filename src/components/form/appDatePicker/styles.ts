@@ -26,6 +26,14 @@ const useStyles = () => {
       borderRadius: moderateWidth(2.5),
       paddingHorizontal: moderateWidth(4),
     },
+    disabledInputWrapper: {
+      opacity: 0.65,
+    },
+    leftIcon: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: moderateWidth(3),
+    },
     displayValue: {
       flex: 1,
     },
