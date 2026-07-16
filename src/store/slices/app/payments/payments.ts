@@ -4,28 +4,59 @@ import { apiCallBegan } from '@store/apiActions';
 import { apiRoutes, methods } from '@store/apiRoutes';
 import { createRequestState, requestReducers } from '../../createRequestSlice';
 
+const ensureRequestState = (state: any, key: string) => {
+  if (!state[key]) {
+    state[key] = createRequestState();
+  }
+
+  return state[key];
+};
+
 const slice = createSlice({
   name: 'payments',
   initialState: {
+    invoices: createRequestState(),
     createOrder: createRequestState(),
     verify: createRequestState(),
   },
   reducers: {
-    createOrderRequested: state => requestReducers.requested(state.createOrder),
+    invoicesRequested: state =>
+      requestReducers.requested(ensureRequestState(state, 'invoices')),
+    invoicesSuccess: (state, action) =>
+      requestReducers.success(ensureRequestState(state, 'invoices'), action),
+    invoicesFailed: (state, action) =>
+      requestReducers.failed(ensureRequestState(state, 'invoices'), action),
+    invoicesReset: state =>
+      requestReducers.reset(ensureRequestState(state, 'invoices')),
+    createOrderRequested: state =>
+      requestReducers.requested(ensureRequestState(state, 'createOrder')),
     createOrderSuccess: (state, action) =>
-      requestReducers.success(state.createOrder, action),
+      requestReducers.success(ensureRequestState(state, 'createOrder'), action),
     createOrderFailed: (state, action) =>
-      requestReducers.failed(state.createOrder, action),
-    verifyRequested: state => requestReducers.requested(state.verify),
+      requestReducers.failed(ensureRequestState(state, 'createOrder'), action),
+    verifyRequested: state =>
+      requestReducers.requested(ensureRequestState(state, 'verify')),
     verifySuccess: (state, action) =>
-      requestReducers.success(state.verify, action),
+      requestReducers.success(ensureRequestState(state, 'verify'), action),
     verifyFailed: (state, action) =>
-      requestReducers.failed(state.verify, action),
+      requestReducers.failed(ensureRequestState(state, 'verify'), action),
   },
 });
 
 export const actions = slice.actions;
 export default slice.reducer;
+
+export const listInvoices = (params?: object) =>
+  apiCallBegan({
+    params,
+    method: methods.GET,
+    url: apiRoutes.profile.invoices,
+    onStart: actions.invoicesRequested.type,
+    onFailed: actions.invoicesFailed.type,
+    onSuccess: actions.invoicesSuccess.type,
+  });
+
+export const resetInvoices = actions.invoicesReset;
 
 export const createOrder = (data: { invoice_number: string }) =>
   apiCallBegan({

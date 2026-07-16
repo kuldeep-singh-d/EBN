@@ -65,6 +65,7 @@ export const apiRoutes = {
   profile: {
     me: '/profile/me',
     billing: '/profile/billing',
+    invoices: '/profile/invoices',
   },
   payments: {
     createOrder: '/payments/create-order',

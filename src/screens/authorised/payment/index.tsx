@@ -1,30 +1,40 @@
 import React from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
 import {
+  ActivityIndicator,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  View,
+} from 'react-native';
+import {
+  BadgeIndianRupee,
   CalendarDays,
   Check,
   Clock3,
-  Download,
-  Funnel,
+  CreditCard,
+  Hash,
+  ReceiptText,
   X,
 } from 'lucide-react-native';
 
 import { AppContainer, AppText } from '@components';
-import usePayment from './usePayment';
-import type { PaymentRecord } from './types';
+import usePayment, { getInvoiceStatus } from './usePayment';
+import type { InvoicePaymentStatus, InvoiceRecord } from './types';
 
 export const Payment = () => {
   const { styles, states, handlers } = usePayment();
   const { screenData } = states;
 
-  const getStatusStyles = (status: PaymentRecord['status']) => {
+  const getStatusStyles = (status: InvoicePaymentStatus) => {
     switch (status) {
-      case 'completed':
+      case 'success':
         return {
           shell: styles.successStatusShell,
           icon: styles.successStatusIcon,
           text: styles.successStatusText,
-          label: 'Completed',
+          label: 'Success',
         };
       case 'pending':
         return {
@@ -43,9 +53,10 @@ export const Payment = () => {
     }
   };
 
-  const renderStatusIcon = (payment: PaymentRecord) => {
-    const statusStyles = getStatusStyles(payment.status);
-    const Icon = payment.status === 'failed' ? X : Check;
+  const renderStatusIcon = (invoice: InvoiceRecord) => {
+    const status = getInvoiceStatus(invoice.payment_status);
+    const statusStyles = getStatusStyles(status);
+    const Icon = status === 'failed' ? X : Check;
 
     return (
       <View style={[styles.statusShell, statusStyles.shell]}>
@@ -58,35 +69,42 @@ export const Payment = () => {
     );
   };
 
-  const renderPayment = (payment: PaymentRecord) => {
-    const statusStyles = getStatusStyles(payment.status);
+  const renderInvoice = (invoice: InvoiceRecord) => {
+    const statusStyles = getStatusStyles(
+      getInvoiceStatus(invoice.payment_status),
+    );
 
     return (
       <Pressable
-        key={payment.id}
+        key={invoice.id}
         accessibilityRole="button"
-        onPress={() => handlers.onPaymentPress(payment.id)}
+        onPress={() => handlers.onPaymentPress(invoice)}
         style={({ pressed }) => [
           styles.paymentCard,
           pressed && styles.paymentCardPressed,
         ]}
       >
-        {renderStatusIcon(payment)}
+        {renderStatusIcon(invoice)}
         <View style={styles.paymentBody}>
           <View style={styles.paymentTopRow}>
             <AppText
               semibold
               numberOfLines={1}
-              label={payment.orderNo}
+              label={invoice.invoice_number}
               style={styles.orderNumber}
             />
             <AppText
               semibold
               numberOfLines={1}
-              label={payment.amount}
+              label={`₹${invoice.total_amount}`}
               style={styles.amountText}
             />
           </View>
+          <AppText
+            numberOfLines={2}
+            label={invoice.description || '-'}
+            style={styles.invoiceDescription}
+          />
           <View style={styles.statusRow}>
             <AppText
               semibold
@@ -101,7 +119,7 @@ export const Payment = () => {
                 height={styles.metaIcon.height}
                 color={styles.metaIcon.color}
               />
-              <AppText label={payment.date} style={styles.metaText} />
+              <AppText label={invoice.invoice_date} style={styles.metaText} />
             </View>
             <View style={styles.metaItem}>
               <Clock3
@@ -109,12 +127,32 @@ export const Payment = () => {
                 height={styles.metaIcon.height}
                 color={styles.metaIcon.color}
               />
-              <AppText label={payment.time} style={styles.metaText} />
+              <AppText label={invoice.due_date} style={styles.metaText} />
             </View>
           </View>
         </View>
       </Pressable>
     );
+  };
+
+  const handleListScroll = ({
+    nativeEvent,
+  }: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (
+      states.invoicesLoading ||
+      states.isFetchingNextPage ||
+      !states.hasNextPage
+    ) {
+      return;
+    }
+
+    const distanceFromBottom =
+      nativeEvent.contentSize.height -
+      (nativeEvent.layoutMeasurement.height + nativeEvent.contentOffset.y);
+
+    if (distanceFromBottom <= 96) {
+      handlers.fetchNextInvoices();
+    }
   };
 
   const renderHistory = () => (
@@ -142,62 +180,73 @@ export const Payment = () => {
         })}
       </View>
 
-      {states.isFilterVisible ? (
-        <View style={styles.filterCard}>
-          <View style={styles.filterArrow} />
-          {screenData.periodFilters.map(period => {
-            const isActive = states.selectedPeriod.id === period.id;
-
-            return (
-              <Pressable
-                key={period.id}
-                accessibilityRole="button"
-                onPress={() => handlers.setPeriod(period)}
-                style={({ pressed }) => [
-                  styles.filterItem,
-                  isActive && styles.activeFilterItem,
-                  pressed && styles.filterItemPressed,
-                ]}
-              >
-                <AppText
-                  medium={isActive}
-                  label={period.label}
-                  style={[
-                    styles.filterItemText,
-                    isActive && styles.activeFilterItemText,
-                  ]}
-                />
-              </Pressable>
-            );
-          })}
+      {states.isInitialLoading ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color={styles.loaderIcon.color} />
         </View>
-      ) : null}
+      ) : (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+          onScroll={handleListScroll}
+          scrollEventThrottle={16}
+          refreshControl={
+            <RefreshControl
+              refreshing={states.isRefreshing}
+              onRefresh={handlers.refreshInvoices}
+              tintColor={styles.refreshControl.color}
+              colors={[styles.refreshControl.color]}
+            />
+          }
+        >
+          {states.filteredInvoices.length ? (
+            states.filteredInvoices.map(renderInvoice)
+          ) : (
+            <View style={styles.emptyState}>
+              <AppText
+                semibold
+                centered
+                label="No Invoices"
+                style={styles.emptyTitle}
+              />
+              <AppText
+                centered
+                label="Invoices will appear here once available."
+                style={styles.emptyText}
+              />
+            </View>
+          )}
 
-      <View style={styles.summaryCard}>
-        <View>
-          <AppText
-            semibold
-            label={`${states.filteredPayments.length} transactions`}
-            style={styles.summaryTitle}
-          />
-          <AppText
-            label={states.selectedPeriod.label}
-            style={styles.summarySubtitle}
-          />
-        </View>
-      </View>
-
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContent}
-      >
-        {states.filteredPayments.map(renderPayment)}
-      </ScrollView>
+          {states.isFetchingNextPage ? (
+            <View style={styles.paginationLoader}>
+              <ActivityIndicator size="small" color={styles.loaderIcon.color} />
+            </View>
+          ) : null}
+        </ScrollView>
+      )}
     </>
   );
 
-  const renderDetail = (payment: PaymentRecord) => {
-    const statusStyles = getStatusStyles(payment.status);
+  const renderDetailRow = (
+    label: string,
+    value?: string | number | boolean | null,
+  ) => (
+    <View style={styles.customerRow}>
+      <AppText label={label} style={styles.customerLabel} />
+      <AppText
+        numberOfLines={3}
+        label={
+          typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value || '-'
+        }
+        style={styles.customerText}
+      />
+    </View>
+  );
+
+  const renderDetail = (invoice: InvoiceRecord) => {
+    const statusStyles = getStatusStyles(
+      getInvoiceStatus(invoice.payment_status),
+    );
 
     return (
       <ScrollView
@@ -215,34 +264,13 @@ export const Payment = () => {
 
           <View style={styles.detailTopRow}>
             <View style={styles.detailOrderBlock}>
-              <AppText label="Order No" style={styles.detailLabel} />
+              <AppText label="Invoice Number" style={styles.detailLabel} />
               <AppText
                 semibold
-                label={payment.orderNo}
+                label={invoice.invoice_number}
                 style={styles.detailValue}
               />
             </View>
-
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => handlers.onInvoicePress(payment)}
-              style={({ pressed }) => [
-                styles.invoiceButton,
-                pressed && styles.invoiceButtonPressed,
-              ]}
-            >
-              <AppText semibold label="Invoice" style={styles.invoiceText} />
-              <Download
-                width={styles.invoiceIcon.width}
-                height={styles.invoiceIcon.height}
-                color={styles.invoiceIcon.color}
-              />
-            </Pressable>
-          </View>
-
-          <View style={styles.detailOrderBlock}>
-            <AppText label="Invoice No" style={styles.detailLabel} />
-            <AppText label={payment.invoiceNo} style={styles.detailValue} />
           </View>
 
           <View style={styles.detailMetaRow}>
@@ -252,7 +280,7 @@ export const Payment = () => {
                 height={styles.metaIcon.height}
                 color={styles.metaIcon.color}
               />
-              <AppText label={payment.date} style={styles.metaText} />
+              <AppText label={invoice.invoice_date} style={styles.metaText} />
             </View>
             <View style={styles.metaItem}>
               <Clock3
@@ -260,7 +288,7 @@ export const Payment = () => {
                 height={styles.metaIcon.height}
                 color={styles.metaIcon.color}
               />
-              <AppText label={payment.time} style={styles.metaText} />
+              <AppText label={invoice.due_date} style={styles.metaText} />
             </View>
             <AppText
               semibold
@@ -271,76 +299,97 @@ export const Payment = () => {
         </View>
 
         <View style={styles.feeCard}>
-          <AppText label={payment.itemName} style={styles.feeTitle} />
-          <AppText semibold label={payment.subtotal} style={styles.feeAmount} />
+          <AppText
+            numberOfLines={2}
+            label={invoice.description}
+            style={styles.feeTitle}
+          />
+          <AppText
+            semibold
+            label={`₹${invoice.total_amount}`}
+            style={styles.feeAmount}
+          />
         </View>
 
         <View style={styles.totalCard}>
           <View style={styles.totalRow}>
-            <AppText semibold label="Subtotal" style={styles.totalLabel} />
+            <View style={styles.totalLabelRow}>
+              <BadgeIndianRupee
+                width={styles.totalIcon.width}
+                height={styles.totalIcon.height}
+                color={styles.totalIcon.color}
+              />
+              <AppText semibold label="Amount" style={styles.totalLabel} />
+            </View>
             <AppText
               semibold
-              label={payment.subtotal}
+              label={`₹${invoice.amount}`}
               style={styles.totalValueAccent}
             />
           </View>
           <View style={styles.divider} />
           <View style={styles.totalRow}>
-            <AppText label="CGST (9.00%)" style={styles.totalLabel} />
-            <AppText label={payment.cgst} style={styles.totalValue} />
+            <View style={styles.totalLabelRow}>
+              <ReceiptText
+                width={styles.totalIcon.width}
+                height={styles.totalIcon.height}
+                color={styles.totalIcon.color}
+              />
+              <AppText label="GST Amount" style={styles.totalLabel} />
+            </View>
+            <AppText
+              label={`₹${invoice.gst_amount}`}
+              style={styles.totalValue}
+            />
           </View>
           <View style={styles.totalRow}>
-            <AppText label="SGST (9.00%)" style={styles.totalLabel} />
-            <AppText label={payment.sgst} style={styles.totalValue} />
+            <View style={styles.totalLabelRow}>
+              <Hash
+                width={styles.totalIcon.width}
+                height={styles.totalIcon.height}
+                color={styles.totalIcon.color}
+              />
+              <AppText label="Penalty Amount" style={styles.totalLabel} />
+            </View>
+            <AppText
+              label={`₹${invoice.penalty_amount}`}
+              style={styles.totalValue}
+            />
           </View>
           <View style={styles.divider} />
           <View style={styles.totalRow}>
-            <AppText semibold label="Total" style={styles.totalLabel} />
+            <View style={styles.totalLabelRow}>
+              <CreditCard
+                width={styles.totalIcon.width}
+                height={styles.totalIcon.height}
+                color={styles.totalIcon.color}
+              />
+              <AppText semibold label="Total" style={styles.totalLabel} />
+            </View>
             <AppText
               semibold
-              label={payment.amount}
+              label={`₹${invoice.total_amount}`}
               style={styles.totalValueAccent}
             />
           </View>
         </View>
 
         <View style={styles.customerCard}>
-          <View style={styles.customerRow}>
-            <AppText label="Name" style={styles.customerLabel} />
-            <AppText
-              label={payment.customer.name}
-              style={styles.customerText}
-            />
-          </View>
-          <View style={styles.customerRow}>
-            <AppText label="Email" style={styles.customerLabel} />
-            <AppText
-              label={payment.customer.email}
-              style={styles.customerText}
-            />
-          </View>
-          <View style={styles.customerRow}>
-            <AppText label="Mobile" style={styles.customerLabel} />
-            <AppText
-              label={payment.customer.mobile}
-              style={styles.customerText}
-            />
-          </View>
-          <View style={styles.customerRow}>
-            <AppText label="GSTIN" style={styles.customerLabel} />
-            <AppText
-              label={payment.customer.gstin}
-              style={styles.customerText}
-            />
-          </View>
-          <View style={styles.customerRow}>
-            <AppText label="Address" style={styles.customerLabel} />
-            <AppText
-              numberOfLines={4}
-              label={payment.customer.address}
-              style={styles.customerText}
-            />
-          </View>
+          {renderDetailRow('Invoice ID', invoice.id)}
+          {renderDetailRow('Payment Mode', invoice.payment_mode)}
+          {renderDetailRow('Payment Status', invoice.payment_status)}
+          {renderDetailRow(
+            'Transaction Reference',
+            invoice.transaction_reference,
+          )}
+          {renderDetailRow(
+            'Penalty Applied',
+            Boolean(invoice.is_penalty_applied),
+          )}
+          {renderDetailRow('Show Pay Button', invoice.show_pay_button)}
+          {renderDetailRow('Created At', invoice.created_at)}
+          {renderDetailRow('Chapter', invoice.chapter?.name)}
+          {renderDetailRow('Chapter ID', invoice.chapter?.id)}
         </View>
       </ScrollView>
     );
@@ -354,40 +403,14 @@ export const Payment = () => {
       title={states.isDetailView ? screenData.detailTitle : screenData.title}
       showHeaderActions={false}
       headerIconColor={String(styles.headerIcon.color)}
-      onHeaderRightPress={handlers.toggleFilter}
       onBackPress={handlers.onBackToHistory}
       contentStyle={styles.content}
       headerStyle={styles.header}
       headerTitleStyle={styles.headerTitle}
-      rightComponent={
-        states.isDetailView ? undefined : (
-          <Pressable
-            hitSlop={12}
-            accessibilityRole="button"
-            accessibilityLabel="Filter payments"
-            onPress={handlers.toggleFilter}
-            style={({ pressed }) => [
-              styles.headerAction,
-              states.isFilterVisible && styles.activeHeaderAction,
-              pressed && styles.headerActionPressed,
-            ]}
-          >
-            <Funnel
-              width={styles.headerActionIcon.width}
-              height={styles.headerActionIcon.height}
-              color={
-                states.isFilterVisible
-                  ? styles.activeHeaderActionIcon.color
-                  : styles.headerActionIcon.color
-              }
-            />
-          </Pressable>
-        )
-      }
     >
       <View style={styles.container}>
-        {states.selectedPayment
-          ? renderDetail(states.selectedPayment)
+        {states.selectedInvoice
+          ? renderDetail(states.selectedInvoice)
           : renderHistory()}
       </View>
     </AppContainer>

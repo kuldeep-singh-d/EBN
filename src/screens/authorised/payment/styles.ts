@@ -151,6 +151,41 @@ const useStyles = () => {
       paddingBottom: moderateHeight(3),
       rowGap: moderateHeight(1.25),
     },
+    loaderContainer: {
+      flex: 1,
+      minHeight: moderateHeight(48),
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    loaderIcon: {
+      color: colors.primary,
+    },
+    refreshControl: {
+      color: colors.primary,
+    },
+    paginationLoader: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: moderateHeight(1.8),
+    },
+    emptyState: {
+      flex: 1,
+      minHeight: moderateHeight(48),
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: moderateWidth(7),
+    },
+    emptyTitle: {
+      color: colors.secondary,
+      fontSize: moderateHeight(1.9),
+      lineHeight: moderateHeight(2.45),
+    },
+    emptyText: {
+      color: colors.gray,
+      fontSize: moderateHeight(1.45),
+      lineHeight: moderateHeight(2.1),
+      marginTop: moderateHeight(0.6),
+    },
     paymentCard: {
       minHeight: moderateHeight(10.5),
       flexDirection: 'row',
@@ -214,6 +249,12 @@ const useStyles = () => {
       flex: 1,
       color: colors.secondary,
       fontSize: moderateHeight(1.5),
+    },
+    invoiceDescription: {
+      color: colors.gray,
+      fontSize: moderateHeight(1.3),
+      lineHeight: moderateHeight(1.85),
+      marginTop: moderateHeight(0.45),
     },
     amountText: {
       color: colors.primaryDark,
@@ -385,6 +426,18 @@ const useStyles = () => {
       flex: 1,
       color: colors.secondary,
       fontSize: moderateHeight(1.45),
+    },
+    totalLabelRow: {
+      flex: 1,
+      minWidth: 0,
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginRight: moderateWidth(2),
+    },
+    totalIcon: {
+      width: moderateWidth(3.8),
+      height: moderateWidth(3.8),
+      color: colors.primary,
     },
     totalValue: {
       color: colors.secondary,
