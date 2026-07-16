@@ -2,7 +2,6 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import {
   View,
   Modal,
-  Image,
   ViewStyle,
   Pressable,
   StyleProp,
@@ -11,12 +10,11 @@ import {
   BackHandler,
   RefreshControlProps,
 } from 'react-native';
-import { images } from '@assets/images';
-import { ArrowLeft, Bell, Menu, X, type LucideIcon } from 'lucide-react-native';
 import { routes } from '@navigation/routes';
 import { useDeviceDimensions } from '@hooks/index';
 import { AppText, KeyboardAvoider, Loader } from '@components';
 import { useTheme, useNavigation } from '@react-navigation/native';
+import { ArrowLeft, Bell, Menu, type LucideIcon } from 'lucide-react-native';
 
 interface AppContainerProps {
   loading?: boolean;
@@ -48,15 +46,6 @@ export type HeaderMenuItem = {
   label: string;
 };
 
-const HEADER_MENU_ITEMS: HeaderMenuItem[] = [
-  { id: 'profile', label: 'Profile' },
-  { id: 'meetingSummary', label: 'Meeting Summary' },
-  { id: 'about', label: 'About' },
-  { id: 'termsOfServices', label: 'Terms Of Services' },
-  { id: 'privacyPolicy', label: 'Privacy Policy' },
-  { id: 'logout', label: 'Logout' },
-];
-
 const AppContainer = ({
   loading,
   listing,
@@ -86,7 +75,6 @@ const AppContainer = ({
   // const queryClient = useQueryClient();
   const navigation: any = useNavigation();
   const [isRightMenuVisible, setIsRightMenuVisible] = useState(false);
-  const [isHeaderMenuVisible, setIsHeaderMenuVisible] = useState(false);
   const { moderateHeight } = useDeviceDimensions();
   const iconSize = headerIconSize ?? moderateHeight(2.55);
   const actionIconColor = String(
@@ -148,15 +136,7 @@ const AppContainer = ({
 
   const handleMenuPress = () => {
     onMenuPress?.();
-    setIsHeaderMenuVisible(true);
-  };
-
-  const handleHeaderMenuItemPress = (item: HeaderMenuItem) => {
-    setIsHeaderMenuVisible(false);
-    console.log('[Header Menu]', {
-      id: item.id,
-      label: item.label,
-    });
+    navigation.navigate(routes.app.menu);
   };
 
   return (
@@ -275,71 +255,6 @@ const AppContainer = ({
             ))}
           </View>
         </Pressable>
-      </Modal>
-
-      <Modal
-        transparent
-        animationType="fade"
-        visible={isHeaderMenuVisible}
-        onRequestClose={() => setIsHeaderMenuVisible(false)}
-      >
-        <View style={styles.headerMenuOverlay}>
-          <Pressable
-            style={styles.headerMenuBackdrop}
-            onPress={() => setIsHeaderMenuVisible(false)}
-          />
-          <View style={styles.headerMenuPanel}>
-            <View style={styles.headerMenuTop}>
-              <Image
-                resizeMode="contain"
-                source={images.headerLogo}
-                style={styles.headerMenuLogo}
-              />
-              <Pressable
-                hitSlop={12}
-                accessibilityRole="button"
-                accessibilityLabel="Close menu"
-                onPress={() => setIsHeaderMenuVisible(false)}
-                style={styles.headerMenuClose}
-              >
-                <X
-                  width={styles.headerMenuCloseIcon.width}
-                  height={styles.headerMenuCloseIcon.height}
-                  color={styles.headerMenuCloseIcon.color}
-                />
-              </Pressable>
-            </View>
-
-            <View style={styles.headerMenuDivider} />
-
-            <View style={styles.headerMenuItems}>
-              {HEADER_MENU_ITEMS.map(item => (
-                <Pressable
-                  key={item.id}
-                  accessibilityRole="button"
-                  onPress={() => handleHeaderMenuItemPress(item)}
-                  style={({ pressed }) => [
-                    styles.headerMenuItem,
-                    pressed && styles.headerMenuItemPressed,
-                  ]}
-                >
-                  <AppText
-                    centered
-                    label={item.label}
-                    style={styles.headerMenuItemText}
-                  />
-                </Pressable>
-              ))}
-            </View>
-
-            <View style={styles.headerMenuDivider} />
-            <AppText
-              centered
-              label="Version:3.26.0"
-              style={styles.headerMenuVersion}
-            />
-          </View>
-        </View>
       </Modal>
 
       {listing !== undefined ? (

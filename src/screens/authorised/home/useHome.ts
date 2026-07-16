@@ -10,17 +10,22 @@ import {
   HomeTrafficLightScoreTone,
 } from './types';
 import {
+  ArrowDownLeft,
+  ArrowUpRight,
   Award,
   BadgeIndianRupee,
+  Banknote,
   BookOpen,
   BriefcaseBusiness,
   Calendar,
+  Coins,
   GraduationCap,
   Handshake,
   Landmark,
   Lightbulb,
   Send,
   UserCheck,
+  UserPlus,
   Users,
 } from 'lucide-react-native';
 import { getDashboardData } from '@store/slices/app/dashboard/dashboard';
@@ -47,13 +52,16 @@ type DashboardNextMeeting = {
 type DashboardActivity = {
   label?: string;
   value?: string | number;
+  icon?: string;
 };
 
 type DashboardResponse = {
   data?: {
     profile?: DashboardProfile | null;
     next_meeting?: DashboardNextMeeting | null;
+    monthly_activity?: DashboardActivity[];
     activities?: DashboardActivity[];
+    time_filter?: string;
   };
 };
 
@@ -118,52 +126,23 @@ const HOME_DATA: HomeData = {
     },
     { id: 'event', label: 'Event', icon: Calendar },
     {
-      id: 'experienceFees',
-      label: 'Experience Fees',
+      id: 'meetingFees',
+      label: 'Meeting Fees',
       icon: BadgeIndianRupee,
     },
     { id: 'membership', label: 'MemberShip', icon: Award },
-    {
-      id: 'trainingTechnology',
-      label: 'Training & Technology',
-      icon: BriefcaseBusiness,
-    },
-    { id: 'cdpsDeposit', label: 'CDPS Deposit', icon: Landmark },
-    { id: 'members', label: 'Members', icon: Users },
-    { id: 'sicilianSpot', label: 'SicilianSpot', icon: Lightbulb },
+    // {
+    //   id: 'trainingTechnology',
+    //   label: 'Training & Technology',
+    //   icon: BriefcaseBusiness,
+    // },
+    // { id: 'cdpsDeposit', label: 'CDPS Deposit', icon: Landmark },
+    // { id: 'members', label: 'Members', icon: Users },
+    // { id: 'sicilianSpot', label: 'SicilianSpot', icon: Lightbulb },
   ],
   stats: {
     defaultRange: 'LIFETIME',
     ranges: ['6 MONTHS', '12 MONTHS', 'LIFETIME'],
-    rowsByRange: {
-      '6 MONTHS': [
-        { id: 'oneToOne', label: 'One-to-One', value: '21' },
-        { id: 'referralsGiven', label: 'Referrals Given', value: '12' },
-        { id: 'referralsReceived', label: 'Referrals Received', value: '10' },
-        { id: 'tyfcbGiven', label: 'TYFCB Given', value: '1432500' },
-        { id: 'revenueReceived', label: 'Revenue Received', value: '76420' },
-        { id: 'visitors', label: 'Visitors', value: '0' },
-        { id: 'ceus', label: 'CEUs', value: '0' },
-      ],
-      '12 MONTHS': [
-        { id: 'oneToOne', label: 'One-to-One', value: '76' },
-        { id: 'referralsGiven', label: 'Referrals Given', value: '35' },
-        { id: 'referralsReceived', label: 'Referrals Received', value: '33' },
-        { id: 'tyfcbGiven', label: 'TYFCB Given', value: '4256142' },
-        { id: 'revenueReceived', label: 'Revenue Received', value: '223760' },
-        { id: 'visitors', label: 'Visitors', value: '0' },
-        { id: 'ceus', label: 'CEUs', value: '0' },
-      ],
-      LIFETIME: [
-        { id: 'oneToOne', label: 'One-to-One', value: '148' },
-        { id: 'referralsGiven', label: 'Referrals Given', value: '79' },
-        { id: 'referralsReceived', label: 'Referrals Received', value: '64' },
-        { id: 'tyfcbGiven', label: 'TYFCB Given', value: '8428100' },
-        { id: 'revenueReceived', label: 'Revenue Received', value: '497500' },
-        { id: 'visitors', label: 'Visitors', value: '0' },
-        { id: 'ceus', label: 'CEUs', value: '0' },
-      ],
-    },
   },
   trafficLight: {
     title: 'EBN Member Traffic Light',
@@ -224,7 +203,7 @@ const HOME_DATA: HomeData = {
 const getMemberStatus = (renewalDate?: string) => {
   const parsedDate = moment(
     renewalDate,
-    ['D MMMM, YYYY', 'DD MMMM, YYYY'],
+    ['D MMMM, YYYY', 'DD MMMM, YYYY', 'D MMM, YYYY', 'DD MMM, YYYY'],
     true,
   );
 
@@ -235,7 +214,31 @@ const getMemberStatus = (renewalDate?: string) => {
   return parsedDate.isAfter(moment(), 'day') ? 'Active' : 'Expired';
 };
 
+const TIME_FILTER_BY_RANGE: Record<HomeStatsRange, string> = {
+  '6 MONTHS': '6_months',
+  '12 MONTHS': '12_months',
+  LIFETIME: 'lifetime',
+};
+
+const ACTIVITY_ICONS = {
+  handshake: Handshake,
+  'arrow-up-right': ArrowUpRight,
+  'arrow-down-left': ArrowDownLeft,
+  banknote: Banknote,
+  coins: Coins,
+  'user-plus': UserPlus,
+  'graduation-cap': GraduationCap,
+} as const;
+
 const SLIP_ICONS = [Handshake, Send, BookOpen, UserCheck];
+
+const getActivityIcon = (icon?: string, index = 0) => {
+  if (icon && icon in ACTIVITY_ICONS) {
+    return ACTIVITY_ICONS[icon as keyof typeof ACTIVITY_ICONS];
+  }
+
+  return SLIP_ICONS[index % SLIP_ICONS.length];
+};
 
 const getNextMeetingData = (nextMeeting?: DashboardNextMeeting | null) => {
   if (!nextMeeting) {
@@ -264,7 +267,19 @@ const getActivitySlips = (activities?: DashboardActivity[]) => {
     id: `${activity.label || 'activity'}-${index}`,
     label: activity.label || '-',
     value: String(activity.value ?? '0'),
-    icon: SLIP_ICONS[index % SLIP_ICONS.length],
+    icon: getActivityIcon(activity.icon, index),
+  }));
+};
+
+const getStatsRows = (monthlyActivity?: DashboardActivity[]) => {
+  if (!monthlyActivity?.length) {
+    return [];
+  }
+
+  return monthlyActivity.map((activity, index) => ({
+    id: `${activity.label || 'monthly-activity'}-${index}`,
+    label: activity.label || '-',
+    value: String(activity.value ?? '0'),
   }));
 };
 
@@ -345,13 +360,13 @@ const useHome = () => {
   );
 
   const requestHomeData = useCallback(
-    (refreshing = false) => {
+    (refreshing = false, range: HomeStatsRange) => {
       if (refreshing) {
         setIsRefreshing(true);
       }
 
       dashboardRequestRef.current = true;
-      dispatch(getDashboardData());
+      dispatch(getDashboardData({ time_filter: TIME_FILTER_BY_RANGE[range] }));
       dispatch(getTrafficLightData());
     },
     [dispatch],
@@ -386,7 +401,7 @@ const useHome = () => {
   }, [dashboardLoading, isRefreshing, trafficLightLoading]);
 
   useEffect(() => {
-    requestHomeData();
+    requestHomeData(false, HOME_DATA.stats.defaultRange);
   }, [requestHomeData]);
 
   const screenData = useMemo(() => {
@@ -400,6 +415,9 @@ const useHome = () => {
         ...HOME_DATA,
         nextMeeting: getNextMeetingData(nextMeeting),
         slips: getActivitySlips(activities),
+        stats: {
+          ...HOME_DATA.stats,
+        },
         trafficLight,
       };
     }
@@ -417,13 +435,25 @@ const useHome = () => {
       },
       nextMeeting: getNextMeetingData(nextMeeting),
       slips: getActivitySlips(activities),
+      stats: {
+        ...HOME_DATA.stats,
+      },
       trafficLight,
     };
   }, [dashboardResponse, trafficLightResponse]);
 
   const statsRows = useMemo(
-    () => HOME_DATA.stats.rowsByRange[selectedStatsRange],
-    [selectedStatsRange],
+    () => getStatsRows(dashboardResponse?.data?.monthly_activity),
+    [dashboardResponse],
+  );
+
+  const handleStatsRangeChange = useCallback(
+    (range: HomeStatsRange) => {
+      setSelectedStatsRange(range);
+      dashboardRequestRef.current = true;
+      dispatch(getDashboardData({ time_filter: TIME_FILTER_BY_RANGE[range] }));
+    },
+    [dispatch],
   );
 
   const onQuickActionPress = useCallback((action: HomeQuickAction) => {
@@ -442,8 +472,13 @@ const useHome = () => {
       return;
     }
 
-    requestHomeData(true);
-  }, [dashboardLoading, requestHomeData, trafficLightLoading]);
+    requestHomeData(true, selectedStatsRange);
+  }, [
+    dashboardLoading,
+    requestHomeData,
+    selectedStatsRange,
+    trafficLightLoading,
+  ]);
 
   return {
     styles,
@@ -457,7 +492,7 @@ const useHome = () => {
       onQrCodePress,
       onRefresh,
       onQuickActionPress,
-      setSelectedStatsRange,
+      setSelectedStatsRange: handleStatsRangeChange,
     },
     constants: {},
   };

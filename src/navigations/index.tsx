@@ -31,7 +31,9 @@ const darkTheme: Theme = {
 };
 
 const primaryStatusBarRoutes = new Set([
+  routes.app.slips,
   routes.app.members,
+  routes.app.payment,
   routes.app.visitors,
 ]);
 

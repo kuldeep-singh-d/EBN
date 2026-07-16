@@ -12,3 +12,4 @@ export * from './authorised/payment';
 export * from './authorised/search';
 export * from './authorised/notifications';
 export * from './authorised/profile';
+export * from './authorised/menu';

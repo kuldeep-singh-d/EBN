@@ -58,7 +58,6 @@ export interface HomeData {
   stats: {
     defaultRange: HomeStatsRange;
     ranges: HomeStatsRange[];
-    rowsByRange: Record<HomeStatsRange, HomeStat[]>;
   };
   trafficLight: {
     title: string;

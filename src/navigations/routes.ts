@@ -14,5 +14,6 @@ export const routes = Object.freeze({
     search: 'search',
     notifications: 'notifications',
     profile: 'profile',
+    menu: 'menu',
   },
 });

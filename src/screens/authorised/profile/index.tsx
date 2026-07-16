@@ -8,7 +8,7 @@ export const Profile = () => {
   const { styles } = useProfile();
 
   return (
-    <AppContainer title="Profile" hideBackBtn>
+    <AppContainer centerTitle title="PROFILE" showHeaderActions={false}>
       <View style={styles.container}>
         <AppText label="profile" centered style={styles.label} />
       </View>

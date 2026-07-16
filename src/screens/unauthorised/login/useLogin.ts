@@ -24,7 +24,7 @@ const useLogin = () => {
   const loginError = useSelector(state => state.login?.error);
 
   const [email, setEmail] = useState<LoginCredentials['email']>(
-    'anastacio86@example.net',
+    'muller.valerie@example.net',
   );
   const [emailError, setEmailError] = useState('');
   const [password, setPassword] =
