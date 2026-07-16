@@ -128,7 +128,7 @@ const useStyles = () => {
     cardHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyContent: 'flex-start',
     },
     cardTitle: {
       letterSpacing: 0,
@@ -153,11 +153,33 @@ const useStyles = () => {
       marginTop: moderateHeight(0.55),
       textTransform: 'capitalize',
     },
+    meetingAddressRow: {
+      minWidth: 0,
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      marginTop: moderateHeight(0.35),
+    },
     meetingAddress: {
       color: colors.gray,
+      paddingTop: moderateWidth(0.6),
       fontSize: moderateHeight(1.35),
+      marginRight: moderateWidth(1.5),
       lineHeight: moderateHeight(1.75),
-      marginTop: moderateHeight(0.35),
+    },
+    locationButton: {
+      width: moderateWidth(5),
+      height: moderateWidth(5),
+      borderRadius: moderateWidth(2.5),
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    locationButtonPressed: {
+      opacity: 0.72,
+    },
+    locationIcon: {
+      color: colors.primary,
+      width: moderateWidth(4),
+      height: moderateWidth(4),
     },
     meetingMetrics: {
       flexDirection: 'row',

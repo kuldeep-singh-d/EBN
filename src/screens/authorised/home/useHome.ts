@@ -16,17 +16,13 @@ import {
   BadgeIndianRupee,
   Banknote,
   BookOpen,
-  BriefcaseBusiness,
   Calendar,
   Coins,
   GraduationCap,
   Handshake,
-  Landmark,
-  Lightbulb,
   Send,
   UserCheck,
   UserPlus,
-  Users,
 } from 'lucide-react-native';
 import { getDashboardData } from '@store/slices/app/dashboard/dashboard';
 import { getTrafficLightData } from '@store/slices/app/trafficLight/trafficLight';
@@ -467,6 +463,10 @@ const useHome = () => {
     console.log('[Next Meeting QR Code]');
   }, []);
 
+  const onMeetingLocationPress = useCallback(() => {
+    console.log('[Next Meeting Location]');
+  }, []);
+
   const onRefresh = useCallback(() => {
     if (dashboardLoading || trafficLightLoading) {
       return;
@@ -489,6 +489,7 @@ const useHome = () => {
       screenData,
     },
     handlers: {
+      onMeetingLocationPress,
       onQrCodePress,
       onRefresh,
       onQuickActionPress,

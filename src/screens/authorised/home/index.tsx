@@ -1,6 +1,6 @@
 import React from 'react';
 import useHome from './useHome';
-import { QrCode } from 'lucide-react-native';
+import { MapPin, QrCode } from 'lucide-react-native';
 import { AppContainer, AppText } from '@components';
 import { Image, Pressable, RefreshControl, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
@@ -25,12 +25,7 @@ export const Home = () => {
     >
       <View style={styles.container}>
         <View style={styles.memberCard}>
-          <Svg
-            // width="100%"
-            // height="100%"
-            pointerEvents="none"
-            style={styles.memberGradient}
-          >
+          <Svg pointerEvents="none" style={styles.memberGradient}>
             <Defs>
               <LinearGradient
                 id="profileCardGradient"
@@ -51,7 +46,9 @@ export const Home = () => {
               fill="url(#profileCardGradient)"
             />
           </Svg>
+
           <Image source={member.avatar} style={styles.avatar} />
+
           <View style={styles.memberInfo}>
             <AppText medium label={member.name} style={styles.memberName} />
             <AppText label={member.company} style={styles.memberText} />
@@ -71,13 +68,11 @@ export const Home = () => {
           <View style={styles.cardHeader}>
             <AppText
               medium
-              centered
               style={styles.cardTitle}
               label={nextMeeting.title}
             />
           </View>
           <AppText
-            centered
             label={
               nextMeeting.time
                 ? `${nextMeeting.date} | ${nextMeeting.time}`
@@ -85,41 +80,34 @@ export const Home = () => {
             }
             style={styles.meetingDate}
           />
-          <AppText
-            centered
-            label={nextMeeting.type}
-            style={styles.meetingType}
-          />
+          <AppText label={nextMeeting.type} style={styles.meetingType} />
           {nextMeeting.venue ? (
-            <AppText
-              centered
-              label={nextMeeting.venue}
-              style={styles.meetingVenue}
-            />
+            <AppText label={nextMeeting.venue} style={styles.meetingVenue} />
           ) : null}
           {nextMeeting.address && nextMeeting.address !== 'N/A' ? (
-            <AppText
-              centered
-              numberOfLines={2}
-              label={nextMeeting.address}
-              style={styles.meetingAddress}
-            />
-          ) : null}
-          <View style={styles.meetingMetrics}>
-            <View style={styles.metricGroup}>
-              <View style={styles.metricRow}>
-                <AppText label="TYFCB" style={styles.metricLabel} />
-                <AppText label={nextMeeting.tyfcb} style={styles.metricValue} />
-              </View>
-            </View>
-            <View style={styles.visitorMetric}>
-              <AppText label="VISITORS" style={styles.metricLabel} />
+            <View style={styles.meetingAddressRow}>
               <AppText
-                label={nextMeeting.visitors}
-                style={styles.metricValue}
+                numberOfLines={2}
+                label={nextMeeting.address}
+                style={styles.meetingAddress}
               />
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Open meeting location"
+                onPress={handlers.onMeetingLocationPress}
+                style={({ pressed }) => [
+                  styles.locationButton,
+                  pressed && styles.locationButtonPressed,
+                ]}
+              >
+                <MapPin
+                  width={styles.locationIcon.width}
+                  color={styles.locationIcon.color}
+                  height={styles.locationIcon.height}
+                />
+              </Pressable>
             </View>
-          </View>
+          ) : null}
           {nextMeeting.canScanQr ? (
             <Pressable
               accessibilityRole="button"
