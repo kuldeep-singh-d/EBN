@@ -1,15 +1,20 @@
 import React from 'react';
-import { Pressable, View } from 'react-native';
-
-import { AppContainer, AppText } from '@components';
-import GlobalSearchForm from './components/GlobalSearchForm';
-import MemberDetail from './components/MemberDetail';
-import MemberListContent from './components/MemberListContent';
 import useMembers from './useMembers';
+import { X } from 'lucide-react-native';
+import { AppContainer, AppText } from '@components';
+import MemberDetail from './components/MemberDetail';
+import GlobalSearchForm from './components/GlobalSearchForm';
+import MemberListContent from './components/MemberListContent';
+import { GestureResponderEvent, Pressable, View } from 'react-native';
 
 export const Members = () => {
   const { styles, states, handlers } = useMembers();
   const { activeTab, screenData } = states;
+
+  const handleClearGlobalSearch = (event: GestureResponderEvent) => {
+    event.stopPropagation();
+    handlers.onBackToMemberList();
+  };
 
   return (
     <AppContainer
@@ -24,11 +29,11 @@ export const Members = () => {
           : screenData.title
       }
       showHeaderActions={false}
-      headerIconColor={String(styles.headerIcon.color)}
-      onBackPress={handlers.onHeaderBackPress}
       headerStyle={styles.header}
       contentStyle={styles.content}
       headerTitleStyle={styles.headerTitle}
+      onBackPress={handlers.onHeaderBackPress}
+      headerIconColor={String(styles.headerIcon.color)}
     >
       <View style={styles.container}>
         {states.isDetailView ? (
@@ -41,6 +46,8 @@ export const Members = () => {
             <View style={styles.tabs}>
               {screenData.tabs.map(tab => {
                 const isActive = activeTab === tab.key;
+                const showClearIcon =
+                  tab.key === 'otherMember' && states.isGlobalResultView;
 
                 return (
                   <Pressable
@@ -54,8 +61,27 @@ export const Members = () => {
                       semibold={isActive}
                       centered
                       label={tab.label}
-                      style={[styles.tabText, isActive && styles.activeTabText]}
+                      style={[
+                        styles.tabText,
+                        showClearIcon && styles.tabTextWithClear,
+                        isActive && styles.activeTabText,
+                      ]}
                     />
+                    {showClearIcon ? (
+                      <Pressable
+                        hitSlop={8}
+                        accessibilityRole="button"
+                        accessibilityLabel="Clear global search"
+                        onPress={handleClearGlobalSearch}
+                        style={styles.tabClearButton}
+                      >
+                        <X
+                          width={styles.tabClearIcon.width}
+                          height={styles.tabClearIcon.height}
+                          color={styles.tabClearIcon.color}
+                        />
+                      </Pressable>
+                    ) : null}
                   </Pressable>
                 );
               })}
@@ -63,41 +89,43 @@ export const Members = () => {
 
             {activeTab === 'chapterRoster' ? (
               <MemberListContent
-                count={states.filteredMembers.length}
-                emptyDescription="Try another name, company, or speciality."
-                hasNextPage={states.hasNextPage}
-                isFetchingNextPage={states.isFetchingNextPage}
-                isInitialLoading={states.isInitialLoading}
-                isRefreshing={states.isRefreshing}
-                members={states.filteredMembers}
-                searchPlaceholder="Search by name, speciality..."
-                searchValue={states.rosterQuery}
                 title="Chapter Member"
-                onFetchNext={handlers.fetchNextChapterMembers}
+                hasNextPage={states.hasNextPage}
+                members={states.filteredMembers}
+                searchValue={states.rosterQuery}
+                isRefreshing={states.isRefreshing}
+                count={states.filteredMembers.length}
                 onMemberPress={handlers.onMemberPress}
-                onRefresh={handlers.refreshChapterMembers}
                 onSearchChange={handlers.setRosterQuery}
+                isInitialLoading={states.isInitialLoading}
+                onRefresh={handlers.refreshChapterMembers}
+                isFetchingNextPage={states.isFetchingNextPage}
+                onFetchNext={handlers.fetchNextChapterMembers}
+                searchPlaceholder="Search by name, speciality..."
+                emptyDescription="Try another name, company, or speciality."
               />
             ) : states.isGlobalResultView ? (
               <MemberListContent
-                count={states.globalMembers.length}
-                emptyDescription="Try updating your global search criteria."
-                hasNextPage={states.globalHasNextPage}
-                isFetchingNextPage={states.isGlobalFetchingNextPage}
-                isInitialLoading={states.isGlobalInitialLoading}
-                isRefreshing={states.isGlobalRefreshing}
-                members={states.globalMembers}
                 title="Global Search Results"
-                onFetchNext={handlers.fetchNextGlobalMembers}
+                members={states.globalMembers}
+                count={states.globalMembers.length}
+                hasNextPage={states.globalHasNextPage}
                 onMemberPress={handlers.onMemberPress}
+                isRefreshing={states.isGlobalRefreshing}
                 onRefresh={handlers.refreshGlobalMembers}
+                onFetchNext={handlers.fetchNextGlobalMembers}
+                isInitialLoading={states.isGlobalInitialLoading}
+                isFetchingNextPage={states.isGlobalFetchingNextPage}
+                emptyDescription="Try updating your global search criteria."
               />
             ) : (
               <GlobalSearchForm
-                canSearch={states.canSearch}
+                canClear={states.canClear}
                 criteria={states.criteria}
-                onChange={handlers.setCriteriaValue}
+                canSearch={states.canSearch}
+                onClear={handlers.resetCriteria}
                 onSearch={handlers.onSearchPress}
+                onChange={handlers.setCriteriaValue}
               />
             )}
           </>

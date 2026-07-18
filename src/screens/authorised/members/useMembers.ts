@@ -20,6 +20,7 @@ import type {
 
 type ListRequestMode = 'initial' | 'refresh' | 'next';
 type MembersRequestContext = 'chapter' | 'global';
+type MembersApiTab = MembersRequestContext;
 
 const INITIAL_CRITERIA: MemberSearchCriteria = {
   search: '',
@@ -35,6 +36,12 @@ const MEMBERS_DATA: MembersData = {
     { key: 'otherMember', label: 'GLOBAL SEARCH' },
   ],
 };
+
+const MEMBERS_API_TAB_BY_CONTEXT: Record<MembersRequestContext, MembersApiTab> =
+  {
+    chapter: 'chapter',
+    global: 'global',
+  };
 
 const getMemberCompany = (member: MemberApiRecord) =>
   member.member_profile?.company_name ||
@@ -120,7 +127,12 @@ const useMembers = () => {
       requestModeRef.current = mode;
       setRequestContext('chapter');
       setRequestMode(mode);
-      dispatch(searchEliteMembers({ tab: 'chapter', page }));
+      dispatch(
+        searchEliteMembers({
+          tab: MEMBERS_API_TAB_BY_CONTEXT.chapter,
+          page,
+        }),
+      );
     },
     [dispatch],
   );
@@ -136,10 +148,10 @@ const useMembers = () => {
 
   const getGlobalSearchParams = useCallback(
     (page = 1) => {
-      const normalizeValue = (value: string) => value.trim() || 'null';
+      const normalizeValue = (value: string) => value.trim();
 
       return {
-        tab: 'chapter',
+        tab: MEMBERS_API_TAB_BY_CONTEXT.global,
         page,
         search: normalizeValue(criteria.search),
         company_name: normalizeValue(criteria.company_name),
@@ -231,6 +243,11 @@ const useMembers = () => {
     [criteria],
   );
 
+  const canClear = useMemo(
+    () => Object.values(criteria).some(value => value.length > 0),
+    [criteria],
+  );
+
   const setCriteriaValue = useCallback(
     (key: keyof MemberSearchCriteria, value: string) => {
       setCriteria(current => ({
@@ -240,6 +257,10 @@ const useMembers = () => {
     },
     [],
   );
+
+  const resetCriteria = useCallback(() => {
+    setCriteria({ ...INITIAL_CRITERIA });
+  }, []);
 
   const setActiveMembersTab = useCallback((tab: MembersTabKey) => {
     setActiveTab(tab);
@@ -292,6 +313,7 @@ const useMembers = () => {
     styles,
     states: {
       activeTab,
+      canClear,
       canSearch,
       criteria,
       filteredMembers,
@@ -334,6 +356,7 @@ const useMembers = () => {
       onSearchPress,
       refreshChapterMembers,
       refreshGlobalMembers,
+      resetCriteria,
       setActiveTab: setActiveMembersTab,
       setCriteriaValue,
       setRosterQuery,

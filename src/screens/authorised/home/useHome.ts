@@ -25,6 +25,10 @@ import {
   UserPlus,
 } from 'lucide-react-native';
 import { getDashboardData } from '@store/slices/app/dashboard/dashboard';
+import {
+  getMeetingQrCode,
+  resetMeetingQrCode,
+} from '@store/slices/app/meetings/meetings';
 import { getTrafficLightData } from '@store/slices/app/trafficLight/trafficLight';
 
 type DashboardProfile = {
@@ -35,7 +39,10 @@ type DashboardProfile = {
 };
 
 type DashboardNextMeeting = {
-  id?: number;
+  id?: string | number;
+  meeting_id?: string | number;
+  elite_meeting_id?: string | number;
+  title?: string;
   date?: string;
   time?: string;
   venue?: string;
@@ -55,6 +62,9 @@ type DashboardResponse = {
   data?: {
     profile?: DashboardProfile | null;
     next_meeting?: DashboardNextMeeting | null;
+    meeting_id?: string | number | null;
+    next_meeting_id?: string | number | null;
+    current_meeting_id?: string | number | null;
     monthly_activity?: DashboardActivity[];
     activities?: DashboardActivity[];
     time_filter?: string;
@@ -76,6 +86,15 @@ type TrafficLightResponse = {
   };
 };
 
+type MeetingQrCodeResponse = {
+  status?: string;
+  data?: {
+    qr_data?: string | null;
+    meeting_id?: number | null;
+    title?: string | null;
+  };
+};
+
 const HOME_DATA: HomeData = {
   member: {
     name: 'Suresh Suthar',
@@ -84,19 +103,7 @@ const HOME_DATA: HomeData = {
     dueDate: '10/01/2026',
     avatar: images.profilePlaceholder,
   },
-  nextMeeting: {
-    title: 'NEXT MEETING',
-    date: 'Thursday, July 02, 2026',
-    time: '',
-    venue: '',
-    address: '',
-    type: 'Meeting: In-Person',
-    tyfcb: '₹32.6k',
-    speakers: '0',
-    visitors: '0',
-    linkLabel: 'Online Meeting Link',
-    canScanQr: false,
-  },
+  nextMeeting: null,
   slips: [
     { id: 'tyfcb', label: 'TYFCBs', value: '0', icon: Handshake },
     {
@@ -227,6 +234,7 @@ const ACTIVITY_ICONS = {
 } as const;
 
 const SLIP_ICONS = [Handshake, Send, BookOpen, UserCheck];
+const FALLBACK_MEETING_QR_ID = 1;
 
 const getActivityIcon = (icon?: string, index = 0) => {
   if (icon && icon in ACTIVITY_ICONS) {
@@ -238,20 +246,41 @@ const getActivityIcon = (icon?: string, index = 0) => {
 
 const getNextMeetingData = (nextMeeting?: DashboardNextMeeting | null) => {
   if (!nextMeeting) {
-    return HOME_DATA.nextMeeting;
+    return null;
   }
 
   return {
-    ...HOME_DATA.nextMeeting,
-    date: nextMeeting.date || HOME_DATA.nextMeeting.date,
-    time: nextMeeting.time || HOME_DATA.nextMeeting.time,
-    venue: nextMeeting.venue || HOME_DATA.nextMeeting.venue,
-    address: nextMeeting.address || HOME_DATA.nextMeeting.address,
+    id:
+      nextMeeting.id ??
+      nextMeeting.meeting_id ??
+      nextMeeting.elite_meeting_id ??
+      null,
+    title: nextMeeting.title || 'NEXT MEETING',
+    date: nextMeeting.date || '',
+    time: nextMeeting.time || '',
+    venue: nextMeeting.venue || '',
+    address: nextMeeting.address || '',
     type: nextMeeting.mode_of_meeting
       ? `Meeting: ${nextMeeting.mode_of_meeting}`
-      : HOME_DATA.nextMeeting.type,
-    canScanQr: Boolean(nextMeeting.can_scan_qr),
+      : '',
+    linkLabel: 'Online Meeting Link',
+    canScanQr: Boolean(nextMeeting.can_scan_qr || nextMeeting.show_qr),
   };
+};
+
+const getMeetingQrRequestId = (response?: DashboardResponse) => {
+  const data = response?.data;
+  const nextMeeting = data?.next_meeting;
+
+  return (
+    nextMeeting?.id ??
+    nextMeeting?.meeting_id ??
+    nextMeeting?.elite_meeting_id ??
+    data?.next_meeting_id ??
+    data?.meeting_id ??
+    data?.current_meeting_id ??
+    FALLBACK_MEETING_QR_ID
+  );
 };
 
 const getActivitySlips = (activities?: DashboardActivity[]) => {
@@ -350,7 +379,11 @@ const useHome = () => {
     state => state.trafficLight?.data,
   ) as TrafficLightResponse;
   const trafficLightLoading = useSelector(state => state.trafficLight?.loading);
+  const qrCodeResponse = useSelector(state => state.meetings?.qrCode?.data) as
+    | MeetingQrCodeResponse
+    | undefined;
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isQrCodeVisible, setIsQrCodeVisible] = useState(false);
   const [selectedStatsRange, setSelectedStatsRange] = useState<HomeStatsRange>(
     HOME_DATA.stats.defaultRange,
   );
@@ -399,6 +432,15 @@ const useHome = () => {
   useEffect(() => {
     requestHomeData(false, HOME_DATA.stats.defaultRange);
   }, [requestHomeData]);
+
+  useEffect(() => {
+    dispatch(resetMeetingQrCode());
+    setIsQrCodeVisible(false);
+
+    if (dashboardResponse) {
+      dispatch(getMeetingQrCode(getMeetingQrRequestId(dashboardResponse)));
+    }
+  }, [dashboardResponse, dispatch]);
 
   const screenData = useMemo(() => {
     const profile = dashboardResponse?.data?.profile;
@@ -459,8 +501,21 @@ const useHome = () => {
     });
   }, []);
 
+  const meetingQrData =
+    qrCodeResponse?.status === 'success'
+      ? qrCodeResponse.data?.qr_data || undefined
+      : undefined;
+
   const onQrCodePress = useCallback(() => {
-    console.log('[Next Meeting QR Code]');
+    if (!meetingQrData) {
+      return;
+    }
+
+    setIsQrCodeVisible(true);
+  }, [meetingQrData]);
+
+  const onCloseQrCode = useCallback(() => {
+    setIsQrCodeVisible(false);
   }, []);
 
   const onMeetingLocationPress = useCallback(() => {
@@ -484,12 +539,15 @@ const useHome = () => {
     styles,
     states: {
       isRefreshing,
+      isQrCodeVisible,
+      meetingQrData,
       statsRows,
       selectedStatsRange,
       screenData,
     },
     handlers: {
       onMeetingLocationPress,
+      onCloseQrCode,
       onQrCodePress,
       onRefresh,
       onQuickActionPress,

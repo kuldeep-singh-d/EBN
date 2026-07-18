@@ -57,6 +57,9 @@ export const apiRoutes = {
     register: (id: string | number) => `/trainings/${id}/register`,
     cancelRegistration: (id: string | number) => `/trainings/${id}/register`,
   },
+  meetings: {
+    qrCode: (id: string | number) => `/meetings/${id}/qr-code`,
+  },
   eliteMembers: {
     chapterMembers: '/elite-members/chapter-members',
     search: '/elite-members/search',

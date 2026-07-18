@@ -51,6 +51,23 @@ const useStyles = () => {
       color: colors.gray,
       fontSize: moderateHeight(1.25),
     },
+    tabTextWithClear: {
+      paddingRight: moderateWidth(6),
+    },
+    tabClearButton: {
+      position: 'absolute',
+      right: moderateWidth(2),
+      width: moderateWidth(6),
+      height: moderateWidth(6),
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: moderateWidth(3),
+    },
+    tabClearIcon: {
+      width: moderateWidth(3.5),
+      height: moderateWidth(3.5),
+      color: colors.white,
+    },
     activeTab: {
       backgroundColor: colors.primary,
     },
@@ -279,8 +296,25 @@ const useStyles = () => {
       height: moderateHeight(5.8),
       borderRadius: moderateWidth(2.3),
     },
+    formActions: {
+      flexDirection: 'row',
+      columnGap: moderateWidth(2.4),
+      marginTop: moderateHeight(0.6),
+    },
+    formActionButton: {
+      flex: 1,
+    },
+    clearButton: {
+      backgroundColor: colors.white,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: colors.primary,
+    },
     searchButtonText: {
       color: colors.white,
+      fontSize: moderateHeight(1.65),
+    },
+    clearButtonText: {
+      color: colors.primary,
       fontSize: moderateHeight(1.65),
     },
     detailContent: {

@@ -114,6 +114,16 @@ const useStyles = () => {
       backgroundColor: colors.primarySurface,
       borderColor: colors.primaryBorder,
     },
+    meetingContentRow: {
+      minWidth: 0,
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+    },
+    meetingDetails: {
+      flex: 1,
+      minWidth: 0,
+      paddingRight: moderateWidth(2.4),
+    },
     corner: {
       position: 'absolute',
       top: 0,
@@ -160,6 +170,7 @@ const useStyles = () => {
       marginTop: moderateHeight(0.35),
     },
     meetingAddress: {
+      flexShrink: 1,
       color: colors.gray,
       paddingTop: moderateWidth(0.6),
       fontSize: moderateHeight(1.35),
@@ -196,7 +207,7 @@ const useStyles = () => {
     metricLabel: {
       color: colors.gray,
       fontSize: moderateHeight(1.35),
-      minWidth: moderateWidth(15),
+      minWidth: moderateWidth(13),
     },
     metricValue: {
       color: colors.primaryDark,
@@ -223,6 +234,50 @@ const useStyles = () => {
       fontSize: moderateHeight(1.9),
       marginLeft: moderateWidth(1.2),
     },
+    qrPreviewButton: {
+      width: moderateWidth(19),
+      aspectRatio: 1,
+      borderRadius: moderateWidth(1.8),
+      overflow: 'hidden',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.white,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: colors.primaryBorder,
+    },
+    qrPreviewButtonPressed: {
+      opacity: 0.72,
+    },
+    qrPreviewCode: {
+      width: moderateWidth(15.5),
+    },
+    qrCenterContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: moderateHeight(1.2),
+    },
+    qrCenterPreviewButton: {
+      width: moderateWidth(42),
+      aspectRatio: 1,
+      borderRadius: moderateWidth(2),
+      overflow: 'hidden',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.white,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: colors.primaryBorder,
+    },
+    qrCenterPreviewCode: {
+      width: moderateWidth(36),
+    },
+    qrPreviewObscurer: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      backgroundColor: 'rgba(255,255,255,0.48)',
+    },
     qrButton: {
       minHeight: moderateHeight(3.8),
       borderRadius: moderateWidth(1.6),
@@ -245,6 +300,34 @@ const useStyles = () => {
       color: colors.white,
       fontSize: moderateHeight(1.5),
       marginLeft: moderateWidth(1.5),
+    },
+    qrModalOverlay: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: moderateWidth(6),
+      backgroundColor: 'rgba(0,0,0,0.58)',
+    },
+    qrModalCard: {
+      width: moderateWidth(78),
+      aspectRatio: 1,
+      borderRadius: moderateWidth(2.4),
+      padding: moderateWidth(3),
+      backgroundColor: colors.white,
+      elevation: 4,
+      shadowRadius: 8,
+      shadowOpacity: 0.18,
+      shadowColor: colors.black,
+      shadowOffset: { width: 0, height: 4 },
+    },
+    qrModalCode: {
+      width: moderateWidth(70),
+    },
+    qrCodeDark: {
+      color: colors.black,
+    },
+    qrCodeLight: {
+      color: colors.white,
     },
     slipsList: {
       rowGap: moderateHeight(0.5),

@@ -11,9 +11,11 @@ type FieldConfig = {
 };
 
 type GlobalSearchFormProps = {
+  canClear: boolean;
   canSearch: boolean;
   criteria: MemberSearchCriteria;
   onChange: (key: keyof MemberSearchCriteria, value: string) => void;
+  onClear: () => void;
   onSearch: () => void;
 };
 
@@ -25,9 +27,11 @@ const GLOBAL_SEARCH_FIELDS: FieldConfig[] = [
 ];
 
 const GlobalSearchForm = ({
+  canClear,
   canSearch,
   criteria,
   onChange,
+  onClear,
   onSearch,
 }: GlobalSearchFormProps) => {
   const styles = useStyles();
@@ -67,14 +71,29 @@ const GlobalSearchForm = ({
         {GLOBAL_SEARCH_FIELDS.map(renderInput)}
       </View>
 
-      <AppButton
-        title="Search"
-        topMargin={0.6}
-        disabled={!canSearch}
-        onPress={onSearch}
-        style={styles.searchButton}
-        labelStyle={styles.searchButtonText}
-      />
+      <View style={styles.formActions}>
+        <AppButton
+          title="Clear"
+          topMargin={0}
+          gradient={false}
+          disabled={!canClear}
+          onPress={onClear}
+          style={[
+            styles.searchButton,
+            styles.formActionButton,
+            styles.clearButton,
+          ]}
+          labelStyle={styles.clearButtonText}
+        />
+        <AppButton
+          title="Search"
+          topMargin={0}
+          disabled={!canSearch}
+          onPress={onSearch}
+          style={[styles.searchButton, styles.formActionButton]}
+          labelStyle={styles.searchButtonText}
+        />
+      </View>
     </ScrollView>
   );
 };

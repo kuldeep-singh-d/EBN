@@ -41,18 +41,16 @@ export interface HomeData {
     avatar: ImageSourcePropType;
   };
   nextMeeting: {
+    id?: string | number | null;
     title: string;
     date: string;
     time: string;
     venue: string;
     address: string;
     type: string;
-    tyfcb: string;
-    speakers: string;
-    visitors: string;
     linkLabel: string;
     canScanQr: boolean;
-  };
+  } | null;
   slips: HomeSlip[];
   quickActions: HomeQuickAction[];
   stats: {

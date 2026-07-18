@@ -17,6 +17,7 @@ import profile from './slices/app/profile/profile';
 import payments from './slices/app/payments/payments';
 import deviceToken from './slices/app/notifications/deviceToken';
 import trainings from './slices/app/trainings/trainings';
+import meetings from './slices/app/meetings/meetings';
 import eliteReferrals from './slices/app/eliteReferrals/eliteReferrals';
 import eliteCloseBusiness from './slices/app/eliteCloseBusiness/eliteCloseBusiness';
 import visitorInvitations from './slices/app/visitorInvitations/visitorInvitations';
@@ -37,6 +38,7 @@ const reducers = combineReducers({
   payments,
   deviceToken,
   trainings,
+  meetings,
   eliteReferrals,
   eliteCloseBusiness,
   visitorInvitations,

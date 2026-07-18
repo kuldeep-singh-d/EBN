@@ -2,13 +2,42 @@ import React from 'react';
 import useHome from './useHome';
 import { MapPin, QrCode } from 'lucide-react-native';
 import { AppContainer, AppText } from '@components';
-import { Image, Pressable, RefreshControl, View } from 'react-native';
+import { Image, Modal, Pressable, RefreshControl, View } from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
 export const Home = () => {
   const { styles, states, handlers } = useHome();
   const { member, nextMeeting, quickActions, slips, stats, trafficLight } =
     states.screenData;
+  const shouldShowMeetingCard = Boolean(nextMeeting || states.meetingQrData);
+
+  const renderQrPreview = (centered = false) =>
+    states.meetingQrData ? (
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Show meeting QR code"
+        onPress={handlers.onQrCodePress}
+        style={({ pressed }) => [
+          centered ? styles.qrCenterPreviewButton : styles.qrPreviewButton,
+          pressed && styles.qrPreviewButtonPressed,
+        ]}
+      >
+        <QRCode
+          value={states.meetingQrData}
+          size={
+            centered
+              ? styles.qrCenterPreviewCode.width
+              : styles.qrPreviewCode.width
+          }
+          color={String(styles.qrCodeDark.color)}
+          backgroundColor={String(styles.qrCodeLight.color)}
+        />
+        {!centered ? (
+          <View pointerEvents="none" style={styles.qrPreviewObscurer} />
+        ) : null}
+      </Pressable>
+    ) : null;
 
   return (
     <AppContainer
@@ -63,70 +92,123 @@ export const Home = () => {
           {/* <AppText label="›" style={styles.chevron} /> */}
         </View>
 
-        <View style={[styles.card, styles.meetingCard]}>
-          {/* <View style={styles.corner} /> */}
-          <View style={styles.cardHeader}>
-            <AppText
-              medium
-              style={styles.cardTitle}
-              label={nextMeeting.title}
-            />
-          </View>
-          <AppText
-            label={
-              nextMeeting.time
-                ? `${nextMeeting.date} | ${nextMeeting.time}`
-                : nextMeeting.date
-            }
-            style={styles.meetingDate}
-          />
-          <AppText label={nextMeeting.type} style={styles.meetingType} />
-          {nextMeeting.venue ? (
-            <AppText label={nextMeeting.venue} style={styles.meetingVenue} />
-          ) : null}
-          {nextMeeting.address && nextMeeting.address !== 'N/A' ? (
-            <View style={styles.meetingAddressRow}>
-              <AppText
-                numberOfLines={2}
-                label={nextMeeting.address}
-                style={styles.meetingAddress}
-              />
+        {shouldShowMeetingCard ? (
+          <View style={[styles.card, styles.meetingCard]}>
+            {/* <View style={styles.corner} /> */}
+            {nextMeeting ? (
+              <View style={styles.meetingContentRow}>
+                <View style={styles.meetingDetails}>
+                  <View style={styles.cardHeader}>
+                    <AppText
+                      medium
+                      style={styles.cardTitle}
+                      label={nextMeeting.title}
+                    />
+                  </View>
+                  {nextMeeting.date || nextMeeting.time ? (
+                    <AppText
+                      label={
+                        nextMeeting.time
+                          ? `${nextMeeting.date} | ${nextMeeting.time}`
+                          : nextMeeting.date
+                      }
+                      style={styles.meetingDate}
+                    />
+                  ) : null}
+                  {nextMeeting.type ? (
+                    <AppText
+                      label={nextMeeting.type}
+                      style={styles.meetingType}
+                    />
+                  ) : null}
+                  {nextMeeting.venue ? (
+                    <AppText
+                      label={nextMeeting.venue}
+                      style={styles.meetingVenue}
+                    />
+                  ) : null}
+                  {nextMeeting.address && nextMeeting.address !== 'N/A' ? (
+                    <View style={styles.meetingAddressRow}>
+                      <AppText
+                        numberOfLines={2}
+                        label={nextMeeting.address}
+                        style={styles.meetingAddress}
+                      />
+                      <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel="Open meeting location"
+                        onPress={handlers.onMeetingLocationPress}
+                        style={({ pressed }) => [
+                          styles.locationButton,
+                          pressed && styles.locationButtonPressed,
+                        ]}
+                      >
+                        <MapPin
+                          width={styles.locationIcon.width}
+                          color={styles.locationIcon.color}
+                          height={styles.locationIcon.height}
+                        />
+                      </Pressable>
+                    </View>
+                  ) : null}
+                </View>
+
+                {renderQrPreview()}
+              </View>
+            ) : (
+              <View style={styles.qrCenterContainer}>
+                {renderQrPreview(true)}
+              </View>
+            )}
+
+            {nextMeeting?.canScanQr || states.meetingQrData ? (
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Open meeting location"
-                onPress={handlers.onMeetingLocationPress}
+                accessibilityLabel="QR Code"
+                onPress={handlers.onQrCodePress}
                 style={({ pressed }) => [
-                  styles.locationButton,
-                  pressed && styles.locationButtonPressed,
+                  styles.qrButton,
+                  pressed && styles.qrButtonPressed,
                 ]}
               >
-                <MapPin
-                  width={styles.locationIcon.width}
-                  color={styles.locationIcon.color}
-                  height={styles.locationIcon.height}
+                <QrCode
+                  width={styles.qrIcon.width}
+                  height={styles.qrIcon.height}
+                  color={styles.qrIcon.color}
                 />
+                <AppText medium label="QR Code" style={styles.qrButtonText} />
               </Pressable>
-            </View>
-          ) : null}
-          {nextMeeting.canScanQr ? (
+            ) : null}
+          </View>
+        ) : null}
+
+        <Modal
+          transparent
+          visible={states.isQrCodeVisible}
+          animationType="fade"
+          onRequestClose={handlers.onCloseQrCode}
+        >
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Close meeting QR code"
+            onPress={handlers.onCloseQrCode}
+            style={styles.qrModalOverlay}
+          >
             <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="QR Code"
-              onPress={handlers.onQrCodePress}
-              style={({ pressed }) => [
-                styles.qrButton,
-                pressed && styles.qrButtonPressed,
-              ]}
+              onPress={event => event.stopPropagation()}
+              style={styles.qrModalCard}
             >
-              <QrCode
-                width={styles.qrIcon.width}
-                height={styles.qrIcon.height}
-                color={styles.qrIcon.color}
-              />
-              <AppText medium label="QR Code" style={styles.qrButtonText} />
+              {states.meetingQrData ? (
+                <QRCode
+                  value={states.meetingQrData}
+                  size={styles.qrModalCode.width}
+                  color={String(styles.qrCodeDark.color)}
+                  backgroundColor={String(styles.qrCodeLight.color)}
+                />
+              ) : null}
             </Pressable>
-          ) : null}
-        </View>
+          </Pressable>
+        </Modal>
 
         <View style={styles.card}>
           <AppText
