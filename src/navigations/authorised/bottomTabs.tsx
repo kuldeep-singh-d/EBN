@@ -3,7 +3,7 @@ import { routes } from '../routes';
 import { AppText } from '@components';
 import * as Screens from '@screens/index';
 import useStyles from './bottomTabs.styles';
-import { Pressable, View } from 'react-native';
+import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import {
   CreditCard,
@@ -46,8 +46,21 @@ const TAB_ITEMS: Record<string, TabItem> = {
   },
 };
 
-const BottomTabBar = ({ state, navigation }: BottomTabBarProps) => {
+const BottomTabBar = ({
+  state,
+  navigation,
+  descriptors,
+}: BottomTabBarProps) => {
   const styles = useStyles();
+  const focusedRoute = state.routes[state.index];
+  const focusedOptions = descriptors[focusedRoute.key]?.options;
+  const focusedTabBarStyle = StyleSheet.flatten(focusedOptions?.tabBarStyle) as
+    | ViewStyle
+    | undefined;
+
+  if (focusedTabBarStyle?.display === 'none') {
+    return null;
+  }
 
   return (
     <View style={styles.container}>

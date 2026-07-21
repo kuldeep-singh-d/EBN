@@ -104,6 +104,8 @@ const useMembers = () => {
     useState<ListRequestMode>('initial');
   const [isGlobalResultView, setIsGlobalResultView] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
+  const [detailSource, setDetailSource] =
+    useState<MembersRequestContext>('chapter');
   const requestContextRef = useRef<MembersRequestContext>('chapter');
   const requestModeRef = useRef<ListRequestMode>('initial');
   const globalRequestModeRef = useRef<ListRequestMode>('initial');
@@ -266,15 +268,17 @@ const useMembers = () => {
     setActiveTab(tab);
     setIsGlobalResultView(false);
     setSelectedMemberId(null);
+    setDetailSource('chapter');
   }, []);
 
   const onMemberPress = useCallback(
     (memberId: number) => {
       setSelectedMemberId(memberId);
+      setDetailSource(isGlobalResultView ? 'global' : 'chapter');
       dispatch(resetEliteMemberDetail());
       dispatch(showEliteMember(memberId));
     },
-    [dispatch],
+    [dispatch, isGlobalResultView],
   );
 
   const onSearchPress = useCallback(() => {
@@ -294,6 +298,7 @@ const useMembers = () => {
 
   const onBackToMemberList = useCallback(() => {
     setSelectedMemberId(null);
+    setDetailSource('chapter');
     dispatch(resetEliteMemberDetail());
   }, [dispatch]);
 
@@ -344,6 +349,7 @@ const useMembers = () => {
       rosterQuery,
       screenData: MEMBERS_DATA,
       selectedMember: detailResponse?.data,
+      showChapterInformationInDetail: detailSource === 'global',
       searchLoading,
     },
     handlers: {

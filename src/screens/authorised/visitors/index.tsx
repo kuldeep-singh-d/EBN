@@ -1,4 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 import { AppContainer } from '@components';
 import type { VisitorsViewMode } from './types';
@@ -20,12 +21,23 @@ const getTitleByView = (viewMode: VisitorsViewMode) => {
 
 export const Visitors = () => {
   const styles = useStyles();
+  const navigation = useNavigation();
   const [viewMode, setViewMode] = useState<VisitorsViewMode>('list');
   const [selectedVisitorId, setSelectedVisitorId] = useState<number | null>(
     null,
   );
 
   const title = useMemo(() => getTitleByView(viewMode), [viewMode]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      tabBarStyle: viewMode === 'list' ? undefined : { display: 'none' },
+    });
+
+    return () => {
+      navigation.setOptions({ tabBarStyle: undefined });
+    };
+  }, [navigation, viewMode]);
 
   const handleAddPress = useCallback(() => {
     setViewMode('create');
@@ -59,6 +71,7 @@ export const Visitors = () => {
       ]}
       headerStyle={styles.header}
       headerTitleStyle={styles.headerTitle}
+      headerIconColor={String(styles.headerIcon.color)}
     >
       {viewMode === 'list' ? (
         <VisitorList

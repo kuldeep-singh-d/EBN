@@ -4,7 +4,6 @@ import {
   BadgeIndianRupee,
   Building2,
   CalendarDays,
-  Hash,
   Mail,
   Phone,
   ReceiptText,
@@ -146,39 +145,19 @@ const VisitorDetail = ({ visitorId }: VisitorDetailProps) => {
           Icon={Building2}
         />
         <VisitorDetailRow
-          label="Chapter ID"
-          value={detail.chapter_id}
-          Icon={Hash}
-        />
-        <VisitorDetailRow
-          label="Category"
+          label="Chapter"
           value={detail.category?.name}
           Icon={UsersRound}
         />
         <VisitorDetailRow
-          label="Category ID"
-          value={detail.category_id}
-          Icon={Hash}
-        />
-        <VisitorDetailRow
-          label="Sub-Category"
+          label="Sub-Chapter"
           value={detail.sub_category?.name}
           Icon={UsersRound}
-        />
-        <VisitorDetailRow
-          label="Sub-Category ID"
-          value={detail.sub_category_id}
-          Icon={Hash}
         />
         <VisitorDetailRow
           label="Invited By"
           value={detail.inviter?.name}
           Icon={UserRound}
-        />
-        <VisitorDetailRow
-          label="Invited By ID"
-          value={detail.invited_by}
-          Icon={Hash}
         />
       </View>
 
@@ -188,26 +167,10 @@ const VisitorDetail = ({ visitorId }: VisitorDetailProps) => {
           label="Payment Information"
           style={styles.detailSectionTitle}
         />
-        <VisitorDetailRow label="Visitor ID" value={detail.id} Icon={Hash} />
         <VisitorDetailRow
           label="Status"
           value={detail.status}
           Icon={ReceiptText}
-        />
-        <VisitorDetailRow
-          label="Invoice Number"
-          value={detail.invoice_number}
-          Icon={ReceiptText}
-        />
-        <VisitorDetailRow
-          label="Payment Mode"
-          value={detail.payment_mode}
-          Icon={BadgeIndianRupee}
-        />
-        <VisitorDetailRow
-          label="Show Pay Button"
-          value={detail.show_pay_button}
-          Icon={Hash}
         />
       </View>
     </ScrollView>

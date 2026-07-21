@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   ActivityIndicator,
   NativeScrollEvent,
@@ -18,6 +18,7 @@ import {
   ReceiptText,
   X,
 } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import { AppContainer, AppText } from '@components';
 import usePayment, { getInvoiceStatus } from './usePayment';
@@ -26,6 +27,17 @@ import type { InvoicePaymentStatus, InvoiceRecord } from './types';
 export const Payment = () => {
   const { styles, states, handlers } = usePayment();
   const { screenData } = states;
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({
+      tabBarStyle: states.isDetailView ? { display: 'none' } : undefined,
+    });
+
+    return () => {
+      navigation.setOptions({ tabBarStyle: undefined });
+    };
+  }, [navigation, states.isDetailView]);
 
   const getStatusStyles = (status: InvoicePaymentStatus) => {
     switch (status) {
@@ -375,7 +387,6 @@ export const Payment = () => {
         </View>
 
         <View style={styles.customerCard}>
-          {renderDetailRow('Invoice ID', invoice.id)}
           {renderDetailRow('Payment Mode', invoice.payment_mode)}
           {renderDetailRow('Payment Status', invoice.payment_status)}
           {renderDetailRow(
@@ -389,7 +400,6 @@ export const Payment = () => {
           {renderDetailRow('Show Pay Button', invoice.show_pay_button)}
           {renderDetailRow('Created At', invoice.created_at)}
           {renderDetailRow('Chapter', invoice.chapter?.name)}
-          {renderDetailRow('Chapter ID', invoice.chapter?.id)}
         </View>
       </ScrollView>
     );

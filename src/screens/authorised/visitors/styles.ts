@@ -18,6 +18,9 @@ const useStyles = () => {
       fontSize: moderateHeight(2.1),
       textTransform: 'none',
     },
+    headerIcon: {
+      color: colors.white,
+    },
     content: {
       paddingHorizontal: moderateWidth(4.7),
       paddingTop: moderateHeight(1.4),

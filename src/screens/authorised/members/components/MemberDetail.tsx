@@ -23,14 +23,22 @@ import MemberDetailRow from './MemberDetailRow';
 type MemberDetailProps = {
   detail?: MemberApiRecord;
   loading: boolean;
+  showChapterInformation: boolean;
 };
 
-const MemberDetail = ({ detail, loading }: MemberDetailProps) => {
+const MemberDetail = ({
+  detail,
+  loading,
+  showChapterInformation,
+}: MemberDetailProps) => {
   const styles = useStyles();
   const profile = detail?.member_profile;
   const avatarSource = profile?.avatar
     ? { uri: profile.avatar }
     : images.profilePlaceholder;
+  const address = [profile?.office_address, profile?.city, profile?.pincode]
+    .filter(Boolean)
+    .join(', ');
 
   if (loading && !detail) {
     return (
@@ -95,7 +103,6 @@ const MemberDetail = ({ detail, loading }: MemberDetailProps) => {
           label="Member Information"
           style={styles.detailSectionTitle}
         />
-        <MemberDetailRow label="Member ID" value={detail.id} Icon={Hash} />
         <MemberDetailRow label="Name" value={detail.name} Icon={UserRound} />
         <MemberDetailRow label="Email" value={detail.email} Icon={Mail} />
         <MemberDetailRow label="Phone" value={detail.phone} Icon={Phone} />
@@ -156,65 +163,41 @@ const MemberDetail = ({ detail, loading }: MemberDetailProps) => {
           style={styles.detailSectionTitle}
         />
         <MemberDetailRow
-          label="Office Address"
-          value={profile?.office_address}
+          label="Address"
+          value={address || undefined}
           Icon={MapPin}
-        />
-        <MemberDetailRow label="City" value={profile?.city} Icon={MapPin} />
-        <MemberDetailRow label="Pincode" value={profile?.pincode} Icon={Hash} />
-      </View>
-
-      <View style={styles.detailCard}>
-        <AppText
-          semibold
-          label="Chapter Information"
-          style={styles.detailSectionTitle}
-        />
-        <MemberDetailRow
-          label="Chapter"
-          value={detail.primary_chapter?.name}
-          Icon={Building2}
-        />
-        <MemberDetailRow
-          label="Chapter City"
-          value={detail.primary_chapter?.city}
-          Icon={MapPin}
-        />
-        <MemberDetailRow
-          label="Chapter ID"
-          value={detail.primary_chapter?.id}
-          Icon={Hash}
-        />
-        <MemberDetailRow
-          label="Category"
-          value={detail.category?.name}
-          Icon={UsersRound}
-        />
-        <MemberDetailRow
-          label="Sub-Category"
-          value={detail.sub_category?.name}
-          Icon={UsersRound}
         />
       </View>
 
-      <View style={styles.detailCard}>
-        <AppText
-          semibold
-          label="Membership Dates"
-          style={styles.detailSectionTitle}
-        />
-        <MemberDetailRow label="DOB" value={profile?.dob} Icon={CalendarDays} />
-        <MemberDetailRow
-          label="Induction Date"
-          value={profile?.induction_date}
-          Icon={CalendarDays}
-        />
-        <MemberDetailRow
-          label="Renewal Date"
-          value={profile?.renewal_date}
-          Icon={CalendarDays}
-        />
-      </View>
+      {showChapterInformation ? (
+        <View style={styles.detailCard}>
+          <AppText
+            semibold
+            label="Chapter Information"
+            style={styles.detailSectionTitle}
+          />
+          <MemberDetailRow
+            label="Chapter"
+            value={detail.primary_chapter?.name}
+            Icon={Building2}
+          />
+          <MemberDetailRow
+            label="Chapter City"
+            value={detail.primary_chapter?.city}
+            Icon={MapPin}
+          />
+          <MemberDetailRow
+            label="Category"
+            value={detail.category?.name}
+            Icon={UsersRound}
+          />
+          <MemberDetailRow
+            label="Sub-Category"
+            value={detail.sub_category?.name}
+            Icon={UsersRound}
+          />
+        </View>
+      ) : null}
     </ScrollView>
   );
 };

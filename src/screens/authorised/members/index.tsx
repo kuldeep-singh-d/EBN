@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import useMembers from './useMembers';
 import { X } from 'lucide-react-native';
 import { AppContainer, AppText } from '@components';
+import { useNavigation } from '@react-navigation/native';
 import MemberDetail from './components/MemberDetail';
 import GlobalSearchForm from './components/GlobalSearchForm';
 import MemberListContent from './components/MemberListContent';
@@ -10,6 +11,18 @@ import { GestureResponderEvent, Pressable, View } from 'react-native';
 export const Members = () => {
   const { styles, states, handlers } = useMembers();
   const { activeTab, screenData } = states;
+  const navigation = useNavigation();
+  const shouldHideBottomTab = states.isDetailView || states.isGlobalResultView;
+
+  useEffect(() => {
+    navigation.setOptions({
+      tabBarStyle: shouldHideBottomTab ? { display: 'none' } : undefined,
+    });
+
+    return () => {
+      navigation.setOptions({ tabBarStyle: undefined });
+    };
+  }, [navigation, shouldHideBottomTab]);
 
   const handleClearGlobalSearch = (event: GestureResponderEvent) => {
     event.stopPropagation();
@@ -40,6 +53,7 @@ export const Members = () => {
           <MemberDetail
             detail={states.selectedMember}
             loading={states.isDetailLoading}
+            showChapterInformation={states.showChapterInformationInDetail}
           />
         ) : (
           <>
