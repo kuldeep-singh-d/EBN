@@ -218,29 +218,40 @@ export const Home = () => {
             label="THIS MONTH'S SLIPS"
           />
           <View style={styles.slipsList}>
-            {slips.map(({ id, label, value, icon: Icon }) => (
-              <View key={id} style={styles.slipRow}>
-                <View style={styles.slipLabelRow}>
-                  <Icon
-                    width={styles.slipIcon.width}
-                    height={styles.slipIcon.height}
-                    color={styles.slipIcon.color}
-                  />
-                  <AppText label={label} style={styles.slipLabel} />
-                </View>
-                <View style={styles.slipValueRow}>
-                  <AppText
-                    semibold
-                    label={value}
-                    numberOfLines={1}
-                    adjustsFontSizeToFit
-                    minimumFontScale={0.78}
-                    style={styles.slipValue}
-                  />
-                  <AppText label="+" style={styles.plusText} />
-                </View>
-              </View>
-            ))}
+            {slips.map(slip => {
+              const { id, label, value, icon: Icon, navigationTarget } = slip;
+
+              return (
+                <Pressable
+                  key={id}
+                  accessibilityRole={navigationTarget ? 'button' : undefined}
+                  accessibilityLabel={navigationTarget ? label : undefined}
+                  disabled={!navigationTarget}
+                  onPress={() => handlers.onSlipPress(slip)}
+                  style={styles.slipRow}
+                >
+                  <View style={styles.slipLabelRow}>
+                    <Icon
+                      width={styles.slipIcon.width}
+                      height={styles.slipIcon.height}
+                      color={styles.slipIcon.color}
+                    />
+                    <AppText label={label} style={styles.slipLabel} />
+                  </View>
+                  <View style={styles.slipValueRow}>
+                    <AppText
+                      semibold
+                      label={value}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                      minimumFontScale={0.78}
+                      style={styles.slipValue}
+                    />
+                    <AppText label="+" style={styles.plusText} />
+                  </View>
+                </Pressable>
+              );
+            })}
           </View>
         </View>
 

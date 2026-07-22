@@ -2,10 +2,13 @@ import useStyles from './styles';
 import moment from 'moment';
 import { images } from '@assets/images';
 import { useDispatch, useSelector } from '@hooks';
+import { routes } from '@navigation/routes';
+import { useNavigation } from '@react-navigation/native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   HomeData,
   HomeQuickAction,
+  HomeSlip,
   HomeStatsRange,
   HomeTrafficLightScoreTone,
 } from './types';
@@ -30,6 +33,7 @@ import {
   resetMeetingQrCode,
 } from '@store/slices/app/meetings/meetings';
 import { getTrafficLightData } from '@store/slices/app/trafficLight/trafficLight';
+import type { SlipFormType } from '../slips/types';
 
 type DashboardProfile = {
   name?: string;
@@ -236,12 +240,68 @@ const ACTIVITY_ICONS = {
 const SLIP_ICONS = [Handshake, Send, BookOpen, UserCheck];
 const FALLBACK_MEETING_QR_ID = 1;
 
+const SLIP_NAVIGATION_TARGETS: Array<{
+  labels: string[];
+  form: SlipFormType;
+}> = [
+  {
+    labels: ['elite meet', 'elite meets'],
+    form: 'meet',
+  },
+  {
+    labels: ['elite referrals given', 'elite referral given'],
+    form: 'referral',
+  },
+  {
+    labels: ['elite referrals received', 'elite referral received'],
+    form: 'referral',
+  },
+  {
+    labels: [
+      'elite close business given',
+      'elite close bussiness given',
+      'elite close businesses given',
+    ],
+    form: 'elite',
+  },
+  {
+    labels: [
+      'elite close business received',
+      'elite close bussiness received',
+      'elite close businesses received',
+    ],
+    form: 'elite',
+  },
+];
+
 const getActivityIcon = (icon?: string, index = 0) => {
   if (icon && icon in ACTIVITY_ICONS) {
     return ACTIVITY_ICONS[icon as keyof typeof ACTIVITY_ICONS];
   }
 
   return SLIP_ICONS[index % SLIP_ICONS.length];
+};
+
+const normalizeActivityLabel = (label?: string) =>
+  (label || '')
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+
+const getSlipNavigationTarget = (label?: string) => {
+  const normalizedLabel = normalizeActivityLabel(label);
+  const target = SLIP_NAVIGATION_TARGETS.find(item =>
+    item.labels.some(
+      option => normalizeActivityLabel(option) === normalizedLabel,
+    ),
+  );
+
+  return target
+    ? {
+        form: target.form,
+      }
+    : undefined;
 };
 
 const getNextMeetingData = (nextMeeting?: DashboardNextMeeting | null) => {
@@ -283,7 +343,7 @@ const getMeetingQrRequestId = (response?: DashboardResponse) => {
   );
 };
 
-const getActivitySlips = (activities?: DashboardActivity[]) => {
+const getActivitySlips = (activities?: DashboardActivity[]): HomeSlip[] => {
   if (!activities?.length) {
     return HOME_DATA.slips;
   }
@@ -293,6 +353,7 @@ const getActivitySlips = (activities?: DashboardActivity[]) => {
     label: activity.label || '-',
     value: String(activity.value ?? '0'),
     icon: getActivityIcon(activity.icon, index),
+    navigationTarget: getSlipNavigationTarget(activity.label),
   }));
 };
 
@@ -369,6 +430,7 @@ const getTrafficLightScreenData = (
 const useHome = () => {
   const styles = useStyles();
   const dispatch = useDispatch();
+  const navigation = useNavigation<any>();
   const dashboardRequestRef = useRef(false);
   const refreshRequestStartedRef = useRef(false);
   const dashboardResponse = useSelector(
@@ -501,6 +563,19 @@ const useHome = () => {
     });
   }, []);
 
+  const onSlipPress = useCallback(
+    (slip: HomeSlip) => {
+      if (!slip.navigationTarget) {
+        return;
+      }
+
+      navigation.navigate(routes.app.slips, {
+        initialForm: slip.navigationTarget.form,
+      });
+    },
+    [navigation],
+  );
+
   const meetingQrData =
     qrCodeResponse?.status === 'success'
       ? qrCodeResponse.data?.qr_data || undefined
@@ -551,6 +626,7 @@ const useHome = () => {
       onQrCodePress,
       onRefresh,
       onQuickActionPress,
+      onSlipPress,
       setSelectedStatsRange: handleStatsRangeChange,
     },
     constants: {},

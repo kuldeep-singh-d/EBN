@@ -1,11 +1,15 @@
 import type { ImageSourcePropType } from 'react-native';
 import type { LucideIcon } from 'lucide-react-native';
+import type { SlipFormType } from '../slips/types';
 
 export type HomeSlip = {
   id: string;
   label: string;
   value: string;
   icon: LucideIcon;
+  navigationTarget?: {
+    form: SlipFormType;
+  };
 };
 
 export type HomeQuickAction = {

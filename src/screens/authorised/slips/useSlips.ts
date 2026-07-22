@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useRoute } from '@react-navigation/native';
 import { BadgeIndianRupee, Handshake, NotebookTabs } from 'lucide-react-native';
 
 import { useDispatch, useSelector } from '@hooks';
@@ -28,6 +29,7 @@ import type {
   SlipFormType,
   SlipRecord,
   SlipsData,
+  SlipsRouteParams,
   SlipsTabKey,
   SlipType,
 } from './types';
@@ -104,6 +106,26 @@ const getApiFilterType = (type: SlipType | null): SlipApiType | null =>
     ? FILTER_OPTIONS.find(option => option.key === type)?.apiType ?? null
     : null;
 
+const getValidRouteTab = (tab?: SlipsRouteParams['initialTab']) =>
+  tab === 'given' || tab === 'received' ? tab : 'given';
+
+const getValidRouteFilter = (
+  filter?: SlipsRouteParams['initialFilter'],
+): SlipType | null =>
+  filter === 'meet' || filter === 'elite' || filter === 'referral'
+    ? filter
+    : null;
+
+const getValidRouteForm = (
+  form?: SlipsRouteParams['initialForm'],
+): SlipFormType | null =>
+  form === 'meet' || form === 'elite' || form === 'referral' ? form : null;
+
+const getRouteParamsSignature = (params: SlipsRouteParams) =>
+  `${params.initialTab ?? ''}|${params.initialFilter ?? ''}|${
+    params.initialForm ?? ''
+  }`;
+
 const getSlipTitle = (activity: EliteActivityItem) => {
   const data = activity.data;
   const type = getSlipType(activity.type);
@@ -171,11 +193,21 @@ const mapActivityToSlip = (
 const useSlips = () => {
   const styles = useStyles();
   const dispatch = useDispatch();
-  const [activeTab, setActiveTab] = useState<SlipsTabKey>('given');
-  const [selectedFilter, setSelectedFilter] = useState<SlipType | null>(null);
+  const route = useRoute();
+  const routeParams = (route.params ?? {}) as SlipsRouteParams;
+  const { initialFilter, initialForm, initialTab } = routeParams;
+  const appliedRouteParamsRef = useRef(getRouteParamsSignature(routeParams));
+  const [activeTab, setActiveTab] = useState<SlipsTabKey>(() =>
+    getValidRouteTab(initialTab),
+  );
+  const [selectedFilter, setSelectedFilter] = useState<SlipType | null>(() =>
+    getValidRouteFilter(initialFilter),
+  );
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [isAddMenuVisible, setIsAddMenuVisible] = useState(false);
-  const [activeForm, setActiveForm] = useState<SlipFormType | null>(null);
+  const [activeForm, setActiveForm] = useState<SlipFormType | null>(() =>
+    getValidRouteForm(initialForm),
+  );
   const [selectedSlip, setSelectedSlip] = useState<SlipRecord | null>(null);
   const [slips, setSlips] = useState<SlipRecord[]>([]);
   const [nextPage, setNextPage] = useState<number | null>(null);
@@ -250,6 +282,33 @@ const useSlips = () => {
       dispatch(resetEliteActivitiesList());
     };
   }, [dispatch, fetchSlips]);
+
+  useEffect(() => {
+    const routeParamsSignature = getRouteParamsSignature({
+      initialFilter,
+      initialForm,
+      initialTab,
+    });
+
+    if (appliedRouteParamsRef.current === routeParamsSignature) {
+      return;
+    }
+
+    appliedRouteParamsRef.current = routeParamsSignature;
+
+    const nextTab = getValidRouteTab(initialTab);
+    const nextFilter = getValidRouteFilter(initialFilter);
+    const nextForm = getValidRouteForm(initialForm);
+
+    setActiveTab(nextTab);
+    setSelectedFilter(nextFilter);
+    setIsFilterVisible(false);
+    setIsAddMenuVisible(false);
+    setActiveForm(nextForm);
+    setSelectedSlip(null);
+    setSlips([]);
+    resetSlipDetails();
+  }, [initialFilter, initialForm, initialTab, resetSlipDetails]);
 
   useEffect(() => {
     const pagination = activitiesResponse?.data;

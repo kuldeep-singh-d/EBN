@@ -10,6 +10,12 @@ export type SlipFormType = SlipType;
 
 export type SlipDetailType = SlipApiType;
 
+export type SlipsRouteParams = {
+  initialTab?: SlipsTabKey;
+  initialFilter?: SlipType | null;
+  initialForm?: SlipFormType | null;
+};
+
 export type SlipFilterOption = {
   key: SlipType;
   apiType: SlipApiType;
