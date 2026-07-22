@@ -8,17 +8,17 @@ import {
   ScrollView,
   View,
 } from 'react-native';
-import {
-  ChevronRight,
-  CirclePlus,
-  X,
-  SlidersHorizontal,
-} from 'lucide-react-native';
+import { ChevronRight, CirclePlus, Funnel, X } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { AppContainer, AppText } from '@components';
 import useSlips from './useSlips';
-import { EliteSlipForm, MeetSlipForm, ReferralSlipForm } from './modules';
+import {
+  EliteSlipForm,
+  MeetSlipForm,
+  ReferralSlipForm,
+  SlipDetail,
+} from './modules';
 import type { SlipFilterOption, SlipFormType, SlipRecord } from './types';
 
 export const Slips = () => {
@@ -28,13 +28,16 @@ export const Slips = () => {
 
   useEffect(() => {
     navigation.setOptions({
-      tabBarStyle: states.activeForm ? { display: 'none' } : undefined,
+      tabBarStyle:
+        states.activeForm || states.selectedSlip
+          ? { display: 'none' }
+          : undefined,
     });
 
     return () => {
       navigation.setOptions({ tabBarStyle: undefined });
     };
-  }, [navigation, states.activeForm]);
+  }, [navigation, states.activeForm, states.selectedSlip]);
 
   const renderSlipIcon = (slip: SlipRecord) => {
     const Icon = screenData.filterOptions.find(
@@ -136,7 +139,7 @@ export const Slips = () => {
     <Pressable
       key={slip.id}
       accessibilityRole="button"
-      onPress={() => handlers.onSlipPress(slip.id)}
+      onPress={() => handlers.onSlipPress(slip)}
       style={({ pressed }) => [
         styles.slipCard,
         pressed && styles.slipCardPressed,
@@ -186,18 +189,36 @@ export const Slips = () => {
     switch (form) {
       case 'meet':
         return (
-          <MeetSlipForm styles={styles} onBackPress={handlers.onBackToList} />
+          <MeetSlipForm
+            styles={styles}
+            onBackPress={handlers.onBackToList}
+            onCreated={() => {
+              handlers.onBackToList();
+              handlers.refreshSlips();
+            }}
+          />
         );
       case 'referral':
         return (
           <ReferralSlipForm
             styles={styles}
             onBackPress={handlers.onBackToList}
+            onCreated={() => {
+              handlers.onBackToList();
+              handlers.refreshSlips();
+            }}
           />
         );
       default:
         return (
-          <EliteSlipForm styles={styles} onBackPress={handlers.onBackToList} />
+          <EliteSlipForm
+            styles={styles}
+            onBackPress={handlers.onBackToList}
+            onCreated={() => {
+              handlers.onBackToList();
+              handlers.refreshSlips();
+            }}
+          />
         );
     }
   };
@@ -239,7 +260,7 @@ export const Slips = () => {
             pressed && styles.filterButtonPressed,
           ]}
         >
-          <SlidersHorizontal
+          <Funnel
             width={styles.filterIcon.width}
             height={styles.filterIcon.height}
             color={
@@ -387,14 +408,18 @@ export const Slips = () => {
     <AppContainer
       listing
       centerTitle
-      hideBackBtn={!states.activeForm}
+      hideBackBtn={!states.activeForm && !states.selectedSlip}
       title={
         states.activeForm
-          ? `${
-              screenData.filterOptions.find(
-                option => option.key === states.activeForm,
-              )?.label ?? 'Slip'
-            } Slip`
+          ? states.activeForm === 'meet'
+            ? 'Elite Meet Slip'
+            : `${
+                screenData.filterOptions.find(
+                  option => option.key === states.activeForm,
+                )?.label ?? 'Slip'
+              } Slip`
+          : states.selectedSlip
+          ? 'Slip Detail'
           : screenData.title
       }
       onBackPress={handlers.onBackToList}
@@ -404,7 +429,18 @@ export const Slips = () => {
       headerStyle={styles.header}
       headerTitleStyle={styles.headerTitle}
     >
-      {states.activeForm ? renderActiveForm(states.activeForm) : renderList()}
+      {states.activeForm ? (
+        renderActiveForm(states.activeForm)
+      ) : states.selectedSlip ? (
+        <SlipDetail
+          slip={states.selectedSlip}
+          detail={states.slipDetail}
+          loading={states.isSlipDetailLoading}
+          styles={styles}
+        />
+      ) : (
+        renderList()
+      )}
     </AppContainer>
   );
 };

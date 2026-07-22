@@ -41,6 +41,14 @@ const slice = createSlice({
 export const actions = slice.actions;
 export default slice.reducer;
 
+export const resetEliteMeetDetail = () => ({
+  type: actions.detailReset.type,
+});
+
+export const resetEliteMeetCreate = () => ({
+  type: actions.createReset.type,
+});
+
 export const listEliteMeets = (params = { status: 'Scheduled' }) =>
   apiCallBegan({
     params,

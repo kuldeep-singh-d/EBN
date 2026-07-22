@@ -55,6 +55,9 @@ const AppDatePicker = ({
     if (mode === 'time') {
       return moment(value).format('hh:mm A'); // 12-hour format with AM/PM
     }
+    if (mode === 'datetime') {
+      return moment(value).format('DD-MM-YYYY hh:mm A');
+    }
     return moment(value).format('DD-MM-YYYY');
   };
 

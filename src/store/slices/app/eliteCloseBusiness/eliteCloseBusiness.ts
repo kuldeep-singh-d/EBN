@@ -28,11 +28,13 @@ const slice = createSlice({
       requestReducers.success(state.create, action),
     createFailed: (state, action) =>
       requestReducers.failed(state.create, action),
+    createReset: state => requestReducers.reset(state.create),
     detailRequested: state => requestReducers.requested(state.detail),
     detailSuccess: (state, action) =>
       requestReducers.success(state.detail, action),
     detailFailed: (state, action) =>
       requestReducers.failed(state.detail, action),
+    detailReset: state => requestReducers.reset(state.detail),
     updateRequested: state => requestReducers.requested(state.update),
     updateSuccess: (state, action) =>
       requestReducers.success(state.update, action),
@@ -43,6 +45,14 @@ const slice = createSlice({
 
 export const actions = slice.actions;
 export default slice.reducer;
+
+export const resetEliteCloseBusinessDetail = () => ({
+  type: actions.detailReset.type,
+});
+
+export const resetEliteCloseBusinessCreate = () => ({
+  type: actions.createReset.type,
+});
 
 export const getAvailableReferrals = () =>
   apiCallBegan({

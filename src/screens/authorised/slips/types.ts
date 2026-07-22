@@ -4,10 +4,15 @@ export type SlipsTabKey = 'given' | 'received';
 
 export type SlipType = 'meet' | 'elite' | 'referral';
 
+export type SlipApiType = 'meet' | 'referral' | 'close_business';
+
 export type SlipFormType = SlipType;
+
+export type SlipDetailType = SlipApiType;
 
 export type SlipFilterOption = {
   key: SlipType;
+  apiType: SlipApiType;
   label: string;
   icon: LucideIcon;
 };
@@ -20,6 +25,8 @@ export type SlipRecord = {
   title: string;
   subtitle: string;
   amount?: string;
+  detailId?: string | number;
+  detailType: SlipDetailType;
   isHighlighted?: boolean;
   raw?: EliteActivityItem;
 };
@@ -61,3 +68,17 @@ export type EliteActivitiesListResponse = {
 };
 
 export type SlipAddOption = SlipFilterOption;
+
+export type SlipDetailPayload = Record<string, unknown> & {
+  id?: string | number;
+  status?: string | null;
+  status_label?: string | null;
+  with_member_name?: string | null;
+  prospect_name?: string | null;
+};
+
+export type SlipDetailResponse = {
+  status?: string;
+  message?: string;
+  data?: SlipDetailPayload;
+};
