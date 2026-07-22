@@ -1,17 +1,20 @@
 import fonts from '@assets/fonts';
-import { Animated, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { useDeviceDimensions } from '@hooks/useDeviceDimensions';
 
-const useStyles = (fadeAnim: Animated.Value) => {
+const useStyles = () => {
   const { colors } = useTheme();
   const { moderateWidth, moderateHeight } = useDeviceDimensions();
 
   return StyleSheet.create({
-    // ── Trigger ──
     wrapper: {
       flex: 1,
+      zIndex: 1,
       marginTop: moderateHeight(1),
+    },
+    wrapperOpen: {
+      zIndex: 20,
     },
     title: {
       flex: 1,
@@ -19,15 +22,21 @@ const useStyles = (fadeAnim: Animated.Value) => {
       marginBottom: moderateHeight(0.3),
     },
     inputWrapper: {
+      minHeight: moderateHeight(5),
       flexDirection: 'row',
       alignItems: 'center',
-      minHeight: moderateHeight(5),
-      borderWidth: moderateWidth(0.4),
       justifyContent: 'space-between',
-      borderRadius: moderateWidth(2.5),
-      paddingHorizontal: moderateWidth(4),
-      borderColor: colors.border as string,
       paddingVertical: moderateHeight(0.5),
+      paddingHorizontal: moderateWidth(4),
+      borderRadius: moderateWidth(2.5),
+      backgroundColor: colors.white as string,
+      borderWidth: moderateWidth(0.4),
+      borderColor: colors.border as string,
+    },
+    inputWrapperOpen: {
+      borderColor: colors.primary as string,
+      borderBottomLeftRadius: moderateWidth(1.2),
+      borderBottomRightRadius: moderateWidth(1.2),
     },
     disabledInputWrapper: {
       opacity: 0.65,
@@ -47,146 +56,162 @@ const useStyles = (fadeAnim: Animated.Value) => {
     },
     selectedText: {
       flex: 1,
-      // fontSize: moderateHeight(1.8),
+    },
+    clearButton: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: moderateWidth(2),
+    },
+    clearIcon: {
+      width: moderateWidth(4),
+      height: moderateWidth(4),
+      color: colors.gray as string,
+    },
+    chevronIcon: {
+      width: moderateWidth(4.5),
+      height: moderateWidth(4.5),
+      color: colors.primary as string,
     },
     errorText: {
       textAlign: 'right',
       marginTop: moderateHeight(0.5),
     },
-
-    // ── Chips (multi-select trigger) ──
     chipsScrollContainer: {
       flex: 1,
       maxHeight: moderateHeight(4),
     },
     chipsContentContainer: {
       alignItems: 'center',
-      gap: moderateWidth(1.5),
+      columnGap: moderateWidth(1.5),
     },
     chip: {
+      maxWidth: moderateWidth(42),
       flexDirection: 'row',
       alignItems: 'center',
-      gap: moderateWidth(1),
       borderRadius: moderateWidth(4),
       paddingVertical: moderateHeight(0.3),
       paddingHorizontal: moderateWidth(2.5),
-      backgroundColor: `rgba(59, 130, 246, 0.12)`,
+      backgroundColor: colors.primarySurface as string,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: colors.primaryBorder as string,
     },
     chipLabel: {
+      flexShrink: 1,
       fontFamily: fonts.medium,
-      fontSize: moderateHeight(1.5),
+      fontSize: moderateHeight(1.35),
       color: colors.primary as string,
     },
     chipClose: {
-      padding: moderateWidth(0.5),
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: moderateWidth(1),
     },
-    chipCloseText: {
-      fontSize: moderateHeight(1.3),
+    chipCloseIcon: {
+      width: moderateWidth(3.2),
+      height: moderateWidth(3.2),
       color: colors.primary as string,
     },
-
-    // ── Modal ──
-    modalOverlay: {
-      flex: 1,
-      opacity: fadeAnim,
-      justifyContent: 'flex-end',
-      backgroundColor: 'rgba(0,0,0,0.35)',
-    },
-    keyboardAvoider: {
-      flex: 1,
-    },
-    overlayPress: {
-      flex: 1,
-    },
-    modalCard: {
-      maxHeight: '70%',
-      shadowColor: '#000',
-      paddingBottom: moderateHeight(3),
-      borderTopLeftRadius: moderateWidth(5),
-      borderTopRightRadius: moderateWidth(5),
+    inlinePanel: {
+      maxHeight: moderateHeight(30),
+      overflow: 'hidden',
+      marginTop: moderateHeight(0.45),
+      borderRadius: moderateWidth(2.2),
       backgroundColor: colors.white as string,
-      shadowOffset: { width: 0, height: -3 },
-      shadowOpacity: 0.1,
-      shadowRadius: 6,
-      elevation: 10,
-      transform: [
-        {
-          translateY: fadeAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [300, 0],
-          }),
-        },
-      ],
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: colors.primaryBorder as string,
+      elevation: 6,
+      shadowColor: colors.black,
+      shadowOffset: { width: 0, height: 5 },
+      shadowOpacity: 0.14,
+      shadowRadius: 10,
     },
-    modalHeader: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingTop: moderateHeight(2),
-      justifyContent: 'space-between',
-      paddingBottom: moderateHeight(1),
-      paddingHorizontal: moderateWidth(5),
-    },
-    modalTitle: {
-      fontFamily: fonts.semibold,
-      color: colors.text as string,
-      fontSize: moderateHeight(2.2),
-    },
-    modalCloseBtn: {
-      padding: moderateWidth(1),
-    },
-
-    // ── Search inside modal ──
     searchContainer: {
-      marginBottom: moderateHeight(1),
-      paddingHorizontal: moderateWidth(5),
+      paddingHorizontal: moderateWidth(2.2),
+      paddingTop: moderateHeight(1),
+      paddingBottom: moderateHeight(0.6),
+      backgroundColor: colors.white as string,
     },
     searchInput: {
-      paddingVertical: 0,
-      fontFamily: fonts.regular,
-      includeFontPadding: false,
-      textAlignVertical: 'center',
-      height: moderateHeight(5),
-      borderColor: colors.border,
+      height: moderateHeight(4.7),
       color: colors.text as string,
-      fontSize: moderateHeight(1.8),
-      borderWidth: moderateWidth(0.4),
-      borderRadius: moderateWidth(2.5),
-      paddingHorizontal: moderateWidth(4),
+      fontFamily: fonts.regular,
+      fontSize: moderateHeight(1.45),
+      paddingVertical: 0,
+      paddingHorizontal: moderateWidth(3),
+      borderRadius: moderateWidth(1.8),
+      backgroundColor: colors.primarySurface as string,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: colors.primaryBorder as string,
     },
-
-    // ── List items ──
     listContentContainer: {
-      paddingHorizontal: moderateWidth(5),
+      paddingVertical: moderateHeight(0.45),
+      paddingHorizontal: moderateWidth(1.2),
     },
     itemRow: {
+      minHeight: moderateHeight(5),
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingVertical: moderateHeight(1.5),
-      borderBottomColor: colors.border as string,
-      borderBottomWidth: StyleSheet.hairlineWidth,
+      paddingVertical: moderateHeight(0.8),
+      paddingHorizontal: moderateWidth(2.6),
+      borderRadius: moderateWidth(1.7),
+    },
+    itemRowSelected: {
+      backgroundColor: colors.primarySurface as string,
+    },
+    itemRowPressed: {
+      opacity: 0.72,
     },
     itemLabel: {
       flex: 1,
       fontFamily: fonts.regular,
       color: colors.text as string,
-      fontSize: moderateHeight(1.9),
+      fontSize: moderateHeight(1.45),
+      lineHeight: moderateHeight(1.95),
     },
     itemSelected: {
       fontFamily: fonts.medium,
       color: colors.primary as string,
     },
     checkIcon: {
+      width: moderateWidth(6),
+      height: moderateWidth(6),
+      alignItems: 'center',
+      justifyContent: 'center',
       marginLeft: moderateWidth(2),
+      borderRadius: moderateWidth(3),
+      backgroundColor: colors.primary as string,
+    },
+    checkGlyph: {
+      width: moderateWidth(3.5),
+      height: moderateWidth(3.5),
+      color: colors.white as string,
     },
     emptyContainer: {
+      minHeight: moderateHeight(8),
       alignItems: 'center',
-      paddingVertical: moderateHeight(4),
+      justifyContent: 'center',
+      paddingVertical: moderateHeight(2),
+      paddingHorizontal: moderateWidth(3),
     },
     emptyText: {
-      fontFamily: fonts.regular,
       color: colors.gray as string,
-      fontSize: moderateHeight(1.8),
+      fontFamily: fonts.regular,
+      fontSize: moderateHeight(1.4),
+      lineHeight: moderateHeight(1.9),
+    },
+    doneButton: {
+      minHeight: moderateHeight(4.8),
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: moderateWidth(1.2),
+      marginBottom: moderateHeight(1),
+      borderRadius: moderateWidth(1.8),
+      backgroundColor: colors.primary as string,
+    },
+    doneText: {
+      color: colors.white as string,
+      fontSize: moderateHeight(1.35),
     },
   });
 };

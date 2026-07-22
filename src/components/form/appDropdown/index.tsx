@@ -1,15 +1,10 @@
-import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import {
-  View,
-  Modal,
-  Platform,
-  Animated,
-  FlatList,
-  Pressable,
-  TextInput,
-  ScrollView,
   ActivityIndicator,
-  KeyboardAvoidingView,
+  Pressable,
+  ScrollView,
+  TextInput,
+  View,
 } from 'react-native';
 
 import useStyles from './styles';
@@ -45,136 +40,78 @@ const AppDropdown = ({
 }: AppDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const styles = useStyles(fadeAnim);
+  const styles = useStyles();
   const { colors } = useTheme();
 
-  // ── Filtered items based on search ──
   const filteredItems = useMemo(() => {
     if (!searchQuery.trim()) {
       return itemList;
     }
-    const q = searchQuery.toLowerCase().trim();
-    return itemList.filter(item => item.label.toLowerCase().includes(q));
+
+    const query = searchQuery.toLowerCase().trim();
+
+    return itemList.filter(item => item.label.toLowerCase().includes(query));
   }, [itemList, searchQuery]);
 
-  // ── Open / Close helpers ──
-  const openModal = useCallback(() => {
+  const openDropdown = useCallback(() => {
     if (disabled || loading) {
       return;
     }
 
-    setIsOpen(true);
+    setIsOpen(current => !current);
     setSearchQuery('');
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 200,
-      useNativeDriver: true,
-    }).start();
-  }, [disabled, fadeAnim, loading]);
+  }, [disabled, loading]);
 
-  const closeModal = useCallback(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 150,
-      useNativeDriver: true,
-    }).start(() => {
-      setIsOpen(false);
-      setSearchQuery('');
-    });
-  }, [fadeAnim]);
+  const closeDropdown = useCallback(() => {
+    setIsOpen(false);
+    setSearchQuery('');
+  }, []);
 
-  // ── Single select handler ──
   const handleSingleSelect = useCallback(
     (item: DropdownItem) => {
       onSelectItem?.(item);
       setError?.('');
-      closeModal();
+      closeDropdown();
     },
-    [onSelectItem, setError, closeModal],
+    [closeDropdown, onSelectItem, setError],
   );
 
-  // ── Multi select toggle ──
   const handleMultiToggle = useCallback(
     (item: DropdownItem) => {
       const isSelected = selectedValues.some(v => v.value === item.value);
-      let updated: DropdownItem[];
-      if (isSelected) {
-        updated = selectedValues.filter(v => v.value !== item.value);
-      } else {
-        updated = [...selectedValues, item];
-      }
+      const updated = isSelected
+        ? selectedValues.filter(v => v.value !== item.value)
+        : [...selectedValues, item];
+
       onSelectItems?.(updated);
       setError?.('');
     },
-    [selectedValues, onSelectItems, setError],
+    [onSelectItems, selectedValues, setError],
   );
 
-  // ── Remove chip ──
   const handleRemoveChip = useCallback(
     (item: DropdownItem) => {
       const updated = selectedValues.filter(v => v.value !== item.value);
       onSelectItems?.(updated);
+      setError?.('');
     },
-    [selectedValues, onSelectItems],
+    [onSelectItems, selectedValues, setError],
   );
 
-  // ── Clear single selection ──
   const handleClearSelection = useCallback(() => {
     onSelectItem?.(null);
-  }, [onSelectItem]);
+    setError?.('');
+  }, [onSelectItem, setError]);
 
-  // ── Check if item is selected (multi) ──
   const isItemSelected = useCallback(
     (item: DropdownItem) => {
-      return selectedValues.some(v => v.value === item.value);
-    },
-    [selectedValues],
-  );
-
-  // ── Render individual list item ──
-  const renderItem = useCallback(
-    ({ item }: { item: DropdownItem }) => {
-      const selected = multiSelection
-        ? isItemSelected(item)
+      return multiSelection
+        ? selectedValues.some(v => v.value === item.value)
         : selectedValue?.value === item.value;
-
-      return (
-        <Pressable
-          style={styles.itemRow}
-          onPress={() => {
-            return multiSelection
-              ? handleMultiToggle(item)
-              : handleSingleSelect(item);
-          }}
-        >
-          <AppText
-            numberOfLines={1}
-            label={item.label}
-            style={[styles.itemLabel, selected && styles.itemSelected]}
-          />
-          {selected && (
-            <View style={styles.checkIcon}>
-              <Check height={18} width={18} />
-            </View>
-          )}
-        </Pressable>
-      );
     },
-    [
-      styles,
-      selectedValue,
-      multiSelection,
-      isItemSelected,
-      handleMultiToggle,
-      handleSingleSelect,
-    ],
+    [multiSelection, selectedValue, selectedValues],
   );
 
-  // ── Key extractor ──
-  const keyExtractor = useCallback((item: DropdownItem) => item.value, []);
-
-  // ── Trigger content ──
   const renderTriggerContent = () => {
     if (multiSelection) {
       if (selectedValues.length === 0) {
@@ -187,6 +124,7 @@ const AppDropdown = ({
           />
         );
       }
+
       return (
         <ScrollView
           horizontal
@@ -205,9 +143,16 @@ const AppDropdown = ({
               <Pressable
                 hitSlop={6}
                 style={styles.chipClose}
-                onPress={() => handleRemoveChip(item)}
+                onPress={event => {
+                  event.stopPropagation();
+                  handleRemoveChip(item);
+                }}
               >
-                <AppText style={styles.chipCloseText} label="✕" />
+                <X
+                  width={styles.chipCloseIcon.width}
+                  height={styles.chipCloseIcon.height}
+                  color={styles.chipCloseIcon.color}
+                />
               </Pressable>
             </View>
           ))}
@@ -215,7 +160,6 @@ const AppDropdown = ({
       );
     }
 
-    // Single select
     return (
       <AppText
         medium
@@ -230,20 +174,56 @@ const AppDropdown = ({
     );
   };
 
+  const renderDropdownItem = (item: DropdownItem) => {
+    const selected = isItemSelected(item);
+
+    return (
+      <Pressable
+        key={item.value}
+        accessibilityRole="button"
+        accessibilityState={{ selected }}
+        onPress={() =>
+          multiSelection ? handleMultiToggle(item) : handleSingleSelect(item)
+        }
+        style={({ pressed }) => [
+          styles.itemRow,
+          selected && styles.itemRowSelected,
+          pressed && styles.itemRowPressed,
+        ]}
+      >
+        <AppText
+          numberOfLines={1}
+          label={item.label}
+          style={[styles.itemLabel, selected && styles.itemSelected]}
+        />
+        {selected ? (
+          <View style={styles.checkIcon}>
+            <Check
+              width={styles.checkGlyph.width}
+              height={styles.checkGlyph.height}
+              color={styles.checkGlyph.color}
+            />
+          </View>
+        ) : null}
+      </Pressable>
+    );
+  };
+
   return (
-    <View style={[styles.wrapper, wrapperStyle]}>
+    <View style={[styles.wrapper, wrapperStyle, isOpen && styles.wrapperOpen]}>
       {title !== '' && <AppText medium label={title} style={styles.title} />}
 
       <Pressable
         disabled={disabled || loading}
         style={[
           styles.inputWrapper,
+          isOpen && styles.inputWrapperOpen,
           disabled && styles.disabledInputWrapper,
           style,
         ]}
-        onPress={openModal}
+        onPress={openDropdown}
         accessibilityRole="button"
-        accessibilityState={{ disabled: disabled || loading }}
+        accessibilityState={{ disabled: disabled || loading, expanded: isOpen }}
       >
         {leftIcon ? <View style={styles.leftIcon}>{leftIcon}</View> : null}
         {renderTriggerContent()}
@@ -252,100 +232,89 @@ const AppDropdown = ({
         ) : !multiSelection && selectedValue && canClear ? (
           <Pressable
             hitSlop={8}
-            onPress={e => {
-              e.stopPropagation();
+            onPress={event => {
+              event.stopPropagation();
               handleClearSelection();
             }}
+            style={styles.clearButton}
           >
-            <X height={18} width={18} />
+            <X
+              width={styles.clearIcon.width}
+              height={styles.clearIcon.height}
+              color={styles.clearIcon.color}
+            />
           </Pressable>
         ) : rightElement ? (
           <View style={styles.rightElement}>{rightElement}</View>
         ) : (
-          <ChevronDown height={20} width={20} />
+          <ChevronDown
+            width={styles.chevronIcon.width}
+            height={styles.chevronIcon.height}
+            color={styles.chevronIcon.color}
+          />
         )}
       </Pressable>
+
+      {isOpen ? (
+        <View style={styles.inlinePanel}>
+          {isSearching ? (
+            <View style={styles.searchContainer}>
+              <TextInput
+                value={searchQuery}
+                autoCorrect={false}
+                placeholder="Search..."
+                style={styles.searchInput}
+                onChangeText={text => {
+                  setSearchQuery(text);
+                  onSearchChange?.(text);
+                }}
+                cursorColor={colors.text as string}
+                selectionColor={colors.primary as string}
+                placeholderTextColor={colors.gray as string}
+              />
+            </View>
+          ) : null}
+
+          <ScrollView
+            nestedScrollEnabled
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContentContainer}
+          >
+            {loading ? (
+              <View style={styles.emptyContainer}>
+                <ActivityIndicator
+                  size="small"
+                  color={colors.primary as string}
+                />
+              </View>
+            ) : filteredItems.length ? (
+              filteredItems.map(renderDropdownItem)
+            ) : (
+              <View style={styles.emptyContainer}>
+                <AppText label={emptyLabel} style={styles.emptyText} />
+              </View>
+            )}
+          </ScrollView>
+
+          {multiSelection ? (
+            <Pressable
+              accessibilityRole="button"
+              onPress={closeDropdown}
+              style={({ pressed }) => [
+                styles.doneButton,
+                pressed && styles.itemRowPressed,
+              ]}
+            >
+              <AppText semibold label="Done" style={styles.doneText} />
+            </Pressable>
+          ) : null}
+        </View>
+      ) : null}
 
       {error !== '' && error !== null && (
         <AppText label={error} color={'red'} style={styles.errorText} />
       )}
-
-      {/* ── Dropdown Modal ── */}
-      <Modal
-        transparent
-        visible={isOpen}
-        animationType="none"
-        statusBarTranslucent
-        onRequestClose={closeModal}
-      >
-        <KeyboardAvoidingView
-          style={styles.keyboardAvoider}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        >
-          <Animated.View style={styles.modalOverlay}>
-            <Pressable style={styles.overlayPress} onPress={closeModal} />
-
-            <Animated.View style={styles.modalCard}>
-              {/* Header */}
-              <View style={styles.modalHeader}>
-                <AppText
-                  style={styles.modalTitle}
-                  label={title || 'Select Option'}
-                />
-                <Pressable
-                  hitSlop={8}
-                  onPress={closeModal}
-                  style={styles.modalCloseBtn}
-                >
-                  <X height={20} width={20} />
-                </Pressable>
-              </View>
-
-              {/* Search */}
-              <View style={styles.searchContainer}>
-                <TextInput
-                  value={searchQuery}
-                  autoCorrect={false}
-                  placeholder="Search..."
-                  style={styles.searchInput}
-                  onChangeText={text => {
-                    setSearchQuery(text);
-                    onSearchChange?.(text);
-                  }}
-                  cursorColor={colors.text as string}
-                  selectionColor={colors.primary as string}
-                  placeholderTextColor={colors.gray as string}
-                />
-              </View>
-
-              {/* Item List */}
-              <FlatList
-                windowSize={10}
-                data={filteredItems}
-                renderItem={renderItem}
-                initialNumToRender={15}
-                maxToRenderPerBatch={20}
-                keyExtractor={keyExtractor}
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.listContentContainer}
-                ListEmptyComponent={
-                  <View style={styles.emptyContainer}>
-                    {isSearching || loading ? (
-                      <ActivityIndicator
-                        size="small"
-                        color={colors.primary as string}
-                      />
-                    ) : (
-                      <AppText label={emptyLabel} style={styles.emptyText} />
-                    )}
-                  </View>
-                }
-              />
-            </Animated.View>
-          </Animated.View>
-        </KeyboardAvoidingView>
-      </Modal>
     </View>
   );
 };
