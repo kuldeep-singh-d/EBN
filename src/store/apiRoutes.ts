@@ -1,6 +1,7 @@
 export const methods = {
   GET: 'GET',
   PUT: 'PUT',
+  PATCH: 'PATCH',
   POST: 'POST',
   DELETE: 'DELETE',
 } as const;
@@ -70,6 +71,7 @@ export const apiRoutes = {
   },
   profile: {
     me: '/profile/me',
+    update: '/profile/update',
     billing: '/profile/billing',
     invoices: '/profile/invoices',
   },

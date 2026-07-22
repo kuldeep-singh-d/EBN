@@ -1,3 +1,92 @@
-export interface ProfileData {
+export type ProfileSectionKey = 'basic' | 'business' | 'network';
+
+export type ProfileApiData = {
+  id?: number;
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  primary_chapter_id?: number | null;
+  whatsapp?: string | null;
+  avatar?: string | null;
+  dob?: string | null;
+  residential_address?: string | null;
+  academic_qualification?: string | null;
+  anniversary_date?: string | null;
+  spouse_name?: string | null;
+  spouse_profession?: string | null;
+  kids_details?: string | null;
+  brand_name?: string | null;
+  company_name?: string | null;
+  gst_number?: string | null;
+  website?: string | null;
+  years_in_business?: string | number | null;
+  pincode?: string | null;
+  city?: string | null;
+  office_address?: string | null;
+  office_ownership?: string | null;
+  employees?: string | number | null;
+  annual_turnover?: string | number | null;
+  monthly_avg_business?: string | number | null;
+  target_customers?: string | null;
+  geographical_area?: string | null;
+  top_5_ideal_clients?: string | null;
+  nature_of_business?: string | null;
+  referrals_looking_for?: string | null;
+  categories_max_business?: string | null;
+  has_sales_team?: boolean | number | null;
+  sales_team_count?: string | number | null;
+  referrals_monthly_capacity?: string | number | null;
+  has_client_database?: boolean | number | null;
+  previous_network_name?: string | null;
+  past_disputes?: boolean | number | null;
+  disputes_description?: string | null;
+};
+
+export type ProfileFormData = {
   name: string;
-}
+  phone: string;
+  email: string;
+  password: string;
+  whatsapp: string;
+  dob: Date | null;
+  residential_address: string;
+  academic_qualification: string;
+  anniversary_date: Date | null;
+  spouse_name: string;
+  spouse_profession: string;
+  kids_details: string;
+  brand_name: string;
+  company_name: string;
+  gst_number: string;
+  website: string;
+  years_in_business: string;
+  pincode: string;
+  city: string;
+  office_address: string;
+  office_ownership: string;
+  employees: string;
+  annual_turnover: string;
+  monthly_avg_business: string;
+  target_customers: string;
+  geographical_area: string;
+  top_5_ideal_clients: string;
+  nature_of_business: string;
+  referrals_looking_for: string;
+  categories_max_business: string;
+  has_sales_team: boolean;
+  sales_team_count: string;
+  referrals_monthly_capacity: string;
+  has_client_database: boolean;
+  previous_network_name: string;
+  past_disputes: boolean;
+  disputes_description: string;
+};
+
+export type ProfileFormErrors = Partial<Record<keyof ProfileFormData, string>>;
+
+export type ProfileResponse = {
+  status?: string;
+  success?: boolean;
+  message?: string;
+  data?: ProfileApiData;
+};
